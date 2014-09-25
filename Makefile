@@ -1,20 +1,9 @@
-prefix = $(shell pwd)
-
-all: boost server client
-
-boost:
-	wget http://downloads.sourceforge.net/project/boost/boost/1.56.0/boost_1_56_0.7z && \
-	7z x ./boost_1_56_0.7z && \
-	cd ./boost_1_56_0 && \
-	./bootstrap.sh --prefix=$(prefix) --with-libraries=system,thread,date_time,regex,serialization && \
-	./b2 install && \
-	cd .. && \
-	rm -r ./boost_1_56_0*
+all: server client
 
 server:
-	gcc -I./include/ ./src/chat_server.cpp -o chat_server -lstdc++ ./lib/libboost_system.a
+	gcc -I$(INCLUDE_PATH) ./src/chat_server.cpp -o chat_server -lstdc++ $(LIB_PATH)/libboost_system.a
 client:
-	gcc -I./include/ ./src/chat_client.cpp -o chat_client -lstdc++ ./lib/libboost_system.a ./lib/libboost_thread.a -pthread -lrt
+	gcc -I$(INCLUDE_PATH) ./src/chat_client.cpp -o chat_client -lstdc++ $(LIB_PATH)/libboost_system.a $(LIB_PATH)/libboost_thread.a -pthread -lrt
 
 clean:
 	-rm ./chat_server
