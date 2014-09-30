@@ -1,4 +1,5 @@
-before_install:s
+before_install:
+  - sudo apt-get update -q
   - sudo apt-get install p7zip 
 language: cpp
 compiler:
