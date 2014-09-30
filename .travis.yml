@@ -1,0 +1,5 @@
+language: cpp
+compiler:
+  - gcc
+# How to build project?
+script: sh bin/install-boost.sh && make
