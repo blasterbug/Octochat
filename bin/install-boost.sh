@@ -17,7 +17,7 @@ then
     exit 1
 fi
 
-7z x boost_${file_version}.7z
+7z ./boost_${file_version}.7z
 if [ "$?" -ne 0 ]
 then
     echo "7z failed"
