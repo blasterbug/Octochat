@@ -2,6 +2,7 @@
 
 prefix=`pwd`
 boost_version="1.56.0"
+boost_format="tar.gz"
 file_version=`echo ${boost_version} | tr . _`
 
 if [ "$#" -ne 0 ]
@@ -10,17 +11,17 @@ then
     exit 0
 fi
 
-wget http://downloads.sourceforge.net/project/boost/boost/${boost_version}/boost_${file_version}.7z
+wget http://downloads.sourceforge.net/project/boost/boost/${boost_version}/boost_${file_version}.${boost_format}
 if [ "$?" -ne 0 ]
 then
     echo "wget failed"
     exit 1
 fi
 
-7z x ./boost_${file_version}.7z
+tar -xf ./boost_${file_version}.${boost_format}
 if [ "$?" -ne 0 ]
 then
-    echo "7z failed"
+    echo "tar failed"
     exit 1
 fi
 
