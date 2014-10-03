@@ -1,10 +1,6 @@
 notifications:
   email: false
-before_install:
-  - sudo apt-get update -q
-  - sudo apt-get install p7zip-full 
 language: cpp
-compiler:
-  - gcc
+compiler: gcc
 # How to build project?
 script: ./bin/install-boost.sh > install-boost.log && make
