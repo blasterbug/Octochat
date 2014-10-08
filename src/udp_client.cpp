@@ -1,12 +1,7 @@
-//
-// blocking_udp_echo_client.cpp
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-//
-// Copyright (c) 2003-2014 Christopher M. Kohlhoff (chris at kohlhoff dot com)
-//
-// Distributed under the Boost Software License, Version 1.0. (See accompanying
-// file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
-//
+/*
+ * udp_client.cpp
+ * Sonde le réseau: envoie une requête en broadcast (sur plusieurs ports ? régulièrement pour maintenir la liste des Octo* connectés, indique le port d'écoute des serveurs udp/tcp dans la requête)
+*/
 
 #include <cstdlib>
 #include <cstring>
