@@ -1,9 +1,9 @@
 /**
- * @file user.hpp
+ * @file message.hpp
  *
  * @section desc File description
  *
- * header for user class
+ * header for message class
  *
  * @section copyright Copyright
  *
@@ -29,34 +29,20 @@
  * @version 0.1
  */
 
-class user {
+class message {
 
 	private:
-		string id_; /// user (unique) name
-		string ip_port_; /// address to communicate
-		bool alive_; /// Is the user on/offline ?
+		user from_; /// Whoe send the message?
+		room destination_; /// Where the message should be posted?
+		string content_; /// Content of the message, i.e. text bitch!
+		int timeStmp_; /// When the message was created? (local time)
 
 	public:
-	/**
-	 * Create a new user
-	 * @param id (Nick)name of the user
-	 * @param socket User's network address
-	 */
-		user(string id, string address):
-			id_(id),
-			ip_port_(socket)
-			alive_(false),
+		message(const &user writer, room adressee, string text):
+			from_(writer),
+			destination_(adresse),
+			content_(text),
+			timeStmp_(0) /// TODO
 		{};
-
-	/**
-	 * What is the name of the user ?
-	 * @return Name of the user
-	 */
-		string getId(){
-			return id_;
-		}
-
-		bool isOnline(){
-			return alive_;
 
 };

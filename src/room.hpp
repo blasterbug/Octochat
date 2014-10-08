@@ -1,9 +1,9 @@
 /**
- * @file user.hpp
+ * @file room.hpp
  *
  * @section desc File description
  *
- * header for user class
+ * header for room class
  *
  * @section copyright Copyright
  *
@@ -29,34 +29,19 @@
  * @version 0.1
  */
 
-class user {
+#include <boost/container/flat_set.hpp>
+class room {
 
 	private:
-		string id_; /// user (unique) name
-		string ip_port_; /// address to communicate
-		bool alive_; /// Is the user on/offline ?
+		user creator_; /// Who created the room ? -Can be a ghost
+		::boost::container::flat_set userlist_; /// Who is in the room?
+		string subject_; /// subject of the room
 
 	public:
-	/**
-	 * Create a new user
-	 * @param id (Nick)name of the user
-	 * @param socket User's network address
-	 */
-		user(string id, string address):
-			id_(id),
-			ip_port_(socket)
-			alive_(false),
+		room(const &user owner, string title):
+			creator_(owner),
+			subject_(title),
+			flat_set()
 		{};
-
-	/**
-	 * What is the name of the user ?
-	 * @return Name of the user
-	 */
-		string getId(){
-			return id_;
-		}
-
-		bool isOnline(){
-			return alive_;
 
 };
