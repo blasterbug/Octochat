@@ -8,6 +8,14 @@ endif
 
 all: server client
 
+tcp_client:
+	gcc -I$(INCLUDE_PATH) ./src/tcp_client.cpp -o tcp_client -lstdc++ $(LIB_PATH)/libboost_system.a
+udp_client:
+	gcc -I$(INCLUDE_PATH) ./src/udp_client.cpp -o udp_client -lstdc++ $(LIB_PATH)/libboost_system.a
+tcp_server:
+	gcc -I$(INCLUDE_PATH) ./src/tcp_server.cpp -o tcp_server -lstdc++ $(LIB_PATH)/libboost_system.a
+udp_server:
+	gcc -I$(INCLUDE_PATH) ./src/udp_server.cpp -o udp_server -lstdc++ $(LIB_PATH)/libboost_system.a
 server:
 	gcc -I$(INCLUDE_PATH) ./src/sandbox/chat_server.cpp -o chat_server -lstdc++ $(LIB_PATH)/libboost_system.a
 client:
