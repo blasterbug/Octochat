@@ -1,0 +1,15 @@
+import modules ;
+BOOST_ROOT = [ modules.peek : BOOST_ROOT ] ;
+use-project /boost : $(BOOST_ROOT) ;
+
+project octochat
+    : source-location ./src
+    : requirements <source>/boost//system <source>/boost//thread
+    : default-build <threading>multi <link>static
+    : build-dir ./bin
+    ;
+
+exe tcp_server : tcp_server.cpp ;
+exe tcp_client : tcp_client.cpp ;
+exe udp_server : udp_server.cpp ;
+exe udp_client : udp_client.cpp ;
