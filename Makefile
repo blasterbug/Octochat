@@ -9,13 +9,13 @@ endif
 all: server client tcp_client udp_client tcp_server tcp_server
 
 tcp_client:
-	gcc -I$(INCLUDE_PATH) ./src/tcp_client.cpp -o tcp_client -lstdc++ $(LIB_PATH)/libboost_system.a $(LIB_PATH)/libboost_thread.a -lpthread -lrt
+	gcc -I$(INCLUDE_PATH) ./src/octonet/tcp_client.cpp -o tcp_client -lstdc++ $(LIB_PATH)/libboost_system.a $(LIB_PATH)/libboost_thread.a -lpthread -lrt
 udp_client:
-	gcc -I$(INCLUDE_PATH) ./src/udp_client.cpp -o udp_client -lstdc++ $(LIB_PATH)/libboost_system.a $(LIB_PATH)/libboost_thread.a -lpthread -lrt
+	gcc -I$(INCLUDE_PATH) ./src/octonet/udp_client.cpp -o udp_client -lstdc++ $(LIB_PATH)/libboost_system.a $(LIB_PATH)/libboost_thread.a -lpthread -lrt
 tcp_server:
-	gcc -I$(INCLUDE_PATH) ./src/tcp_server.cpp -o tcp_server -lstdc++ $(LIB_PATH)/libboost_system.a $(LIB_PATH)/libboost_thread.a -lpthread -lrt
+	gcc -I$(INCLUDE_PATH) ./src/octonet/tcp_server.cpp -o tcp_server -lstdc++ $(LIB_PATH)/libboost_system.a $(LIB_PATH)/libboost_thread.a -lpthread -lrt
 udp_server:
-	gcc -I$(INCLUDE_PATH) ./src/udp_server.cpp -o udp_server -lstdc++ $(LIB_PATH)/libboost_system.a $(LIB_PATH)/libboost_thread.a -lpthread -lrt
+	gcc -I$(INCLUDE_PATH) ./src/octonet/udp_server.cpp -o udp_server -lstdc++ $(LIB_PATH)/libboost_system.a $(LIB_PATH)/libboost_thread.a -lpthread -lrt
 server:
 	gcc -I$(INCLUDE_PATH) ./src/sandbox/chat_server.cpp -o chat_server -lstdc++ $(LIB_PATH)/libboost_system.a
 client:
