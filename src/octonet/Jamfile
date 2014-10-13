@@ -1,0 +1,15 @@
+project octonet
+    # Source location
+    :
+    # Requirements
+    : requirements <source>/boost//system <source>/boost//thread
+    # Default build
+    : default-build <threading>multi <link>static
+    # Build directory
+    :
+    ;
+
+exe tcp_server : tcp_server.cpp ;
+exe tcp_client : tcp_client.cpp ;
+exe udp_server : udp_server.cpp ;
+exe udp_client : udp_client.cpp ;
