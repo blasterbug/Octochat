@@ -24,6 +24,12 @@ doc:
 	doxygen Doxyfile
 doclatex: doc
 	make -C ./doc/latex
+bjam:
+	./boost/bjam
+bjam.prepare:
+	./bin/prepare-boost.sh 1.56.0 && \
+	cd ./boost && \
+	./bootstrap.sh
 
 clean:
 	-rm ./chat_server
