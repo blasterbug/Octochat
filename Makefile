@@ -25,7 +25,7 @@ doc:
 doclatex: doc
 	make -C ./doc/latex
 bjam:
-	./boost/bjam
+	BOOST_ROOT=./boost ./boost/bjam toolset=gcc
 bjam.prepare:
 	./bin/prepare-boost.sh 1.56.0 && \
 	cd ./boost && \

@@ -5,12 +5,12 @@ var_version_underscore=""
 var_format=""
 
 function func_download {
-    if command -v curl
-    then
-        curl -O http://downloads.sourceforge.net/project/boost/boost/$var_version_dot/boost_$var_version_underscore.$var_format
-    elif command -v wget
+    if command -v wget
     then
         wget http://downloads.sourceforge.net/project/boost/boost/$var_version_dot/boost_$var_version_underscore.$var_format
+    elif command -v curl
+    then
+        curl -O http://downloads.sourceforge.net/project/boost/boost/$var_version_dot/boost_$var_version_underscore.$var_format
     else
         echo "error" 1>&2
         exit 1
