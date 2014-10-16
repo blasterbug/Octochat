@@ -29,20 +29,24 @@
  * @version 0.1
  */
 
+#include <string>
+#include "user.hpp"
+#include "room.hpp"
+
 class message {
 
 	private:
 		user from_; /// Whoe send the message?
 		room destination_; /// Where the message should be posted?
-		string content_; /// Content of the message, i.e. text bitch!
+		std::string content_; /// Content of the message, i.e. text bitch!
 		int timeStmp_; /// When the message was created? (local time)
 
 	public:
-		message(const &user writer, room adressee, string text):
+		message(const user &writer, const room &adressee, std::string text):
 			from_(writer),
-			destination_(adresse),
+			destination_(adressee),
 			content_(text),
 			timeStmp_(0) /// TODO
-		{};
+		{}
 
 };

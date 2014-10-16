@@ -29,11 +29,13 @@
  * @version 0.1
  */
 
+#include <string>
+
 class user {
 
 	private:
-		string id_; /// user (unique) name
-		string ip_port_; /// address to communicate
+		std::string id_; /// user (unique) name
+		std::string ip_port_; /// address to communicate
 		bool alive_; /// Is the user on/offline ?
 
 	public:
@@ -42,21 +44,22 @@ class user {
 	 * @param id (Nick)name of the user
 	 * @param socket User's network address
 	 */
-		user(string id, string address):
+		user(std::string id, std::string address):
 			id_(id),
-			ip_port_(socket)
-			alive_(false),
+			ip_port_(address),
+			alive_(false)
 		{};
 
 	/**
 	 * What is the name of the user ?
 	 * @return Name of the user
 	 */
-		string getId(){
+		std::string getId(){
 			return id_;
 		}
 
 		bool isOnline(){
 			return alive_;
+		}
 
 };

@@ -24,24 +24,27 @@
  *
  * @section infos File informations
  *
- * @date 2014/10/07
+ * @date 2014/10/16
  * @author Benjamin Sientzoff
  * @version 0.1
  */
 
-#include <boost/container/flat_set.hpp>
+#include <vector>
+#include <string>
+#include "user.hpp"
+
 class room {
 
 	private:
 		user creator_; /// Who created the room ? -Can be a ghost
-		::boost::container::flat_set userlist_; /// Who is in the room?
-		string subject_; /// subject of the room
+		std::vector<user*> userlist_; /// Who is in the room?
+		std::string subject_; /// subject of the room
 
 	public:
-		room(const &user owner, string title):
+		room(user &owner, std::string title):
 			creator_(owner),
 			subject_(title),
-			flat_set()
-		{};
+			userlist_()
+		{}
 
 };
