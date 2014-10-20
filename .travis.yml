@@ -2,5 +2,4 @@ notifications:
   email: false
 language: cpp
 compiler: gcc
-# How to build project?
-script: ./bin/install-boost.sh > install-boost.log && make
+script: make
