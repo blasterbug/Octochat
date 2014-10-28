@@ -27,10 +27,6 @@
 *.out
 *.app
 
-# boost folders
-include
-lib
-
 # Linux file copies
 *~
 
