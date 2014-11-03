@@ -1,5 +1,5 @@
 /**
- * @file user.hpp
+ * @file octouser.hpp
  *
  * @section desc File description
  *
@@ -21,7 +21,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
- *
+	 *
  * @section infos File informations
  *
  * @date 2014/10/07
@@ -29,14 +29,18 @@
  * @version 0.1
  */
 
-#include <string>
+#ifndef USER_HPP
+#define USER_HPP
 
-class user {
+#include <string>
+#include <octopeer>
+
+class octouser {
 
 	private:
-		std::string id_; /// user (unique) name
-		std::string ip_port_; /// address to communicate
-		bool alive_; /// Is the user on/offline ?
+		std::string __id; /// user (unique) name
+		octopeer* __socket;
+		bool __alive; /// Is the user on/offline ?
 
 	public:
 	/**
@@ -44,10 +48,9 @@ class user {
 	 * @param id (Nick)name of the user
 	 * @param socket User's network address
 	 */
-		user(std::string id, std::string address):
-			id_(id),
-			ip_port_(address),
-			alive_(false)
+		octouser(const octopeer &peer, std::string address):
+			__socket(peer),
+			__alive(false)
 		{};
 
 	/**
@@ -55,11 +58,17 @@ class user {
 	 * @return Name of the user
 	 */
 		std::string getId(){
-			return id_;
+			return __id;
 		}
 
+	/**
+	 * Is the user online ?
+	 * @return True if the user is online, else false is returned
+	 */
 		bool isOnline(){
-			return alive_;
+			return __alive;
 		}
 
 };
+
+#endif

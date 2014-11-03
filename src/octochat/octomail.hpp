@@ -1,9 +1,9 @@
 /**
- * @file room.hpp
+ * @file octomail.hpp
  *
  * @section desc File description
  *
- * header for room class
+ * header for message class
  *
  * @section copyright Copyright
  *
@@ -24,27 +24,34 @@
  *
  * @section infos File informations
  *
- * @date 2014/10/16
+ * @date 2014/10/07
  * @author Benjamin Sientzoff
  * @version 0.1
  */
 
-#include <vector>
-#include <string>
-#include "user.hpp"
+#ifndef MESSAGE_HPP
+#define MESSAGE_HPP
 
-class room {
+#include <string>
+#include "octouser.hpp"
+#include "octoroom.hpp"
+
+class octomail {
 
 	private:
-		user creator_; /// Who created the room ? -Can be a ghost
-		std::vector<user*> userlist_; /// Who is in the room?
-		std::string subject_; /// subject of the room
+		user __from; /// Whoe send the message?
+		room __destination; /// Where the message should be posted?
+		std::string __content; /// Content of the message, i.e. text bitch!
+		int __timeStmp; /// When the message was created? (local time)
 
 	public:
-		room(user &owner, std::string title):
-			creator_(owner),
-			subject_(title),
-			userlist_()
+		octomail(const user &writer, const room &adressee, std::string text):
+			__from(writer),
+			__destination(adressee),
+			__content(text),
+			__timeStmp(0) /// TODO
 		{}
 
 };
+
+#endif
