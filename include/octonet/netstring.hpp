@@ -5,22 +5,22 @@
 
 #define LEN_BUFFER_SIZE 10
 
-#include <ctype.h>
-#include <errno.h>
-#include <limits.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include <cctype>
+#include <cerrno>
+#include <climits>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
 
-size_t netstring_decode(const char * __netstring, size_t __max_len, const char ** __string)
+std::size_t netstring_decode(const char * __netstring, std::size_t __max_len, const char ** __string)
 {
 	int _err;
     char _buffer[LEN_BUFFER_SIZE];
-    size_t _cpy_count;
+    std::size_t _cpy_count;
     char * _chr_ret;
-    size_t _len;
+    std::size_t _len;
     char * _end_ptr;
-    size_t _buffer_len;
+    std::size_t _buffer_len;
     unsigned short _i;
     
     _err = 0;
@@ -33,8 +33,8 @@ size_t netstring_decode(const char * __netstring, size_t __max_len, const char *
 	else
 	{
 		_cpy_count = (__max_len < LEN_BUFFER_SIZE) ? __max_len : LEN_BUFFER_SIZE;
-		memcpy(_buffer, __netstring, _cpy_count*sizeof(char));
-		_chr_ret = memchr(_buffer, ':', _cpy_count*sizeof(char));
+		std::memcpy(_buffer, __netstring, _cpy_count*sizeof(char));
+		_chr_ret = (char*)std::memchr(_buffer, ':', _cpy_count*sizeof(char));// TODO : check cast
 		if(_chr_ret == NULL)
 		{
 			_err = 2;
@@ -44,7 +44,7 @@ size_t netstring_decode(const char * __netstring, size_t __max_len, const char *
 			*_chr_ret = '\0';
 			for(_i=0; _i<_cpy_count; _i++)
 			{
-				if((isdigit(_buffer[_i]) == 0) || (_buffer[_i] == '\0'))
+				if((std::isdigit(_buffer[_i]) == 0) || (_buffer[_i] == '\0'))
 				{
 					break;
 				}
@@ -56,7 +56,7 @@ size_t netstring_decode(const char * __netstring, size_t __max_len, const char *
 			else
 			{
 				errno = 0;
-				_len = strtoul(_buffer, &_end_ptr, 10);
+				_len = std::strtoul(_buffer, &_end_ptr, 10);
 				if((errno == ERANGE && (_len == ULONG_MAX || _len == 0)) || (errno != 0 && _len == 0))
 				{
 					_err = 4;
@@ -69,7 +69,7 @@ size_t netstring_decode(const char * __netstring, size_t __max_len, const char *
 					}
 					else
 					{
-						_buffer_len = strlen(_buffer);
+						_buffer_len = std::strlen(_buffer);
 						if((_buffer_len+1+_len+1) > __max_len)
 						{
 							_err = 6;
