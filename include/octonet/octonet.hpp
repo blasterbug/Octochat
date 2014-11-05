@@ -27,7 +27,7 @@ class octonet
         bool rem_query_observer(const octoquery_observer *oq_obs);
         bool add_peer_observer(const octopeer_observer *op_obs);
         bool rem_peer_observer(const octopeer_observer *op_obs);
-        bool send_query(const octopeer &op, const octoquery &oq);
+        bool send_query(const octopeer &op, const octoquery &oq) const;
 };
 
 #endif

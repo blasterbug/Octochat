@@ -5,10 +5,18 @@
 #include <cstddef>
 #include <map>
 
+struct str_comparator
+{
+    bool operator()(const char* lhs, const char* rhs) const
+    {
+        return std::strcmp(lhs, rhs) < 0;
+    }
+};
+
 struct octoquery
 {
     //TODO : think about optimal container
-    std::map<char*, char*> headers;
+    std::map<char*, char*, str_comparator> headers;
     char *content;
     size_t content_length;
 
