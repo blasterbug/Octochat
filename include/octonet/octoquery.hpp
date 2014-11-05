@@ -78,12 +78,17 @@ public:
     bool rem_header(const char *key)
     {
 		std::map<const char*, const char*>::const_iterator fi = __headers.find(key);
+		const char* old_key;
+		const char* old_value;
 
 		if(fi != __headers.end())
 		{
-			delete[] fi->first;
-			delete[] fi->second;
-			return __headers.erase(key) > 0;
+			old_key = fi->first;
+			old_value = fi->second;
+			__headers.erase(fi->first);
+			delete[] old_key;
+			delete[] old_value;
+			return true;
 		}
 		return false;
 	}
