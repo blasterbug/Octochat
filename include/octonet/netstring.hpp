@@ -12,6 +12,8 @@
 #include <cstdlib>
 #include <cstring>
 
+std::size_t netstring_decode(const char * __netstring, std::size_t __max_len, const char ** __string);
+
 std::size_t netstring_decode(const char * __netstring, std::size_t __max_len, const char ** __string)
 {
 	int _err;
@@ -34,7 +36,7 @@ std::size_t netstring_decode(const char * __netstring, std::size_t __max_len, co
 	{
 		_cpy_count = (__max_len < LEN_BUFFER_SIZE) ? __max_len : LEN_BUFFER_SIZE;
 		std::memcpy(_buffer, __netstring, _cpy_count*sizeof(char));
-		_chr_ret = (char*)std::memchr(_buffer, ':', _cpy_count*sizeof(char));// TODO : check cast
+		_chr_ret = static_cast<char*>(std::memchr(_buffer, ':', _cpy_count*sizeof(char)));
 		if(_chr_ret == NULL)
 		{
 			_err = 2;
