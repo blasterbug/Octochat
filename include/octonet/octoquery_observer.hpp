@@ -6,9 +6,8 @@
 class octoquery_observer
 {
     public:
-        const char *app_id;
-        octoquery_observer(const char *_app_id) : app_id(_app_id) {}
-        virtual void update_query(const octoquery &oq) {}
+        virtual void update_query(const octoquery &oq) = 0;
+        virtual const char* get_app() const = 0;
 };
 
 #endif
