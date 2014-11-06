@@ -93,7 +93,7 @@ public:
 		return false;
 	}
 
-    const char* get_header(const char *key)
+    const char* get_header(const char *key) const
     {
 		std::map<const char*, const char*>::const_iterator fi = __headers.find(key);
 
