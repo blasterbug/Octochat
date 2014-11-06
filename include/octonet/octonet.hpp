@@ -1,6 +1,10 @@
 #ifndef OCTONET_HPP
 #define OCTONET_HPP
 
+#define OCTONET_VERSION "1"
+#define OCTONET_HEADER "OCTONET"
+#define APP_HEADER "APP"
+
 #include <set>
 
 #include "octopeer.hpp"
@@ -23,10 +27,10 @@ class octonet
     public:
         octonet();
         ~octonet();
-        bool add_query_observer(const octoquery_observer *oq_obs);
-        bool rem_query_observer(const octoquery_observer *oq_obs);
-        bool add_peer_observer(const octopeer_observer *op_obs);
-        bool rem_peer_observer(const octopeer_observer *op_obs);
+        bool add_query_observer(octoquery_observer *oq_obs);
+        bool rem_query_observer(octoquery_observer *oq_obs);
+        bool add_peer_observer(octopeer_observer *op_obs);
+        bool rem_peer_observer(octopeer_observer *op_obs);
         bool send_query(const octopeer &op, const octoquery &oq) const;
 };
 
