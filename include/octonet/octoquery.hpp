@@ -44,40 +44,29 @@ public:
 		{
 			throw 1;
 		}
-		
+
 		acc_len = headers_len;
-		key_str = headers_buf-1;
-		value_len = 0;
+		key_str = headers_buf;
 		while(acc_len > 0)
 		{
-			if(key_str == 0)
-			{
-				throw 2;
-			}
-			key_str++;
 			key_len = strnlen(key_str, acc_len);
 			if((key_len == acc_len) || (key_len < 1))
 			{
 				throw 3;
 			}
-			acc_len -= key_len+1;
 			
-			value_str = static_cast<const char*>(std::memchr(key_str, '\0', acc_len));
-			if(value_str == 0)
-			{
-				throw 4;
-			}
-			value_str++;
+			value_str = key_str+key_len+1;
+			acc_len -= key_len+1;
 			value_len = strnlen(value_str, acc_len);
 			if((value_len == acc_len) || (value_len < 1))
 			{
-				throw 5;
+				throw 4;
 			}
-			acc_len -= value_len+1;
 			
 			set_header(key_str, value_str);
 			
-			key_str = static_cast<const char*>(std::memchr(value_str, '\0', acc_len));
+			key_str = value_str+value_len+1;
+			acc_len -= value_len+1;
 		}
 		
 		value_str = get_header(CONTENT_LENGTH_HEADER);
