@@ -18,16 +18,17 @@ class octoquery
 {
 protected:
     std::map<const char*, const char*, str_comparator> __headers_set;
+    std::size_t __headers_len;
 
 public:
     const char* content_buf;
     std::size_t content_len;
 
-    octoquery() : __headers_set(), content_buf(0), content_len(0) {}
+    octoquery() : __headers_set(), __headers_len(0), content_buf(0), content_len(0) {}
 
-    octoquery(const octoquery& oq) : __headers_set(oq.__headers_set), content_buf(oq.content_buf), content_len(oq.content_len) {}
+    octoquery(const octoquery& oq) : __headers_set(oq.__headers_set), __headers_len(oq.__headers_len), content_buf(oq.content_buf), content_len(oq.content_len) {}
 
-    octoquery(const char *query_buf, std::size_t query_len) : __headers_set(), content_buf(0), content_len(0)
+    octoquery(const char *query_buf, std::size_t query_len) : __headers_set(), __headers_len(0), content_buf(0), content_len(0)
     {
 		const char* headers_buf;
 		std::size_t headers_len;
@@ -76,7 +77,7 @@ public:
 		{
 			if(query_len != acc_len)
 			{
-				throw 6;
+				throw 5;
 			}
 		}
 		else
@@ -85,17 +86,24 @@ public:
 			{
 				if(!std::isdigit(value_str[i]))
 				{
-					throw 7;
+					throw 6;
 				}
 			}
 			errno = 0;
 			value_len = std::strtoul(value_str, &end_str, 10);
 			if((errno != 0 && (value_len == ULONG_MAX || value_len == 0)) || (end_str == value_str))
 			{
+				throw 7;
+			}
+			if(query_len != (acc_len+value_len))
+			{
 				throw 8;
 			}
 			content_len = value_len;
-			content_buf = query_buf + acc_len + 1;
+			if(content_len>0)
+			{
+				content_buf = query_buf + acc_len + 1;
+			}
 		}
 	}
 
@@ -107,22 +115,37 @@ public:
     virtual void clear_headers()
     {
 		__headers_set.clear();
+		__headers_len = 0;
 	}
 
-    std::map<const char*, const char*>::const_iterator begin()
+    std::map<const char*, const char*>::const_iterator headers_begin()
     {
 		return __headers_set.begin();
 	}
 
-    std::map<const char*, const char*>::const_iterator end()
+    std::map<const char*, const char*>::const_iterator headers_end()
     {
 		return __headers_set.end();
 	}
 
     virtual bool set_header(const char* key_str, const char* value_str)
     {
-		if((std::strlen(key_str)>0) && (std::strlen(value_str)>0))
+		std::size_t key_len = std::strlen(key_str);
+		std::size_t value_len = std::strlen(value_str);
+		const char* old_value_str;
+		
+		if((key_len>0) && (value_len>0))
 		{
+			old_value_str = get_header(key_str);
+			if(old_value_str == 0)
+			{
+				__headers_len += key_len+1;
+			}
+			else
+			{
+				__headers_len -= std::strlen(old_value_str)+1;
+			}
+			__headers_len += value_len+1;
 			__headers_set[key_str] = value_str;
 			return true;
 		}
@@ -135,6 +158,7 @@ public:
 		
 		if(fi != __headers_set.end())
 		{
+			__headers_len -= std::strlen(fi->first)+1+std::strlen(fi->second)+1;
 			__headers_set.erase(fi->first);
 			return true;
 		}
@@ -150,6 +174,11 @@ public:
 			return fi->second;
 		}
 		return 0;
+	}
+	
+	std::size_t get_headers_len()
+	{
+		return __headers_len;
 	}
 };
 
