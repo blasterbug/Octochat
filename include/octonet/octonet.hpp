@@ -4,6 +4,7 @@
 #define OCTONET_VERSION "1"
 #define OCTONET_HEADER "OCTONET"
 #define APP_HEADER "APP"
+#define CONTENT_LENGTH_HEADER "CONTENT_LENGTH"
 
 #include <set>
 
