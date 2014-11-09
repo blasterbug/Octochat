@@ -13,7 +13,7 @@ endif
 ifeq ($(wildcard ./boost/bjam),)
 	cd ./boost && ./bootstrap.sh
 endif
-	BOOST_ROOT=./boost ./boost/bjam toolset=gcc
+	BOOST_ROOT=./boost ./boost/bjam toolset=gcc warnings=all
 
 clean: clean.doc
 

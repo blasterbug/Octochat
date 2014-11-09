@@ -2,4 +2,20 @@ import modules ;
 BOOST_ROOT = [ modules.peek : BOOST_ROOT ] ;
 use-project /boost : $(BOOST_ROOT) ;
 
-build-project src/octonet ;
+project octonet
+    # Source location
+    :
+    # Requirements
+    : requirements <include>include <source>/boost//system <source>/boost//thread
+    # Default build
+    : default-build <threading>multi <link>static
+    # Build directory
+    :
+    ;
+
+lib netstring : src/octonet/netstring.cpp ;
+lib octonet : src/octonet/octonet.cpp : <use>netstring ;
+
+exe octotest : src/octotest/octotest.cpp octonet ;
+
+# build-project src/octonet ;
