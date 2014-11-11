@@ -45,27 +45,27 @@ using namespace std;
  */
 class octoroom_exception : std::exception {
 	private:
-		char* _cause; /** store exception description */
+		char* __cause; /** store exception description */
 	public:
 		/** constructor
 		 * @param[in] cause description of exception origin
 		 */
-		octoroom_exception(char* cause):
-			_cause(cause)
+		octoroom_exception( char* cause ) :
+			__cause( cause )
 			{}
 
 		/** destructor
 		 * currently, do anything special
 		 */
-		virtual ~octoroom_exception() throw(){
+		virtual ~octoroom_exception() throw() {
 			// do nothing
 		}
 
 		/** virtual fonction from superclass,
 		 * usefull to get the exception description
 		 */
-		virtual const char* what()const throw(){
-			return _cause;
+		virtual const char* what()const throw() {
+			return __cause;
 		}
 };
 
@@ -99,7 +99,7 @@ class octoroom {
 		 * Adding user in the room
 		 * @param[in] user User to add in the room
 		 */
-		void addUser(const ocotouser &user) throw octoroom_exception {
+		void addUser( const ocotouser &user ) throw octoroom_exception {
 			// ?
 		}
 

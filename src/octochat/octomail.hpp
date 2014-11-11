@@ -51,11 +51,11 @@ class octomail {
 		 * @param[in] adressee Where the mail should be posted ?
 		 * @param[in] text content of the message
 		 */
-		octomail(const user &writer, const room &adressee, std::string text):
-			__from(writer),
-			__destination(adressee),
-			__content(text),
-			__timeStmp(0) /// TODO
+		octomail( const user &writer, const room &adressee, std::string text ) :
+			__from( writer ),
+			__destination( adressee ),
+			__content( text ),
+			__timeStmp( 0 ) /// TODO
 		{}
 
 		/**

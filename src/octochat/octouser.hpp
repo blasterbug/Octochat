@@ -59,7 +59,7 @@ class octouser {
 	 * @param[in] tocopy Octo-user to copy
 	 */
 		octouser( const octouser& tocopy ) {
-			octouser* copied = new octouser( tocopy.__id, tocopy.__peer);
+			octouser* copied = new octouser( tocopy.__id, tocopy.__peer );
 			copied.__alive = tocopy.__alive;
 			return copied;
 		}
