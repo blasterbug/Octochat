@@ -29,8 +29,8 @@
  * @version 0.1
  */
 
-#ifndef ROOM_HPP
-#define ROOM_HPP
+#ifndef OCTOROOM_HPP
+#define OCTOROOM_HPP
 
 #include <vector>
 #include <string>

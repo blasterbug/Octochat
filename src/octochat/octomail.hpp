@@ -29,8 +29,8 @@
  * @version 0.1
  */
 
-#ifndef MESSAGE_HPP
-#define MESSAGE_HPP
+#ifndef OCTOMAIL_HPP
+#define OCTOMAIL_HPP
 
 #include <string>
 #include "octouser.hpp"
@@ -45,12 +45,31 @@ class octomail {
 		int __timeStmp; /// When the message was created? (local time)
 
 	public:
+		/**
+		 * constructor for a octo-mail
+		 * @param writer the emitter of the message
+		 * @param adressee Where the mail should be posted ?
+		 * @param text content of the message
+		 */
 		octomail(const user &writer, const room &adressee, std::string text):
 			__from(writer),
 			__destination(adressee),
 			__content(text),
 			__timeStmp(0) /// TODO
 		{}
+
+		/**
+		 * copy contructor for octo-mail
+		 * @param tocopy octo-mail to be copied
+		 * @return address of the copy object
+		 */
+		octomail& octomail( const octomail& tocopy ) {
+			octomail& copied = new octomail( tocopy.__from, tocopy.__destination, tocopy.__content );
+			copied.__timeStmp = tocopy.__timeStmp;
+			return copied;
+		}
+
+
 
 };
 

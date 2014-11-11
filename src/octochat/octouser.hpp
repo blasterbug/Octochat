@@ -29,8 +29,8 @@
  * @version 0.1
  */
 
-#ifndef USER_HPP
-#define USER_HPP
+#ifndef OCTOUSER_HPP
+#define OCTOUSER_HPP
 
 #include <string>
 #include <octopeer>
@@ -39,25 +39,45 @@ class octouser {
 
 	private:
 		std::string __id; /// user (unique) name
-		octopeer* __socket;
+		octopeer* __peer; /// "connect" to user
 		bool __alive; /// Is the user on/offline ?
 
 	public:
 	/**
 	 * Create a new user
-	 * @param id (Nick)name of the user
+	 * @param name (Nick)name of the user
 	 * @param socket User's network address
 	 */
-		octouser(const octopeer &peer, std::string address):
-			__socket(peer),
-			__alive(false)
+		octouser( std::string name, const octopeer &peer ) :
+			__id( __name ),
+			__peer( peer ),
+			__alive( false )
 		{};
+
+	/**
+	 * Copy contructor, make a copy of the object
+	 * @param tocopy Octo-user to copy
+	 */
+		octouser( const octouser& tocopy ) {
+			octouser* copied = new octouser( tocopy.__id, tocopy.__peer);
+			copied.__alive = tocopy.__alive;
+			return copied;
+		}
+
+	/**
+	 * assignment operator, use pointers!
+	 * @param toassig octo-user to assign
+	 * @return octo-user adresse to get the assigment
+	 */
+	octouser& operator=( const octouser& toassig ) {
+		return this;
+	}
 
 	/**
 	 * What is the name of the user ?
 	 * @return Name of the user
 	 */
-		std::string getId(){
+		std::string getId() {
 			return __id;
 		}
 
@@ -65,7 +85,7 @@ class octouser {
 	 * Is the user online ?
 	 * @return True if the user is online, else false is returned
 	 */
-		bool isOnline(){
+		bool isOnline() {
 			return __alive;
 		}
 
