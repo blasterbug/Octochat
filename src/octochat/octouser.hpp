@@ -33,7 +33,7 @@
 #define OCTOUSER_HPP
 
 #include <string>
-#include <octopeer>
+#include "octonet/octopeer.hpp"
 
 class octouser {
 
