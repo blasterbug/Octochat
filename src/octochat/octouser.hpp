@@ -45,8 +45,8 @@ class octouser {
 	public:
 	/**
 	 * Create a new user
-	 * @param name (Nick)name of the user
-	 * @param socket User's network address
+	 * @param[in] name (Nick)name of the user
+	 * @param[in] socket User's network address
 	 */
 		octouser( std::string name, const octopeer &peer ) :
 			__id( __name ),
@@ -56,7 +56,7 @@ class octouser {
 
 	/**
 	 * Copy contructor, make a copy of the object
-	 * @param tocopy Octo-user to copy
+	 * @param[in] tocopy Octo-user to copy
 	 */
 		octouser( const octouser& tocopy ) {
 			octouser* copied = new octouser( tocopy.__id, tocopy.__peer);
@@ -66,7 +66,7 @@ class octouser {
 
 	/**
 	 * assignment operator, use pointers!
-	 * @param toassig octo-user to assign
+	 * @param[in] toassig octo-user to assign
 	 * @return octo-user adresse to get the assigment
 	 */
 	octouser& operator=( const octouser& toassig ) {
@@ -75,7 +75,7 @@ class octouser {
 
 	/**
 	 * What is the name of the user ?
-	 * @return Name of the user
+	 * @param[out] Name of the user
 	 */
 		std::string getId() {
 			return __id;
@@ -83,7 +83,7 @@ class octouser {
 
 	/**
 	 * Is the user online ?
-	 * @return True if the user is online, else false is returned
+	 * @param[out] True if the user is online, else false is returned
 	 */
 		bool isOnline() {
 			return __alive;

@@ -47,9 +47,9 @@ class octomail {
 	public:
 		/**
 		 * constructor for a octo-mail
-		 * @param writer the emitter of the message
-		 * @param adressee Where the mail should be posted ?
-		 * @param text content of the message
+		 * @param[in] writer the emitter of the message
+		 * @param[in] adressee Where the mail should be posted ?
+		 * @param[in] text content of the message
 		 */
 		octomail(const user &writer, const room &adressee, std::string text):
 			__from(writer),
@@ -60,8 +60,8 @@ class octomail {
 
 		/**
 		 * copy contructor for octo-mail
-		 * @param tocopy octo-mail to be copied
-		 * @return address of the copy object
+		 * @param[in] tocopy octo-mail to be copied
+		 * @param[out] address of the copy object
 		 */
 		octomail& octomail( const octomail& tocopy ) {
 			octomail& copied = new octomail( tocopy.__from, tocopy.__destination, tocopy.__content );

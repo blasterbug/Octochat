@@ -34,21 +34,76 @@
 
 #include <vector>
 #include <string>
+#include <boost/assign/std/vector.hpp> // for 'operator+=()'
+#include <boost/assign/list_inserter.hpp>
 #include "octouser.hpp"
 
+using namespace std;
+
+/**
+ * Exceptions throwed by octoroom class
+ */
+class octoroom_exception : std::exception {
+	private:
+		char* _cause; /** store exception description */
+	public:
+		/** constructor
+		 * @param[in] cause description of exception origin
+		 */
+		octoroom_exception(char* cause):
+			_cause(cause)
+			{}
+
+		/** destructor
+		 * currently, do anything special
+		 */
+		virtual ~octoroom_exception() throw(){
+			// do nothing
+		}
+
+		/** virtual fonction from superclass,
+		 * usefull to get the exception description
+		 */
+		virtual const char* what()const throw(){
+			return _cause;
+		}
+};
+
+/**
+ * An octo-room is the place where octo-users chat
+ */
 class octoroom {
 
 	private:
 		user __creator /// Who created the room ? -Can be a ghost
-		std::vector<octouser*> __userlist; /// Who is in the room?
-		std::string __subject; /// subject of the room
+		vector<octouser*> __userlist; /// Who is in the room? // TODO : use a map
+		vector<octouser*> __bannedusers; /// Who is not allowed here // TODO : use a map !
+		string __subject; /// subject of the room
+
 
 	public:
-		octoroom(user &owner, std::string title):
-			__creator(owner),
-			__subject(title),
-			__userlist()
+
+		/**
+		 * Contructor for octo-room
+		 * @param[in] owner The octo-user who created the room
+		 * @param[in] title The subject of the room
+		 */
+		octoroom( user &owner, string title ) :
+			__creator( owner ),
+			__subject( title ),
+			__userlist(),
+			__bannedusers();
 		{}
+
+		/**
+		 * Adding user in the room
+		 * @param[in] user User to add in the room
+		 */
+		void addUser(const ocotouser &user) throw octoroom_exception {
+			// ?
+		}
+
+
 
 };
 
