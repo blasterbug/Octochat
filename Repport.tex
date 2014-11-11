@@ -1,0 +1,31 @@
+\documentclass[a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[frenchb]{babel}
+\usepackage{ifpdf}
+\usepackage{hyperref}
+\title{Octochat \\ \textit{Discuter sur le réseau local sans serveur}}
+\author{Alexis \textsc{Giraudet}, Benjamin \textsc{Sientzoff}}
+\date{\today}
+\ifpdf
+\hypersetup{
+    pdfauthor={Alexis Giraudet, Benjamin Sientzoff},
+    pdftitle={Octochat - Discuter sur le réseau local sans serveur},
+}
+\fi
+\begin{document}
+	% page de garde avec sommaire
+	\maketitle
+	\vspace{5cm}
+	\tableofcontents
+	\newpage
+	
+	\section*{Introduction}
+	\newpage
+	
+	\section{titre de la section}
+	\subsection{sous titre}
+	\paragraph{titre du paragraphe}{contenu}
+	\paragraph{}{paragraphe sans titre}
+	
+	\section*{Conclusion}
+\end{document}
