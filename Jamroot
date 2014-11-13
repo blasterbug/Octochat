@@ -13,9 +13,4 @@ project octonet
     :
     ;
 
-lib netstring : src/octonet/netstring.cpp ;
-lib octonet : src/octonet/octonet.cpp : <use>netstring ;
-
-exe octotest : src/octotest/octotest.cpp octonet ;
-
-# build-project src/octonet ;
+exe octotest : src/octotest/octotest.cpp ;
