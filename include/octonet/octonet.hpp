@@ -20,36 +20,63 @@
 #include "octopeer_observer.hpp"
 #include "octoquery_observer.hpp"
 
+/*!
+ * \class octonet
+ * \brief 
+ */
 class octonet
 {
     private:
-        std::set<octoquery_observer*> query_observers;
-        std::set<octopeer_observer*> peer_observers;
+        std::set<octoquery_observer*> __query_observers;
+        boost::mutex __query_observers_mtx;
+        std::set<octopeer_observer*> __peer_observers;
+        boost::mutex __peer_observers_mtx;
         //TODO : think about const members
-        unsigned short __tcp_port;
-        unsigned short __udp_port;
-
-    protected:
-        boost::asio::io_service _io_service;
-        void _notify_query_observers(const octoquery &oq) const {}
-        void _notify_peer_observers(const octopeer &op) const
+        const unsigned short __tcp_port;
+        const unsigned short __udp_port;
+        boost::asio::io_service __io_service;
+        
+        /*!
+         * \brief 
+         * \param oq : 
+         */
+        void _notify_query_observers(const octoquery &oq)
+        {
+                boost::lock_guard<boost::mutex> guard(__query_observers_mtx);
+        }
+        
+        /*!
+         * \brief 
+         * \param op : 
+         */
+        void _notify_peer_observers(const octopeer &op)
         {
 			std::set<octopeer_observer*>::const_iterator it;
-			for(it=peer_observers.begin(); it!=peer_observers.end(); ++it)
+                        boost::lock_guard<boost::mutex> guard(__peer_observers_mtx);
+			for(it=__peer_observers.begin(); it!=__peer_observers.end(); ++it)
 			{
 				(*it)->update_peer(op);
 			}
         }
-        void _server_tcp(unsigned short port)
+        
+        /*!
+         * \brief 
+         */
+        void _run_server_tcp()
         {
-                boost::asio::ip::tcp::acceptor a(_io_service, boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), port));
+                boost::asio::ip::tcp::acceptor a(__io_service, boost::asio::ip::tcp::endpoint(boost::asio::ip::tcp::v4(), __tcp_port));
                 for (;;)
                 {
-                        boost::shared_ptr<boost::asio::ip::tcp::socket> sock(new boost::asio::ip::tcp::socket(_io_service));
+                        boost::shared_ptr<boost::asio::ip::tcp::socket> sock(new boost::asio::ip::tcp::socket(__io_service));
                         a.accept(*sock);
                         boost::thread t(boost::bind(&octonet::_session_tcp0, this, sock));
                 }
         }
+        
+        /*!
+         * \brief 
+         * \param sock : 
+         */
         void _session_tcp0(boost::shared_ptr<boost::asio::ip::tcp::socket> sock)
         {
                 char header_buf[8];
@@ -96,17 +123,63 @@ class octonet
         }
 
     public:
-        octonet() : _io_service() {}
+        /*!
+         * \brief 
+         */
+        octonet(unsigned short tcp_port, unsigned short udp_port) : __tcp_port(tcp_port), __udp_port(udp_port) {}
+
+        /*!
+         * \brief 
+         */
         ~octonet() {}
-        bool add_query_observer(octoquery_observer *oq_obs) { return (query_observers.insert(oq_obs)).second; }
-        bool rem_query_observer(octoquery_observer *oq_obs) { return query_observers.erase(oq_obs) > 0; }
-        bool add_peer_observer(octopeer_observer *op_obs) { return (peer_observers.insert(op_obs)).second; }
-        bool rem_peer_observer(octopeer_observer *op_obs) { return peer_observers.erase(op_obs) > 0; }
+
+        /*!
+         * \brief 
+         * \param oq_obs : 
+         * \return 
+         */
+        bool add_query_observer(octoquery_observer *oq_obs) { boost::lock_guard<boost::mutex> guard(__query_observers_mtx); return (__query_observers.insert(oq_obs)).second; }
+        
+        /*!
+         * \brief 
+         * \param oq_obs : 
+         * \return 
+         */
+        bool rem_query_observer(octoquery_observer *oq_obs) { boost::lock_guard<boost::mutex> guard(__query_observers_mtx); return __query_observers.erase(oq_obs) > 0; }
+        
+        /*!
+         * \brief 
+         * \param op_obs : 
+         * \return 
+         */
+        bool add_peer_observer(octopeer_observer *op_obs) { boost::lock_guard<boost::mutex> guard(__peer_observers_mtx); return (__peer_observers.insert(op_obs)).second; }
+        
+        /*!
+         * \brief 
+         * \param op_obs : 
+         * \return 
+         */
+        bool rem_peer_observer(octopeer_observer *op_obs) { boost::lock_guard<boost::mutex> guard(__peer_observers_mtx); return __peer_observers.erase(op_obs) > 0; }
+        
+        /*!
+         * \brief 
+         */
+        void run(void)
+        {
+                boost::thread t(boost::bind(&octonet::_run_server_tcp, this));
+        }
+        
+        /*!
+         * \brief 
+         * \param op : 
+         * \param oq : 
+         * \return 
+         */
         bool send_query_tcp(const octopeer &op, const octoquery &oq)
         {
                 try
                 {
-                        boost::asio::ip::tcp::socket s(_io_service);
+                        boost::asio::ip::tcp::socket s(__io_service);
                         s.connect(op.endpoint);
 
                         std::ostringstream archive_stream;
