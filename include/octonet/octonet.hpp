@@ -91,21 +91,50 @@ class octonet
                 }
                 catch (std::exception& e)
                 {
-                        std::cerr << "Exception in thread: " << e.what() << std::endl;
+                        //log
                 }
         }
 
     public:
-        octonet() {}
+        octonet() : _io_service() {}
         ~octonet() {}
         bool add_query_observer(octoquery_observer *oq_obs) { return (query_observers.insert(oq_obs)).second; }
         bool rem_query_observer(octoquery_observer *oq_obs) { return query_observers.erase(oq_obs) > 0; }
         bool add_peer_observer(octopeer_observer *op_obs) { return (peer_observers.insert(op_obs)).second; }
         bool rem_peer_observer(octopeer_observer *op_obs) { return peer_observers.erase(op_obs) > 0; }
-        bool send_query(const octopeer &op, const octoquery &oq) const { return false; }
-        void _session_tcp(boost::shared_ptr<boost::asio::ip::tcp::socket> sock)
+        bool send_query_tcp(const octopeer &op, const octoquery &oq)
         {
-                ;
+                try
+                {
+                        boost::asio::ip::tcp::socket s(_io_service);
+                        s.connect(op.endpoint);
+
+                        std::ostringstream archive_stream;
+                        boost::archive::text_oarchive archive(archive_stream);
+                        archive << oq;
+                        std::string data_str = archive_stream.str();
+
+                        std::ostringstream header_stream;
+                        header_stream << std::setw(8) << std::hex << data_str.size();
+                        if (!header_stream || header_stream.str().size() != 8)
+                        {
+                                //log
+                                return false;
+                        }
+                        std::string header_str = header_stream.str();
+                        
+                        std::vector<boost::asio::const_buffer> buffers;
+                        buffers.push_back(boost::asio::buffer(header_str));
+                        buffers.push_back(boost::asio::buffer(data_str));
+                        boost::asio::write(s, buffers);
+                        return true;
+                }
+                catch (std::exception& e)
+                {
+                        //log
+                        return false;
+                }
+                return false;
         }
 };
 
