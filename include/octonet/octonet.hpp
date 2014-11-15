@@ -5,12 +5,14 @@
 #define OCTONET_HEADER "OCTONET"
 #define APP_HEADER "APP"
 
-#include <set>
-#include <iostream>
 #include <boost/asio.hpp>
 #include <boost/bind.hpp>
 #include <boost/smart_ptr.hpp>
 #include <boost/thread/thread.hpp>
+#include <iomanip>
+#include <set>
+#include <sstream>
+#include <vector>
 
 #include "octoconnect_tcp.hpp"
 #include "octopeer.hpp"
@@ -50,10 +52,42 @@ class octonet
         }
         void _session_tcp0(boost::shared_ptr<boost::asio::ip::tcp::socket> sock)
         {
+                char header_buf[8];
+                std::size_t data_len;
+                std::size_t read_len;
+                boost::system::error_code error;
+                std::vector<char> data_vec;
+                octoquery oq;
                 try
                 {
-                        // read data length
-                        // read data
+                        read_len = sock->read_some(boost::asio::buffer(header_buf), error);
+                        if(error || (read_len != 8))
+                        {
+                                //log
+                                return;
+                        }
+                        
+                        std::istringstream is(std::string(header_buf, 8));
+                        data_len = 0;
+                        if (!(is >> std::hex >> data_len))
+                        {
+                                //log
+                                return;
+                        }
+                        
+                        data_vec.resize(data_len);
+                        read_len = sock->read_some(boost::asio::buffer(data_vec), error);
+                        if(error || (read_len != data_len))
+                        {
+                                //log
+                                return;
+                        }
+                        std::string archive_data(&data_vec[0], data_vec.size());
+                        std::istringstream archive_stream(archive_data);
+                        boost::archive::text_iarchive archive(archive_stream);
+                        archive >> oq;
+                        
+                        _notify_query_observers(oq);
                 }
                 catch (std::exception& e)
                 {
