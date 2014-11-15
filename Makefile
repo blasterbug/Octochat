@@ -8,7 +8,7 @@ doc.latex: doc
 
 bjam:
 ifeq ($(wildcard ./boost/.*),)
-	./bin/prepare-boost.sh 1.56.0
+	./bin/prepare-boost.sh 1.57.0
 endif
 ifeq ($(wildcard ./boost/bjam),)
 	cd ./boost && ./bootstrap.sh
