@@ -7,6 +7,7 @@
 
 #include <boost/asio.hpp>
 #include <boost/bind.hpp>
+#include <boost/log/trivial.hpp>
 #include <boost/smart_ptr.hpp>
 #include <boost/thread/thread.hpp>
 #include <iomanip>
@@ -31,7 +32,6 @@ class octonet
         boost::mutex __query_observers_mtx;
         std::set<octopeer_observer*> __peer_observers;
         boost::mutex __peer_observers_mtx;
-        //TODO : think about const members
         const unsigned short __tcp_port;
         const unsigned short __udp_port;
         boost::asio::io_service __io_service;
@@ -79,36 +79,39 @@ class octonet
          */
         void _session_tcp0(boost::shared_ptr<boost::asio::ip::tcp::socket> sock)
         {
-                char header_buf[8];
-                std::size_t data_len;
-                std::size_t read_len;
-                boost::system::error_code error;
-                std::vector<char> data_vec;
-                octoquery oq;
                 try
                 {
-                        read_len = sock->read_some(boost::asio::buffer(header_buf), error);
-                        if(error || (read_len != 8))
+                        std::vector<char> data_vec;
+                        octoquery oq;
+                        
                         {
-                                //log
-                                return;
+                                char header_buf[8];
+                                boost::system::error_code error;
+                                
+                                std::size_t read_len = sock->read_some(boost::asio::buffer(header_buf), error);
+                                if(error || (read_len != 8))
+                                {
+                                        BOOST_LOG_TRIVIAL(error) << "session tcp: bad header";
+                                        return;
+                                }
+                                
+                                std::istringstream is(std::string(header_buf, 8));
+                                std::size_t data_len = 0;
+                                if (!(is >> std::hex >> data_len))
+                                {
+                                        BOOST_LOG_TRIVIAL(error) << "session tcp: bad header";
+                                        return;
+                                }
+                                
+                                data_vec.resize(data_len);
+                                read_len = sock->read_some(boost::asio::buffer(data_vec), error);
+                                if(error || (read_len != data_len))
+                                {
+                                        BOOST_LOG_TRIVIAL(error) << "session tcp: bad data";
+                                        return;
+                                }
                         }
                         
-                        std::istringstream is(std::string(header_buf, 8));
-                        data_len = 0;
-                        if (!(is >> std::hex >> data_len))
-                        {
-                                //log
-                                return;
-                        }
-                        
-                        data_vec.resize(data_len);
-                        read_len = sock->read_some(boost::asio::buffer(data_vec), error);
-                        if(error || (read_len != data_len))
-                        {
-                                //log
-                                return;
-                        }
                         std::string archive_data(&data_vec[0], data_vec.size());
                         std::istringstream archive_stream(archive_data);
                         boost::archive::text_iarchive archive(archive_stream);
@@ -118,7 +121,7 @@ class octonet
                 }
                 catch (std::exception& e)
                 {
-                        //log
+                        BOOST_LOG_TRIVIAL(error) << "session tcp: " << e.what();
                 }
         }
 
@@ -191,7 +194,7 @@ class octonet
                         header_stream << std::setw(8) << std::hex << data_str.size();
                         if (!header_stream || header_stream.str().size() != 8)
                         {
-                                //log
+                                BOOST_LOG_TRIVIAL(error) << "send query tcp: bad header";
                                 return false;
                         }
                         std::string header_str = header_stream.str();
@@ -204,7 +207,7 @@ class octonet
                 }
                 catch (std::exception& e)
                 {
-                        //log
+                        BOOST_LOG_TRIVIAL(error) << "send query tcp: " << e.what();
                         return false;
                 }
                 return false;
