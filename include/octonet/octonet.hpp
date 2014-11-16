@@ -1,9 +1,9 @@
 #ifndef OCTONET_HPP
 #define OCTONET_HPP
 
-#define OCTONET_VERSION "1"
-#define OCTONET_HEADER "OCTONET"
-#define APP_HEADER "APP"
+#define OCTONET_DEFAULT_TCP_PORT 0
+#define OCTONET_DEFAULT_UDP_PORT 3333
+#define OCTONET_HEADER_LENGTH 8
 
 #include <boost/asio.hpp>
 #include <boost/bind.hpp>
@@ -85,17 +85,17 @@ class octonet
                         octoquery oq;
                         
                         {
-                                char header_buf[8];
+                                char header_buf[header_length];
                                 boost::system::error_code error;
                                 
                                 std::size_t read_len = sock->read_some(boost::asio::buffer(header_buf), error);
-                                if(error || (read_len != 8))
+                                if(error || (read_len != header_length))
                                 {
                                         BOOST_LOG_TRIVIAL(error) << "session tcp: bad header";
                                         return;
                                 }
                                 
-                                std::istringstream is(std::string(header_buf, 8));
+                                std::istringstream is(std::string(header_buf, header_length));
                                 std::size_t data_len = 0;
                                 if (!(is >> std::hex >> data_len))
                                 {
@@ -126,6 +126,15 @@ class octonet
         }
 
     public:
+        enum { default_tcp_port = OCTONET_DEFAULT_TCP_PORT };
+        enum { default_udp_port = OCTONET_DEFAULT_UDP_PORT };
+        enum { header_length = OCTONET_HEADER_LENGTH };
+
+        /*!
+         * \brief 
+         */
+        octonet() : __tcp_port(default_tcp_port), __udp_port(default_udp_port) {}
+
         /*!
          * \brief 
          */
@@ -191,8 +200,8 @@ class octonet
                         std::string data_str = archive_stream.str();
 
                         std::ostringstream header_stream;
-                        header_stream << std::setw(8) << std::hex << data_str.size();
-                        if (!header_stream || header_stream.str().size() != 8)
+                        header_stream << std::setw(header_length) << std::hex << data_str.size();
+                        if (!header_stream || header_stream.str().size() != header_length)
                         {
                                 BOOST_LOG_TRIVIAL(error) << "send query tcp: bad header";
                                 return false;
