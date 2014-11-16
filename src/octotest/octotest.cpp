@@ -10,6 +10,8 @@ void init(void)
 int main(void)
 {
     init();
-    octonet on();
+    octonet on;
+    on.run();
+    for(;;);
     return 0;
 }
