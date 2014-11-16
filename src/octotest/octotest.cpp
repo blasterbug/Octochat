@@ -12,6 +12,7 @@ int main(void)
     init();
     octonet on;
     on.run();
-    for(;;);
+    std::string s;
+    std::getline(std::cin, s);
     return 0;
 }
