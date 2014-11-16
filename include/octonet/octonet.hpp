@@ -106,14 +106,14 @@ class octonet
                         std::size_t length = sock.receive_from(boost::asio::buffer(port_headers), sender_endpoint);
                         if(length == (port_header_length*2))
                         {
-                                std::istringstream tcp_is(std::string(port_headers, port_header_length));
+                                std::istringstream tcp_is(std::string(port_headers[0], port_header_length));
                                 unsigned short tcp_port = 0;
                                 if (!(tcp_is >> std::hex >> tcp_port))
                                 {
                                         return;
                                 }
                                 
-                                std::istringstream udp_is(std::string(port_headers+port_header_length, port_header_length));
+                                std::istringstream udp_is(std::string(port_headers[port_header_length], port_header_length));
                                 unsigned short udp_port = 0;
                                 if (!(udp_is >> std::hex >> udp_port))
                                 {
