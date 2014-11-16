@@ -1,7 +1,15 @@
+#include <boost/log/utility/setup/file.hpp>
+
 #include <octonet/octonet.hpp>
+
+void init(void)
+{
+    boost::log::add_file_log("octotest.log");
+}
 
 int main(void)
 {
-    octonet on;
+    init();
+    octonet on();
     return 0;
 }
