@@ -32,11 +32,12 @@
 #ifndef OCTOROOM_HPP
 #define OCTOROOM_HPP
 
-#include <vector>
 #include <string>
-#include <boost/assign/std/vector.hpp> // for 'operator+=()'
+#include <map>
+#include <boost/serialization/map.hpp>
 #include <boost/assign/list_inserter.hpp>
 #include "octouser.hpp"
+#include "octomail.hpp"
 
 using namespace std;
 
@@ -75,10 +76,11 @@ class octoroom_exception : std::exception {
 class octoroom {
 
 	private:
-		user __creator /// Who created the room ? -Can be a ghost
-		vector<octouser*> __userlist; /// Who is in the room? // TODO : use a map
-		vector<octouser*> __bannedusers; /// Who is not allowed here // TODO : use a map !
+		octouser __creator; /// Who created the room ? -Can be a ghost
 		string __subject; /// subject of the room
+		map<octouser*, const string> __userlist; /// Who is in the room?
+		map<octouser*, string> __bannedusers; /// Who is not allowed here
+		vector<string> __chat_messages;
 
 
 	public:
@@ -88,22 +90,37 @@ class octoroom {
 		 * @param[in] owner The octo-user who created the room
 		 * @param[in] title The subject of the room
 		 */
-		octoroom( user &owner, string title ) :
+		octoroom( octouser &owner, string &title ) :
 			__creator( owner ),
 			__subject( title ),
 			__userlist(),
-			__bannedusers();
-		{}
+			__bannedusers(),
+			__chat_messages()
+		{};
 
 		/**
 		 * Adding user in the room
 		 * @param[in] user User to add in the room
+		 * @exception Octoroom_exception throwed if the user is already registered
 		 */
-		void addUser( const ocotouser &user ) throw octoroom_exception {
-			// ?
+		void addUser( const octouser &user ) {
+			if ( 1 > __bannedusers.count( user.getName() ) ) {
+				__userlist[ user.getName() ] = user;
+			} else {
+				throw octoroom_exception("Octo-user already in the room");
+			}
+		};
+
+		void banUser( const octouser &user ) const {
+			if( __userlist.count( user.getName() ) ) {
+				__userlist.erase( user.getName() );
+			}
+			__bannedusers[ user.getName() ] = user;
+		};
+
+		void post( const octomail &mail ) {
+			__chat_messages += mail;
 		}
-
-
 
 };
 

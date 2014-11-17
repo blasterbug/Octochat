@@ -39,8 +39,8 @@
 class octomail {
 
 	private:
-		user __from; /// Whoe send the message?
-		room __destination; /// Where the message should be posted?
+		octouser __from; /// Whoe send the message?
+		octoroom __destination; /// Where the message should be posted?
 		std::string __content; /// Content of the message, i.e. text bitch!
 		int __timeStmp; /// When the message was created? (local time)
 
@@ -51,24 +51,24 @@ class octomail {
 		 * @param[in] adressee Where the mail should be posted ?
 		 * @param[in] text content of the message
 		 */
-		octomail( const user &writer, const room &adressee, std::string text ) :
+		octomail( const octouser &writer, const octoroom &adressee, std::string text ) :
 			__from( writer ),
 			__destination( adressee ),
 			__content( text ),
 			__timeStmp( 0 ) /// TODO
-		{}
+		{};
 
 		/**
 		 * copy contructor for octo-mail
 		 * @param[in] tocopy octo-mail to be copied
 		 * @param[out] address of the copy object
 		 */
-		octomail& octomail( const octomail& tocopy ) {
-			octomail& copied = new octomail( tocopy.__from, tocopy.__destination, tocopy.__content );
-			copied.__timeStmp = tocopy.__timeStmp;
-			return copied;
-		}
-
+		octomail( const octomail& tocopy ) :
+			__from ( tocopy.__from ),
+			__destination( tocopy.__destination ),
+			__content( tocopy.__content ),
+			__timeStmp( tocopy.__timeStmp )
+		{};
 
 
 };
