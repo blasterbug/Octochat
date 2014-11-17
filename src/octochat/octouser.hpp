@@ -85,7 +85,7 @@ class octouser {
 	 * Is the user online ?
 	 * @param[out] True if the user is online, else false is returned
 	 */
-		bool isOnline() const {
+		const bool isOnline() const {
 			return __alive;
 		}
 

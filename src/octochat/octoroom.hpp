@@ -37,6 +37,7 @@
 #include <boost/serialization/map.hpp>
 #include <boost/assign/list_inserter.hpp>
 #include "octouser.hpp"
+#include "octomail.hpp"
 
 using namespace std;
 
@@ -76,9 +77,10 @@ class octoroom {
 
 	private:
 		octouser __creator; /// Who created the room ? -Can be a ghost
+		string __subject; /// subject of the room
 		map<octouser*, const string> __userlist; /// Who is in the room?
 		map<octouser*, string> __bannedusers; /// Who is not allowed here
-		string __subject; /// subject of the room
+		vector<string> __chat_messages;
 
 
 	public:
@@ -92,7 +94,8 @@ class octoroom {
 			__creator( owner ),
 			__subject( title ),
 			__userlist(),
-			__bannedusers()
+			__bannedusers(),
+			__chat_messages()
 		{};
 
 		/**
@@ -115,6 +118,9 @@ class octoroom {
 			__bannedusers[ user.getName() ] = user;
 		};
 
+		void post( const octomail &mail ) {
+			__chat_messages += mail;
+		}
 
 };
 
