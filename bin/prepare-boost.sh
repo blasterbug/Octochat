@@ -1,10 +1,10 @@
 #!/bin/bash
 
-var_version_dot="1.57.0"
-var_version_underscore="1_57_0"
-var_format="tar.gz"
+var_version_dot=""
+var_version_underscore=""
+var_format=""
 
-function func_download {
+func_download () {
     if command -v wget
     then
         wget http://downloads.sourceforge.net/project/boost/boost/$var_version_dot/boost_$var_version_underscore.$var_format
