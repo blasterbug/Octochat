@@ -91,7 +91,7 @@ protected:
          */
         void _handle_udp(const boost::system::error_code& error, size_t bytes_recvd)
         {
-                BOOST_LOG_TRIVIAL(info) << "INFO octonet::_handle_udp: new udp datagram";
+                BOOST_LOG_TRIVIAL(info) << "INFO octonet::_handle_udp: new udp datagram from " << __udp_endpoint.address() << ":" << __udp_endpoint.port();
                 if (!error && (bytes_recvd == 2*port_header_length))
                 {
                         std::istringstream tcp_is(std::string(__udp_data, port_header_length));
@@ -177,7 +177,7 @@ protected:
          */
         void _handle_tcp(boost::shared_ptr<tcp::socket> sock)
         {
-                BOOST_LOG_TRIVIAL(info) << "INFO octonet::_handle_udp: new tcp session";
+                BOOST_LOG_TRIVIAL(info) << "INFO octonet::_handle_udp: new tcp session from " << sock->remote_endpoint().address() << ":" << sock->remote_endpoint().port();
                 try
                 {
                         std::vector<char> data_vec;
@@ -297,6 +297,7 @@ protected:
          */
         bool send_query(const octopeer &op, const octoquery &oq)
         {
+                BOOST_LOG_TRIVIAL(info) << "INFO octonet::send_query: start sending query to " << op.ip_address << ":" << op.tcp_port;
                 try
                 {
                         std::ostringstream archive_stream;
@@ -321,7 +322,7 @@ protected:
                         tcp::endpoint endpoint(op.ip_address, op.tcp_port);
                         s.connect(endpoint);
                         boost::asio::write(s, buffers);
-                        BOOST_LOG_TRIVIAL(info) << "INFO octonet::send_query: query sent";
+                        BOOST_LOG_TRIVIAL(info) << "INFO octonet::send_query: query sent to " << op.ip_address << ":" << op.tcp_port;
                         return true;
                 }
                 catch (std::exception& e)
@@ -338,6 +339,7 @@ protected:
          */
         bool send_broadcast(unsigned short port)
         {
+                BOOST_LOG_TRIVIAL(info) << "INFO octonet::send_broadcast: start sending broadcast on port " << port;
                 try
                 {
                         std::ostringstream tcp_port_stream;
@@ -362,7 +364,7 @@ protected:
                         sock.set_option(boost::asio::socket_base::broadcast(true));
                         udp::endpoint broadcast_endpoint(boost::asio::ip::address_v4::broadcast(), port);
                         sock.send_to(boost::asio::buffer(port_str), broadcast_endpoint);
-                        BOOST_LOG_TRIVIAL(info) << "INFO octonet::send_broadcast: broadcast sent %" << port_str;
+                        BOOST_LOG_TRIVIAL(info) << "INFO octonet::send_broadcast: broadcast sent on port " << port << " %" << port_str;
                         return true;
                 }
                 catch (std::exception& e)
