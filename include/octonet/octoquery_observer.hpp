@@ -7,7 +7,7 @@ class octoquery_observer
 {
     public:
         virtual void update_query(const octoquery &oq) = 0;
-        virtual const char* get_app() const = 0;
+        virtual std::string app() const = 0;
 };
 
 #endif
