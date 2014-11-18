@@ -1,8 +1,8 @@
 #!/bin/bash
 
-var_version_dot=""
-var_version_underscore=""
-var_format=""
+var_version_dot="1.57.0"
+var_version_underscore="1_57_0"
+var_format="tar.gz"
 
 function func_download {
     if command -v wget
