@@ -4,7 +4,7 @@
 
 void init(void)
 {
-    boost::log::add_file_log("octotest.log");
+    //boost::log::add_file_log("octotest.log");
 }
 
 int main(void)
