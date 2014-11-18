@@ -3,6 +3,8 @@
 
 #include <boost/asio.hpp>
 
+enum octopeer_state { online, offline };
+
 struct octopeer
 {
     boost::asio::ip::address ip_address;
