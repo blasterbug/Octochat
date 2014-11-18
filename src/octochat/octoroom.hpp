@@ -78,9 +78,9 @@ class octoroom {
 	private:
 		octouser __creator; /// Who created the room ? -Can be a ghost
 		string __subject; /// subject of the room
-		map<octouser*, const string> __userlist; /// Who is in the room?
-		map<octouser*, string> __bannedusers; /// Who is not allowed here
-		vector<string> __chat_messages;
+		map < const string, octouser > __userlist; /// Who is in the room?
+		map < string, octouser > __bannedusers; /// Who is not allowed here
+		vector < string > __chat_messages;
 
 
 	public:
@@ -104,18 +104,19 @@ class octoroom {
 		 * @exception Octoroom_exception throwed if the user is already registered
 		 */
 		void addUser( const octouser &user ) {
-			if ( 1 > __bannedusers.count( user.getName() ) ) {
-				__userlist[ user.getName() ] = user;
+			const string user_name = user.getName();
+			if ( 1 > __bannedusers.count( user_name ) ) {
+				__userlist[ user_name ] = user;
 			} else {
 				throw octoroom_exception("Octo-user already in the room");
 			}
 		};
 
 		void banUser( const octouser &user ) const {
-			if( __userlist.count( user.getName() ) ) {
-				__userlist.erase( user.getName() );
-			}
-			__bannedusers[ user.getName() ] = user;
+			const string user_name = user.getName();
+			if(__userlist.count( user_name ))
+				__userlist.erase( user_name );
+			__bannedusers[ user_name ] = user;
 		};
 
 		void post( const octomail &mail ) {

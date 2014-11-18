@@ -61,7 +61,6 @@ class octomail {
 		/**
 		 * copy contructor for octo-mail
 		 * @param[in] tocopy octo-mail to be copied
-		 * @param[out] address of the copy object
 		 */
 		octomail( const octomail& tocopy ) :
 			__from ( tocopy.__from ),
