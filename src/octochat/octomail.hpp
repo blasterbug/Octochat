@@ -71,8 +71,8 @@ class octomail {
 			__timeStmp( tocopy.__timeStmp )
 		{};
 
-		const octouser get_writer() {
-			return __from;
+		const octouser get_writer_name() {
+			return __from.get_name();
 		};
 
 };
