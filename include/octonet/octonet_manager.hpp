@@ -11,6 +11,7 @@
 #define OCTONET_TCP_PORT_HEADER "TCP_PORT"
 #define OCTONET_UDP_PORT_HEADER "UDP_PORT"
 
+#include <boost/archive/text_oarchive.hpp>
 #include <boost/asio.hpp>
 #include <boost/bind.hpp>
 #include <boost/log/trivial.hpp>
@@ -85,7 +86,7 @@ public:
         if(peers_set_.find(_peer) == peers_set_.end())
         {
             octoquery query;
-            if(send_query(_peer, query)
+            if(send_query(_peer, query))
             {
                 BOOST_LOG_TRIVIAL(info) << "INFO octonet::add_peer: peer added";
                 peers_set_.insert(_peer);
@@ -101,7 +102,7 @@ public:
     void rem_peer(const octopeer& _peer)
     {
         boost::lock_guard<boost::mutex> guard(peers_set_mtx_);
-        if(peers_set_.erase(peer) > 0)
+        if(peers_set_.erase(_peer) > 0)
         {
             notify_peer_observers(_peer, offline);
         }
@@ -114,8 +115,8 @@ public:
     void notify_query_observers(const octoquery& _query)
     {
         std::string app_str;                            
-        std::map<std::string, std::string>::const_iterator app_it = _query.headers_map.find(app_header);
-        if(app_it != query.headers_map.end())
+        std::map<std::string, std::string>::const_iterator app_it = _query.headers_map.find(octonet_app_id_header);
+        if(app_it != _query.headers_map.end())
         {
             app_str = app_it->second;
         }
@@ -125,7 +126,7 @@ public:
         {
             if((*it)->app() == app_str)
             {
-                (*it)->update_query(query);
+                (*it)->update_query(_query);
             }
         }
     }
@@ -152,7 +153,7 @@ public:
     /*!
      * \brief 
      */
-    ~octonet() {}
+    ~octonet_manager(void) {}
 
     /*!
      * \brief 
@@ -180,7 +181,7 @@ public:
      * \param _peer_observer : 
      * \return 
      */
-    bool rem_peer_observer(octopeer_observer* _peer_observer) { boost::lock_guard<boost::mutex> guard(peer_observers_set_mtx_); return peer_observers_set_.erase(op_obs) > 0; }
+    bool rem_peer_observer(octopeer_observer* _peer_observer) { boost::lock_guard<boost::mutex> guard(peer_observers_set_mtx_); return peer_observers_set_.erase(_peer_observer) > 0; }
     
     /*!
      * \brief 
@@ -215,8 +216,8 @@ public:
             std::string data_str = archive_stream.str();
 
             std::ostringstream header_stream;
-            header_stream << std::setw(size_header_length) << std::hex << data_str.size();
-            if (!header_stream || header_stream.str().size() != size_header_length)
+            header_stream << std::setw(octonet_size_header_length) << std::hex << data_str.size();
+            if (!header_stream || header_stream.str().size() != octonet_size_header_length)
             {
                     BOOST_LOG_TRIVIAL(error) << "ERROR octonet::send_query: bad size header";
                     return false;
@@ -238,7 +239,7 @@ public:
         {
             BOOST_LOG_TRIVIAL(error) << "ERROR octonet::send_query: " << e.what();
         }
-        _rem_peer(op);
+        //rem_peer(op);
         return false;
     }
 
