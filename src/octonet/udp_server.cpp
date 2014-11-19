@@ -1,0 +1,51 @@
+#include "octonet/udp_server.hpp"
+
+#include "octonet/octonet_manager.hpp"
+
+udp_server::udp_server(octonet_manager* _net_manager, unsigned short _port) : net_manager_(_net_manager), sock_(_net_manager->io_service(), udp::endpoint(udp::v4(), _port))
+{
+    ;
+}
+
+void udp_server::run(void)
+{
+    data_len_ = octonet_version_header.size() + octonet_port_header_length;
+    data_buf_.reset(new char(data_len_));
+    start_receive();
+}
+
+unsigned short udp_server::port(void)
+{
+    return port_;
+}
+
+void udp_server::start_receive(void)
+{
+    sock_.async_receive_from(
+        boost::asio::buffer(data_buf_.get(), data_len_), remote_endpoint_,
+        boost::bind(&udp_server::handle_receive, this,
+        boost::asio::placeholders::error,
+        boost::asio::placeholders::bytes_transferred));
+}
+
+void udp_server::handle_receive(const boost::system::error_code& _error, std::size_t _bytes_recvd)
+{
+    BOOST_LOG_TRIVIAL(info) << "INFO octonet::_handle_udp: new udp datagram from " << remote_endpoint_.address() << ":" << remote_endpoint_.port();
+    if (!_error && (_bytes_recvd == data_len_) && (octonet_version_header == std::string(data_buf_.get(), octonet_version_header.size())))
+    {
+        std::istringstream tcp_is(std::string(data_buf_.get() + octonet_version_header.size(), octonet_port_header_length));
+        unsigned short tcp_port = 0;
+        if(!(tcp_is >> std::hex >> tcp_port))//TODO: remove if(!... -> if(...
+        {
+            BOOST_LOG_TRIVIAL(error) << "ERROR octonet::_handle_udp: bad tcp port header";
+        }
+        else
+        {
+            BOOST_LOG_TRIVIAL(info) << "INFO octonet::_handle_udp: good tcp port header %"<<tcp_port;
+            octopeer peer(remote_endpoint_.address(), tcp_port);
+            octoquery query;
+            net_manager_->send_query(peer, query);
+        }
+    }
+    start_receive();
+}
