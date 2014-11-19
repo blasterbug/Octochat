@@ -6,6 +6,9 @@
 #define OCTONET_SIZE_HEADER_LENGTH 8
 #define OCTONET_PORT_HEADER_LENGTH 4
 #define OCTONET_VERSION "OCTONET1"
+#define OCTONET_APP_HEADER "APP"
+#define OCTONET_TCP_PORT_HEADER "TCP_PORT"
+#define OCTONET_UDP_PORT_HEADER "UDP_PORT"
 
 #include <boost/asio.hpp>
 #include <boost/bind.hpp>
@@ -40,13 +43,10 @@ protected:
         void _add_peer(const octopeer &op)
         {
                 boost::lock_guard<boost::mutex> guard(__peers_mtx);
-                if(__peers.insert(op).second)
+                if(send_hello(op) && __peers.insert(op).second)//TODO: check
                 {
                         BOOST_LOG_TRIVIAL(info) << "INFO octonet::_add_peer: peer added";
-                        _notify_peer_observers(op);
-                        octoquery oq;
-                        oq.headers_map["HELLO"] = "";
-                        send_query(op, oq);
+                        _notify_peer_observers(op, online);
                 }
         }
 
@@ -59,7 +59,7 @@ protected:
                 boost::lock_guard<boost::mutex> guard(__peers_mtx);
                 if(__peers.erase(op) > 0)
                 {
-                        _notify_peer_observers(op);
+                        _notify_peer_observers(op, offline);
                 }
         }
         
@@ -69,20 +69,37 @@ protected:
          */
         void _notify_query_observers(const octoquery &oq)
         {
+                std::string app_str;
+                std::set<octoquery_observer*>::const_iterator it;
+                                
+                std::map<std::string, std::string>::const_iterator app_it = oq.headers_map.find(app_header);
+                if(app_it != oq.headers_map.end())
+                {
+                        app_str = app_it->second;
+                }
+                
                 boost::lock_guard<boost::mutex> guard(__query_observers_mtx);
+                for(it=__query_observers.begin(); it!=__query_observers.end(); ++it)
+                {
+                        if((*it)->app() == app_str)
+                        {
+                                (*it)->update_query(oq);
+                        }
+                }
         }
         
         /*!
          * \brief 
          * \param op : 
          */
-        void _notify_peer_observers(const octopeer &op)
+        void _notify_peer_observers(const octopeer &op, octopeer_state s)
         {
 			std::set<octopeer_observer*>::const_iterator it;
+                        
                         boost::lock_guard<boost::mutex> guard(__peer_observers_mtx);
 			for(it=__peer_observers.begin(); it!=__peer_observers.end(); ++it)
 			{
-				(*it)->update_peer(op);
+				(*it)->update_peer(op, s);
 			}
         }
 
@@ -92,9 +109,9 @@ protected:
         void _handle_udp(const boost::system::error_code& error, size_t bytes_recvd)
         {
                 BOOST_LOG_TRIVIAL(info) << "INFO octonet::_handle_udp: new udp datagram from " << __udp_endpoint.address() << ":" << __udp_endpoint.port();
-                if (!error && (bytes_recvd == 2*port_header_length))
+                if (!error && (bytes_recvd == __udp_data_len) && (version == std::string(__udp_data.get(), version.size())))
                 {
-                        std::istringstream tcp_is(std::string(__udp_data, port_header_length));
+                        std::istringstream tcp_is(std::string(__udp_data.get(), port_header_length));
                         unsigned short tcp_port = 0;
                         if (!(tcp_is >> std::hex >> tcp_port))
                         {
@@ -104,24 +121,11 @@ protected:
                         {
                                 BOOST_LOG_TRIVIAL(info) << "INFO octonet::_handle_udp: good tcp port header %"<<tcp_port;
                                 octopeer op(__udp_endpoint.address(), tcp_port);
-                                octoquery oq;
-                                oq.headers_map["HELLO"] = "";
-                                send_query(op, oq);
-                        }
-
-                        std::istringstream udp_is(std::string(__udp_data+port_header_length, port_header_length));
-                        unsigned short udp_port = 0;
-                        if (!(udp_is >> std::hex >> udp_port))
-                        {
-                                BOOST_LOG_TRIVIAL(error) << "ERROR octonet::_handle_udp: bad udp port header";
-                        }
-                        else
-                        {
-                                BOOST_LOG_TRIVIAL(info) << "INFO octonet::_handle_udp: good udp port header %"<<udp_port;
+                                send_hello(op);
                         }
                 }
                __udp_sock->async_receive_from(
-                        boost::asio::buffer(__udp_data), __udp_endpoint,
+                        boost::asio::buffer(__udp_data.get(), __udp_data_len), __udp_endpoint,
                         boost::bind(&octonet::_handle_udp, this,
                         boost::asio::placeholders::error,
                         boost::asio::placeholders::bytes_transferred));
@@ -135,9 +139,11 @@ protected:
                 BOOST_LOG_TRIVIAL(info) << "INFO octonet::_run_server_udp: start udp server";
                 try
                 {
-                        __udp_sock = new udp::socket(__io_service, udp::endpoint(udp::v4(), __udp_port));
+                        __udp_sock.reset(new udp::socket(__io_service, udp::endpoint(udp::v4(), __udp_port)));
+                        __udp_data_len = version.size() + port_header_length;
+                        __udp_data.reset(new char[__udp_data_len]);
                         __udp_sock->async_receive_from(
-                                boost::asio::buffer(__udp_data), __udp_endpoint,
+                                boost::asio::buffer(__udp_data.get(), __udp_data_len), __udp_endpoint,
                                 boost::bind(&octonet::_handle_udp, this,
                                 boost::asio::placeholders::error,
                                 boost::asio::placeholders::bytes_transferred));
@@ -186,9 +192,17 @@ protected:
                         octopeer op(remote_endpoint.address(), remote_endpoint.port());
                         
                         {
+                                char version_buf[] = OCTONET_VERSION;
                                 char header_buf[size_header_length];
-                                
-                                std::size_t read_len = sock->read_some(boost::asio::buffer(header_buf));
+
+                                std::size_t read_len = sock->read_some(boost::asio::buffer(version_buf));
+                                if((read_len != version.size()) || (version != std::string(version_buf)))
+                                {
+                                        BOOST_LOG_TRIVIAL(error) << "ERROR octonet::_handle_udp: bad version";
+                                        return;
+                                }
+
+                                read_len = sock->read_some(boost::asio::buffer(header_buf));
                                 if(read_len != size_header_length)
                                 {
                                         BOOST_LOG_TRIVIAL(error) << "ERROR octonet::_handle_udp: bad header";
@@ -230,11 +244,13 @@ protected:
 
     public:
         static const std::string version;
+        static const std::string app_header;
+        static const std::string tcp_port_header;
+        static const std::string udp_port_header;
         enum { default_tcp_port = OCTONET_DEFAULT_TCP_PORT };
         enum { default_udp_port = OCTONET_DEFAULT_UDP_PORT };
         enum { size_header_length = OCTONET_SIZE_HEADER_LENGTH };
         enum { port_header_length = OCTONET_PORT_HEADER_LENGTH };
-        enum peer_state { online, offline };
 
         /*!
          * \brief 
@@ -249,7 +265,7 @@ protected:
         /*!
          * \brief 
          */
-        ~octonet() { delete __udp_sock; }
+        ~octonet() { __io_service.stop(); __servers.interrupt_all(); }
 
         /*!
          * \brief 
@@ -284,9 +300,40 @@ protected:
          */
         void run(void)
         {
-                boost::thread t1(boost::bind(&octonet::_run_server_udp, this));
-                boost::thread t0(boost::bind(&octonet::_run_server_tcp, this));
+                __servers.create_thread(boost::bind(&octonet::_run_server_udp, this));
+                //__servers.create_thread(boost::bind(&octonet::_run_server_tcp, this));
+                boost::thread t(boost::bind(&octonet::_run_server_tcp, this));
                 send_broadcast(default_udp_port);
+        }
+        
+        /*!
+         * \brief 
+         * \param op : 
+         * \return 
+         */
+        bool send_hello(const octopeer &op)
+        {
+                octoquery oq;
+
+                std::ostringstream tcp_port_stream;
+                tcp_port_stream << std::setw(port_header_length) << std::hex << __tcp_port;
+                if (!tcp_port_stream || tcp_port_stream.str().size() != port_header_length)
+                {
+                        BOOST_LOG_TRIVIAL(error) << "ERROR octonet::send_hello: bad tcp port header";
+                        return false;
+                }
+                oq.headers_map[tcp_port_header] = tcp_port_stream.str();
+
+                std::ostringstream udp_port_stream;
+                udp_port_stream << std::setw(port_header_length) << std::hex << __udp_port;
+                if (!udp_port_stream || udp_port_stream.str().size() != port_header_length)
+                {
+                        BOOST_LOG_TRIVIAL(error) << "ERROR octonet::send_hello: bad udp port header";
+                        return false;
+                }
+                oq.headers_map[udp_port_header] = udp_port_stream.str();
+                
+                return send_query(op, oq);
         }
         
         /*!
@@ -329,6 +376,7 @@ protected:
                 {
                         BOOST_LOG_TRIVIAL(error) << "ERROR octonet::send_query: " << e.what();
                 }
+                _rem_peer(op);
                 return false;
         }
 
@@ -342,6 +390,8 @@ protected:
                 BOOST_LOG_TRIVIAL(info) << "INFO octonet::send_broadcast: start sending broadcast on port " << port;
                 try
                 {
+                        std::string data_str(version);
+                        
                         std::ostringstream tcp_port_stream;
                         tcp_port_stream << std::setw(port_header_length) << std::hex << __tcp_port;
                         if (!tcp_port_stream || tcp_port_stream.str().size() != port_header_length)
@@ -349,22 +399,13 @@ protected:
                                 BOOST_LOG_TRIVIAL(error) << "ERROR octonet::send_broadcast: bad tcp port header";
                                 return false;
                         }
-                        std::string port_str = tcp_port_stream.str();
-
-                        std::ostringstream udp_port_stream;
-                        udp_port_stream << std::setw(port_header_length) << std::hex << __udp_port;
-                        if (!udp_port_stream || udp_port_stream.str().size() != port_header_length)
-                        {
-                                BOOST_LOG_TRIVIAL(error) << "ERROR octonet::send_broadcast: bad udp port header";
-                                return false;
-                        }
-                        port_str += udp_port_stream.str();
+                        data_str += tcp_port_stream.str();
 
                         udp::socket sock(__io_service, udp::endpoint(udp::v4(), 0));
                         sock.set_option(boost::asio::socket_base::broadcast(true));
                         udp::endpoint broadcast_endpoint(boost::asio::ip::address_v4::broadcast(), port);
-                        sock.send_to(boost::asio::buffer(port_str), broadcast_endpoint);
-                        BOOST_LOG_TRIVIAL(info) << "INFO octonet::send_broadcast: broadcast sent on port " << port << " %" << port_str;
+                        sock.send_to(boost::asio::buffer(data_str), broadcast_endpoint);
+                        BOOST_LOG_TRIVIAL(info) << "INFO octonet::send_broadcast: broadcast sent on port " << port << " %" << data_str;
                         return true;
                 }
                 catch (std::exception& e)
@@ -382,14 +423,21 @@ protected:
         std::set<octopeer_observer*> __peer_observers;
         boost::mutex __peer_observers_mtx;
 
-        boost::asio::io_service __io_service;
         const unsigned short __tcp_port;
         const unsigned short __udp_port;
-        udp::socket *__udp_sock;
+        boost::scoped_ptr<udp::socket> __udp_sock;
         udp::endpoint __udp_endpoint;
-        char __udp_data[2*port_header_length];
+        boost::scoped_array<char> __udp_data;
+        std::size_t __udp_data_len;
+        
+        boost::thread_group __servers;
+        
+        boost::asio::io_service __io_service; //need to be destruct in last
 };
 
 const std::string octonet::version = OCTONET_VERSION;
+const std::string octonet::app_header = OCTONET_APP_HEADER;
+const std::string octonet::tcp_port_header = OCTONET_TCP_PORT_HEADER;
+const std::string octonet::udp_port_header = OCTONET_UDP_PORT_HEADER;
 
 #endif
