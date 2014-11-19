@@ -33,12 +33,9 @@
  */
 
 
-#include <iostream>
 #include <string>
 #include <vector>
 #include <map>
-#include <boost/serialization/map.hpp>
-#include <boost/assign/list_inserter.hpp>
 #include "octouser.hpp"
 #include "octomail.hpp"
 
@@ -133,7 +130,6 @@ class octoroom {
 			/// \todo muted user ? banned user ? etc.
 			__messages[ __msg_idx++ ] = mail;
 			__msg_idx %= MESSAGE_STACK_SIZE; // stay in the vector boundaries
-			std::cout << __msg_idx << std::endl;
 		};
 
 };
