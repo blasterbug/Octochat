@@ -265,7 +265,7 @@ protected:
         /*!
          * \brief 
          */
-        ~octonet() {}
+        ~octonet() { __io_service.stop(); __servers.interrupt_all(); }
 
         /*!
          * \brief 
@@ -300,8 +300,9 @@ protected:
          */
         void run(void)
         {
-                boost::thread t1(boost::bind(&octonet::_run_server_udp, this));
-                boost::thread t0(boost::bind(&octonet::_run_server_tcp, this));
+                __servers.create_thread(boost::bind(&octonet::_run_server_udp, this));
+                //__servers.create_thread(boost::bind(&octonet::_run_server_tcp, this));
+                boost::thread t(boost::bind(&octonet::_run_server_tcp, this));
                 send_broadcast(default_udp_port);
         }
         
@@ -428,6 +429,8 @@ protected:
         udp::endpoint __udp_endpoint;
         boost::scoped_array<char> __udp_data;
         std::size_t __udp_data_len;
+        
+        boost::thread_group __servers;
         
         boost::asio::io_service __io_service; //need to be destruct in last
 };
