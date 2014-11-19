@@ -62,6 +62,11 @@ private:
     unsigned short udp_port_;
 
 public:
+    boost::asio::io_service& io_service(void)
+    {
+        return io_service_;
+    }
+
     /*!
      * \brief 
      * \param _port : 
