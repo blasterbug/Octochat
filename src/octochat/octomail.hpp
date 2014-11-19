@@ -1,3 +1,6 @@
+#ifndef OCTOMAIL_HPP
+#define OCTOMAIL_HPP
+
 /**
  * @file octomail.hpp
  *
@@ -29,8 +32,7 @@
  * @version 0.1
  */
 
-#ifndef OCTOMAIL_HPP
-#define OCTOMAIL_HPP
+
 
 #include <string>
 #include "octouser.hpp"
@@ -69,6 +71,9 @@ class octomail {
 			__timeStmp( tocopy.__timeStmp )
 		{};
 
+		const octouser get_writer() {
+			return __from;
+		};
 
 };
 

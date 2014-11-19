@@ -1,3 +1,6 @@
+#ifndef OCTOUSER_HPP
+#define OCTOUSER_HPP
+
 /**
  * @file octouser.hpp
  *
@@ -29,8 +32,6 @@
  * @version 0.1
  */
 
-#ifndef OCTOUSER_HPP
-#define OCTOUSER_HPP
 
 #include <string>
 #include "octonet/octopeer.hpp"
