@@ -33,7 +33,9 @@
  */
 
 
+#include <iostream>
 #include <string>
+#include <vector>
 #include <map>
 #include <boost/serialization/map.hpp>
 #include <boost/assign/list_inserter.hpp>
@@ -56,21 +58,21 @@ class octoroom_exception : std::exception {
 		 */
 		octoroom_exception( std::string cause ) :
 			__cause( cause )
-			{}
+			{};
 
 		/** destructor
 		 * currently, do anything special
 		 */
 		virtual ~octoroom_exception() throw() {
 			// do nothing
-		}
+		};
 
 		/** virtual fonction from superclass,
 		 * usefull to get the exception description
 		 */
 		virtual const char* what()const throw() {
 			return __cause.c_str();
-		}
+		};
 };
 
 /**
@@ -79,12 +81,12 @@ class octoroom_exception : std::exception {
 class octoroom {
 
 	private:
-		octouser __creator; /// Who created the room ? -Can be a ghost
+		octouser* __creator; /// Who created the room ? -Can be a ghost
 		std::string __subject; /// subject of the room
 		std::map < const std::string, octouser* > __userlist; /// Who is in the room?
 		std::map < const std::string, octouser* > __bannedusers; /// Who is not allowed here
-		std::vector < const octomail* > __messages; /// Messages in da room
-		int msg_idx;
+		std::vector< const octomail* > __messages; /// Messages in da room
+		int __msg_idx; /// current index of the last message posted in the room
 
 
 	public:
@@ -94,14 +96,16 @@ class octoroom {
 		 * @param[in] owner The octo-user who created the room
 		 * @param[in] title The subject of the room
 		 */
-		octoroom( octouser &owner, std::string &title ) :
+		octoroom( octouser* owner, std::string title ) :
 			__creator( owner ),
 			__subject( title ),
 			__userlist(),
-			__bannedusers(),
-			__messages( MESSAGE_STACK_SIZE )
+			__bannedusers()
 		{
-			msg_idx = 0;
+			__msg_idx = 0;
+			__messages = std::vector< const octomail* >( MESSAGE_STACK_SIZE );
+			// add the owner in his own room
+			__userlist[ owner->get_name() ] = owner;
 		};
 
 		/**
@@ -110,7 +114,7 @@ class octoroom {
 		 * @exception Octoroom_exception throwed if the user is already registered
 		 */
 		void add_user( octouser *user ) {
-			const std::string user_name = user->getName();
+			const std::string user_name = user->get_name();
 			if ( 1 > __bannedusers.count( user_name ) ) {
 				__userlist[ user_name ] = user;
 			} else {
@@ -119,17 +123,18 @@ class octoroom {
 		};
 
 		/*void ban_user( octouser &user ) const {
-			const string user_name = user->getName();
+			const string user_name = user->get_name();
 			if(__userlist.count( user_name ))
 				__userlist.erase( user_name );
 			__bannedusers[ user_name ] = user;
 		};*/
 
 		void post( const octomail *mail ) {
-			/// TODO muted user ?
-			msg_idx = msg_idx++ % MESSAGE_STACK_SIZE;
-			__messages[ msg_idx ] = mail;
-		}
+			/// \todo muted user ? banned user ? etc.
+			__messages[ __msg_idx++ ] = mail;
+			__msg_idx %= MESSAGE_STACK_SIZE; // stay in the vector boundaries
+			std::cout << __msg_idx << std::endl;
+		};
 
 };
 
