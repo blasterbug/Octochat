@@ -14,4 +14,4 @@ project octonet
     ;
 
 exe octotest : src/octotest/octotest.cpp ;
-# exe octochat : src/octochat/test.cpp ;
+exe octochat : src/octochat/test.cpp ;

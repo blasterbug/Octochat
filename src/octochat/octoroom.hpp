@@ -39,19 +39,25 @@
 #include "octouser.hpp"
 #include "octomail.hpp"
 
+/* Must done because of circle dependencies */
+class octomail;
+
 using namespace std;
+
+/// Amount of messages to store
+#define MESSAGE_STACK_SIZE 20
 
 /**
  * Exceptions throwed by octoroom class
  */
 class octoroom_exception : std::exception {
 	private:
-		char* __cause; /** store exception description */
+		std::string __cause; /** store exception description */
 	public:
 		/** constructor
 		 * @param[in] cause description of exception origin
 		 */
-		octoroom_exception( char* cause ) :
+		octoroom_exception( std::string cause ) :
 			__cause( cause )
 			{}
 
@@ -66,7 +72,7 @@ class octoroom_exception : std::exception {
 		 * usefull to get the exception description
 		 */
 		virtual const char* what()const throw() {
-			return __cause;
+			return __cause.c_str();
 		}
 };
 
@@ -78,9 +84,10 @@ class octoroom {
 	private:
 		octouser __creator; /// Who created the room ? -Can be a ghost
 		string __subject; /// subject of the room
-		map < const string, octouser > __userlist; /// Who is in the room?
-		map < string, octouser > __bannedusers; /// Who is not allowed here
-		vector < string > __chat_messages;
+		map < const string, octouser* > __userlist; /// Who is in the room?
+		map < const string, octouser* > __bannedusers; /// Who is not allowed here
+		vector < const octomail* > __messages; /// messages posted in the room
+		int __last_mail_idx;
 
 
 	public:
@@ -95,32 +102,40 @@ class octoroom {
 			__subject( title ),
 			__userlist(),
 			__bannedusers(),
-			__chat_messages()
-		{};
+			__messages(MESSAGE_STACK_SIZE)
+		{
+			__last_mail_idx = 0;
+		};
 
 		/**
 		 * Adding user in the room
 		 * @param[in] user User to add in the room
 		 * @exception Octoroom_exception throwed if the user is already registered
 		 */
-		void addUser( const octouser &user ) {
-			const string user_name = user.getName();
+		void addUser( octouser *user ) {
+			const string user_name = user->getName();
 			if ( 1 > __bannedusers.count( user_name ) ) {
 				__userlist[ user_name ] = user;
 			} else {
-				throw octoroom_exception("Octo-user already in the room");
+				throw octoroom_exception( "Octo-user is already in the room" );
 			}
 		};
 
-		void banUser( const octouser &user ) const {
-			const string user_name = user.getName();
-			if(__userlist.count( user_name ))
-				__userlist.erase( user_name );
+		/*void banUser( octouser *user ) const {
+			const string user_name = user->getName();
+			/// this is safe ! ... Or possibly not
+			map< const string, octouser* >::iterator it = __userlist.find( user_name );
+			__userlist.erase( it );
 			__bannedusers[ user_name ] = user;
-		};
+		};*/
 
-		void post( const octomail &mail ) {
-			__chat_messages += mail;
+		/**
+		 * Post a new mail in da room
+		 * @pram[in] mail Mail to post
+		 */
+		void post( const octomail *mail ) {
+			__last_mail_idx = __last_mail_idx++ % MESSAGE_STACK_SIZE;
+			__messages[__last_mail_idx] = mail;
 		}
 
 };
