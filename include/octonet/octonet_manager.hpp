@@ -197,13 +197,14 @@ public:
     {
             tcp_server_ptr_.reset(server_factory_.create_server(tcp, tcp_port_));
             tcp_port_ = tcp_server_ptr_->port();
-            tcp_server_ptr_->run();
+            boost::thread t0(boost::bind(&abstract_server::run, tcp_server_ptr_.get()));
 
             udp_server_ptr_.reset(server_factory_.create_server(udp, udp_port_));
             udp_port_ = udp_server_ptr_->port();
-            udp_server_ptr_->run();
+            boost::thread t1(boost::bind(&abstract_server::run, udp_server_ptr_.get()));
             
-            io_service_.run();
+            send_broadcast(udp_port_);
+            //io_service_.run();
     }
     
     /*!
@@ -222,6 +223,24 @@ public:
             archive << _query;
             std::string data_str = archive_stream.str();
 
+            std::ostringstream tcp_port_stream;
+            tcp_port_stream << std::setw(octonet_port_header_length) << std::hex << tcp_port_;
+            if (!tcp_port_stream || tcp_port_stream.str().size() != octonet_port_header_length)
+            {
+                    BOOST_LOG_TRIVIAL(error) << "ERROR octonet::send_query: bad size header";
+                    return false;
+            }
+            std::string tcp_port_str = tcp_port_stream.str();
+
+            std::ostringstream udp_port_stream;
+            udp_port_stream << std::setw(octonet_port_header_length) << std::hex << udp_port_;
+            if (!udp_port_stream || udp_port_stream.str().size() != octonet_port_header_length)
+            {
+                    BOOST_LOG_TRIVIAL(error) << "ERROR octonet::send_query: bad size header";
+                    return false;
+            }
+            std::string udp_port_str = udp_port_stream.str();
+
             std::ostringstream header_stream;
             header_stream << std::setw(octonet_size_header_length) << std::hex << data_str.size();
             if (!header_stream || header_stream.str().size() != octonet_size_header_length)
@@ -232,6 +251,9 @@ public:
             std::string header_str = header_stream.str();
             
             std::vector<boost::asio::const_buffer> buffers;
+            buffers.push_back(boost::asio::buffer(octonet_version_header));
+            buffers.push_back(boost::asio::buffer(tcp_port_str));
+            buffers.push_back(boost::asio::buffer(udp_port_str));
             buffers.push_back(boost::asio::buffer(header_str));
             buffers.push_back(boost::asio::buffer(data_str));
 
