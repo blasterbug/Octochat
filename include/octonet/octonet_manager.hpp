@@ -46,6 +46,7 @@ using boost::asio::ip::tcp;
 class octonet_manager
 {
 private:
+	boost::thread_group servers_group_;
     server_factory server_factory_;
     boost::scoped_ptr<abstract_server> tcp_server_ptr_;
     boost::scoped_ptr<abstract_server> udp_server_ptr_;
@@ -160,7 +161,11 @@ public:
     /*!
      * \brief 
      */
-    ~octonet_manager(void) {}
+    ~octonet_manager(void)
+    {
+		io_service_.stop();
+		servers_group_.join_all();
+	}
 
     /*!
      * \brief 
@@ -197,14 +202,13 @@ public:
     {
             tcp_server_ptr_.reset(server_factory_.create_server(tcp, tcp_port_));
             tcp_port_ = tcp_server_ptr_->port();
-            boost::thread t0(boost::bind(&abstract_server::run, tcp_server_ptr_.get()));
+            servers_group_.create_thread(boost::bind(&abstract_server::run, tcp_server_ptr_.get()));
 
             udp_server_ptr_.reset(server_factory_.create_server(udp, udp_port_));
             udp_port_ = udp_server_ptr_->port();
-            boost::thread t1(boost::bind(&abstract_server::run, udp_server_ptr_.get()));
+            servers_group_.create_thread(boost::bind(&abstract_server::run, udp_server_ptr_.get()));
             
             send_broadcast(udp_port_);
-            //io_service_.run();
     }
     
     /*!
