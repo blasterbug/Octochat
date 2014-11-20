@@ -1,5 +1,7 @@
 #include "octonet/octonet_manager.hpp"
 
+#include <boost/lexical_cast.hpp>
+
 ////tcp_connection
 
 //public
@@ -121,8 +123,8 @@ void tcp_connection::handle_read_data(const boost::system::error_code& _error, s
             archive >> query;
             
             query.headers_map[octonet_ip_address_header] = sock_.remote_endpoint().address().to_string();
-            //query.headers_map[octonet_tcp_port_header] = std::to_string(tcp_port_);
-            //query.headers_map[octonet_udp_port_header] = std::to_string(udp_port_);
+            query.headers_map[octonet_tcp_port_header] = boost::lexical_cast<std::string>(tcp_port_);
+            query.headers_map[octonet_udp_port_header] = boost::lexical_cast<std::string>(udp_port_);
 
             BOOST_LOG_TRIVIAL(info) << "INFO octonet::_handle_udp: OK";
 
@@ -143,6 +145,7 @@ void tcp_connection::handle_read_data(const boost::system::error_code& _error, s
 
 tcp_server::tcp_server(octonet_manager* _net_manager, unsigned short _port) : net_manager_(_net_manager), acceptor_(_net_manager->io_service(), tcp::endpoint(tcp::v4(), _port))
 {
+	ip_address_ = acceptor_.local_endpoint().address();
     port_ = acceptor_.local_endpoint().port();
 }
 
@@ -160,6 +163,11 @@ void tcp_server::run(void)
 unsigned short tcp_server::port(void)
 {
     return port_;
+}
+
+boost::asio::ip::address tcp_server::ip_address(void)
+{
+	return ip_address_;
 }
 
 void tcp_server::start_accept(void)
