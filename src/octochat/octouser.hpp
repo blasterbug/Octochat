@@ -1,3 +1,6 @@
+#ifndef OCTOUSER_HPP
+#define OCTOUSER_HPP
+
 /**
  * @file octouser.hpp
  *
@@ -29,8 +32,6 @@
  * @version 0.1
  */
 
-#ifndef OCTOUSER_HPP
-#define OCTOUSER_HPP
 
 #include <string>
 #include "octonet/octopeer.hpp"
@@ -77,9 +78,9 @@ class octouser {
 	 * What is the name of the user ?
 	 * @param[out] Name of the user
 	 */
-		const std::string getName() const {
+		const std::string get_name() const {
 			return __name;
-		}
+		};
 
 	/**
 	 * Is the user online ?
@@ -87,7 +88,7 @@ class octouser {
 	 */
 		const bool isOnline() const {
 			return __alive;
-		}
+		};
 
 	size_t hash_value( const octouser &user ) {
 		return hash_value( user.getName() ) ;

@@ -1,3 +1,6 @@
+#ifndef OCTOMAIL_HPP
+#define OCTOMAIL_HPP
+
 /**
  * @file octomail.hpp
  *
@@ -28,9 +31,6 @@
  * @author Benjamin Sientzoff
  * @version 0.1
  */
-
-#ifndef OCTOMAIL_HPP
-#define OCTOMAIL_HPP
 
 #include <string>
 #include "octouser.hpp"
@@ -69,6 +69,9 @@ class octomail {
 			__timeStmp( tocopy.__timeStmp )
 		{};
 
+		const octouser get_writer_name() {
+			return __from.get_name();
+		};
 
 };
 
