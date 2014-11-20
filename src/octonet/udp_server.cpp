@@ -1,14 +1,16 @@
 #include "octonet/octonet_manager.hpp"
+#include "octonet/octopeer.hpp"
+#include "octonet/udp_server.hpp"
+
+#include <boost/asio.hpp>
+#include <boost/bind.hpp>
+#include <ios>
+#include <sstream>
 
 udp_server::udp_server(octonet_manager* _net_manager, unsigned short _port) : net_manager_(_net_manager), sock_(_net_manager->io_service(), udp::endpoint(udp::v4(), _port))
 {
 	ip_address_ = sock_.local_endpoint().address();
     port_ = sock_.local_endpoint().port();
-}
-
-udp_server::~udp_server(void)
-{
-    ;
 }
 
 void udp_server::run(void)
@@ -52,8 +54,7 @@ void udp_server::handle_receive(const boost::system::error_code& _error, std::si
         {
             BOOST_LOG_TRIVIAL(info) << "INFO octonet::_handle_udp: good tcp port header %"<<tcp_port;
             octopeer peer(remote_endpoint_.address(), tcp_port);
-            octoquery query;
-            net_manager_->send_query(peer, query);//TODO: check peers before
+            net_manager_->add_peer(peer);
         }
     }
     start_receive();

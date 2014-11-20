@@ -11,12 +11,12 @@ struct octopeer
     unsigned short tcp_port;
 
     octopeer(boost::asio::ip::address _ip_address, unsigned short _tcp_port) : ip_address(_ip_address), tcp_port(_tcp_port) {}
-    octopeer(const octopeer &op) : ip_address(op.ip_address), tcp_port(op.tcp_port) {}
+    octopeer(const octopeer& _peer) : ip_address(_peer.ip_address), tcp_port(_peer.tcp_port) {}
 };
 
 struct octopeer_comparator
 {
-    bool operator()(const octopeer &lhs, const octopeer &rhs) const
+    bool operator()(const octopeer& lhs, const octopeer& rhs) const
     {
         return lhs.ip_address < rhs.ip_address;
     }
