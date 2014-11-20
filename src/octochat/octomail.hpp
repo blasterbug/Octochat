@@ -32,54 +32,32 @@
  * @version 0.1
  */
 
-/* forward declaration */
-class octomail;
-
 #include <string>
 #include "octouser.hpp"
 #include "octoroom.hpp"
 
-
+/**
+ * Octomail is a message send by an octouser into an octoroom
+ */
 class octomail {
 
 	private:
 		octouser __from; /// Whoe send the message?
-		octoroom __destination; /// Where the message should be posted?
+		const octoroom* __destination; /// Where the message should be posted?
 		std::string __content; /// Content of the message, i.e. text bitch!
 		int __timeStmp; /// When the message was created? (local time)
 
 	public:
-		/**
-		 * constructor for a octo-mail
-		 * @param[in] writer the emitter of the message
-		 * @param[in] adressee Where the mail should be posted ?
-		 * @param[in] text content of the message
-		 */
-		octomail( const octouser &writer, const octoroom &adressee, std::string text ) :
-			__from( writer ),
-			__destination( adressee ),
-			__content( text ),
-			__timeStmp( 0 ) /// TODO
-		{}
 
-		/**
-		 * copy contructor for octo-mail
-		 * @param[in] tocopy octo-mail to be copied
-		 */
-		octomail( const octomail& tocopy ) :
-			__from ( tocopy.__from ),
-			__destination( tocopy.__destination ),
-			__content( tocopy.__content ),
-			__timeStmp( tocopy.__timeStmp )
-		{}
-
-		const octouser get_writer_name() {
-			return __from.get_name();
-		}
-
-		std::string to_string() {
-			return __from.get_name() + " : " + __content;
-		}
+		/// Constructor for octomail
+		octomail( octouser&, octoroom*, std::string );
+		/// copy constructor for octomail
+		octomail( const octomail& );
+		/// get the name of the mail writer
+		const std::string get_writer_name() const;
+		/// get the string reprensentation of the mail
+		const std::string to_string() const;
 };
 
+#include "octomail.cpp"
 #endif

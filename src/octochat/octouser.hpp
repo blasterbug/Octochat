@@ -6,7 +6,7 @@
  *
  * @section desc File description
  *
- * header for user class
+ * header for octouser class
  *
  * @section copyright Copyright
  *
@@ -40,47 +40,21 @@ class octouser {
 
 	private:
 		std::string __name; /// user (unique) name
-		octopeer* __peer; /// "connect" to user
+		const octopeer* __peer; /// "connect" to user
 		bool __alive; /// Is the user on/offline ?
 
 	public:
-		/**
-		 * Create a new user
-		 * @param[in] name (Nick)name of the user
-		 * @param[in] socket User's network address
-		 */
-		octouser( std::string name) :
-			__name( name ),
-			//__peer( peer ),
-			__alive( false )
-		{}
-
-		/**
-		 * Copy contructor, make a copy of the object
-		 * @param[in] tocopy Octo-user to copy
-		 */
-		octouser( const octouser& tocopy ) :
-			__name( tocopy.__name ),
-			__peer( tocopy.__peer ),
-			__alive( tocopy.__alive )
-			{}
-
-		/**
-		 * What is the name of the user ?
-		 * @param[out] Name of the user
-		 */
-		std::string get_name() const {
-			return __name;
-		}
-
-		/**
-		 * Is the user online ?
-		 * @param[out] True if the user is online, else false is returned
-		 */
-		bool is_online() const {
-			return __alive;
-		}
-
+		octouser(){};
+		/// constructor for octo-user
+		octouser( std::string name, const octopeer *peer);
+		/// copy constructor for octo-user
+		octouser( const octouser& tocopy );
+		/// get the name of the octo-user
+		std::string get_name() const;
+		/// Is the user online ?
+		bool is_online() const;
 };
+
+#include "octouser.cpp"
 
 #endif
