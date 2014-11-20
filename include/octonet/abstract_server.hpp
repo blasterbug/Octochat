@@ -4,7 +4,7 @@
 class abstract_server
 {
 public:
-    virtual ~abstract_server(void);
+    virtual ~abstract_server(void) {}
     virtual void run(void) = 0;
     virtual unsigned short port(void) = 0;
 };
