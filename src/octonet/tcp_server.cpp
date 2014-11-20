@@ -1,6 +1,12 @@
 #include "octonet/octonet_manager.hpp"
+#include "octonet/tcp_server.hpp"
 
+#include <boost/archive/text_iarchive.hpp>
+#include <boost/asio.hpp>
+#include <boost/bind.hpp>
 #include <boost/lexical_cast.hpp>
+#include <ios>
+#include <sstream>
 
 ////tcp_connection
 
@@ -130,7 +136,7 @@ void tcp_connection::handle_read_data(const boost::system::error_code& _error, s
 
             net_manager_->add_peer(peer);
             net_manager_->notify_query_observers(query);
-            net_manager_->add_remote_udp_port(udp_port_);
+            net_manager_->add_udp_broadcast_port(udp_port_);
         }
         catch(std::exception& e)
         {
@@ -147,11 +153,6 @@ tcp_server::tcp_server(octonet_manager* _net_manager, unsigned short _port) : ne
 {
 	ip_address_ = acceptor_.local_endpoint().address();
     port_ = acceptor_.local_endpoint().port();
-}
-
-tcp_server::~tcp_server(void)
-{
-    ;
 }
 
 void tcp_server::run(void)

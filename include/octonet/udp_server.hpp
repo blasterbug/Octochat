@@ -26,7 +26,6 @@ private:
 
 public:
     udp_server(octonet_manager* _net_manager, unsigned short _port);
-    ~udp_server(void);
     virtual void run(void);
     virtual unsigned short port(void);
     virtual boost::asio::ip::address ip_address(void);

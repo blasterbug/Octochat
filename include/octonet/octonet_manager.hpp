@@ -11,14 +11,13 @@
 #define OCTONET_TCP_PORT_HEADER "TCP_PORT"
 #define OCTONET_UDP_PORT_HEADER "UDP_PORT"
 
-#include <boost/archive/text_iarchive.hpp>
 #include <boost/archive/text_oarchive.hpp>
 #include <boost/asio.hpp>
 #include <boost/bind.hpp>
 #include <boost/log/trivial.hpp>
 #include <boost/smart_ptr.hpp>
 #include <boost/thread/thread.hpp>
-#include <iomanip>
+#include <ios>
 #include <set>
 #include <sstream>
 #include <string>
@@ -46,25 +45,45 @@ using boost::asio::ip::tcp;
 class octonet_manager
 {
 private:
-	boost::thread_group servers_group_;
-    server_factory server_factory_;
-    boost::scoped_ptr<abstract_server> tcp_server_ptr_;
-    boost::scoped_ptr<abstract_server> udp_server_ptr_;
-    boost::asio::io_service io_service_;
-
-    std::set<octopeer, octopeer_comparator> peers_set_;
-    boost::mutex peers_set_mtx_;
-    std::set<octoquery_observer*> query_observers_set_;
-    boost::mutex query_observers_set_mtx_;
-    std::set<octopeer_observer*> peer_observers_set_;
-    boost::mutex peer_observers_set_mtx_;
-    std::set<unsigned short> remote_udp_ports_set_;
-    boost::mutex remote_udp_ports_set_mtx_;
-
+    boost::asio::ip::address ip_address_;
     unsigned short tcp_port_;
     unsigned short udp_port_;
 
+    boost::mutex peers_set_mtx_;
+    boost::mutex query_observers_set_mtx_;
+    boost::mutex peer_observers_set_mtx_;
+    boost::mutex remote_udp_ports_set_mtx_;
+
+    std::set<octopeer, octopeer_comparator> peers_set_;
+    std::set<octoquery_observer*> query_observers_set_;
+    std::set<octopeer_observer*> peer_observers_set_;
+    std::set<unsigned short> remote_udp_ports_set_;
+
+    boost::asio::io_service io_service_;
+    server_factory server_factory_;
+    boost::scoped_ptr<abstract_server> tcp_server_ptr_;
+    boost::scoped_ptr<abstract_server> udp_server_ptr_;
+    boost::thread_group servers_group_;
+
 public:
+    /*!
+     * \brief 
+     */
+    octonet_manager(unsigned short _tcp_port, unsigned short _udp_port) : tcp_port_(_tcp_port), udp_port_(_udp_port), server_factory_(this) {}
+
+    /*!
+     * \brief 
+     */
+    ~octonet_manager(void)
+    {
+		io_service_.stop();
+		servers_group_.join_all();
+	}
+
+    /*!
+     * \brief 
+     * \return 
+     */
     boost::asio::io_service& io_service(void)
     {
         return io_service_;
@@ -72,9 +91,36 @@ public:
 
     /*!
      * \brief 
+     * \return 
+     */
+    boost::asio::ip::address ip_address(void)
+    {
+        return ip_address_;
+    }
+
+    /*!
+     * \brief 
+     * \return 
+     */
+    unsigned short tcp_port(void)
+    {
+        return tcp_port_;
+    }
+
+    /*!
+     * \brief 
+     * \return 
+     */
+    unsigned short udp_port(void)
+    {
+        return udp_port_;
+    }
+
+    /*!
+     * \brief 
      * \param _port : 
      */
-    void add_remote_udp_port(unsigned short _port)
+    void add_udp_broadcast_port(unsigned short _port)
     {
         boost::lock_guard<boost::mutex> guard(remote_udp_ports_set_mtx_);
         if(remote_udp_ports_set_.find(_port) == remote_udp_ports_set_.end())
@@ -115,7 +161,51 @@ public:
             notify_peer_observers(_peer, offline);
         }
     }
+
+    /*!
+     * \brief 
+     * \param _query_observer : 
+     * \return 
+     */
+    bool add_query_observer(octoquery_observer* _query_observer)
+    {
+        boost::lock_guard<boost::mutex> guard(query_observers_set_mtx_);
+        return (query_observers_set_.insert(_query_observer)).second;
+    }
     
+    /*!
+     * \brief 
+     * \param _query_observer : 
+     * \return 
+     */
+    bool rem_query_observer(octoquery_observer* _query_observer)
+    {
+        boost::lock_guard<boost::mutex> guard(query_observers_set_mtx_);
+        return query_observers_set_.erase(_query_observer) > 0;
+    }
+    
+    /*!
+     * \brief 
+     * \param _peer_observer : 
+     * \return 
+     */
+    bool add_peer_observer(octopeer_observer* _peer_observer)
+    {
+        boost::lock_guard<boost::mutex> guard(peer_observers_set_mtx_);
+        return (peer_observers_set_.insert(_peer_observer)).second;
+    }
+    
+    /*!
+     * \brief 
+     * \param _peer_observer : 
+     * \return 
+     */
+    bool rem_peer_observer(octopeer_observer* _peer_observer)
+    {
+        boost::lock_guard<boost::mutex> guard(peer_observers_set_mtx_);
+        return peer_observers_set_.erase(_peer_observer) > 0;
+    }
+
     /*!
      * \brief 
      * \param query : 
@@ -156,51 +246,10 @@ public:
     /*!
      * \brief 
      */
-    octonet_manager(unsigned short _tcp_port, unsigned short _udp_port) : server_factory_(this), tcp_port_(_tcp_port), udp_port_(_udp_port) {}
-
-    /*!
-     * \brief 
-     */
-    ~octonet_manager(void)
-    {
-		io_service_.stop();
-		servers_group_.join_all();
-	}
-
-    /*!
-     * \brief 
-     * \param _query_observer : 
-     * \return 
-     */
-    bool add_query_observer(octoquery_observer* _query_observer) { boost::lock_guard<boost::mutex> guard(query_observers_set_mtx_); return (query_observers_set_.insert(_query_observer)).second; }
-    
-    /*!
-     * \brief 
-     * \param _query_observer : 
-     * \return 
-     */
-    bool rem_query_observer(octoquery_observer* _query_observer) { boost::lock_guard<boost::mutex> guard(query_observers_set_mtx_); return query_observers_set_.erase(_query_observer) > 0; }
-    
-    /*!
-     * \brief 
-     * \param _peer_observer : 
-     * \return 
-     */
-    bool add_peer_observer(octopeer_observer* _peer_observer) { boost::lock_guard<boost::mutex> guard(peer_observers_set_mtx_); return (peer_observers_set_.insert(_peer_observer)).second; }
-    
-    /*!
-     * \brief 
-     * \param _peer_observer : 
-     * \return 
-     */
-    bool rem_peer_observer(octopeer_observer* _peer_observer) { boost::lock_guard<boost::mutex> guard(peer_observers_set_mtx_); return peer_observers_set_.erase(_peer_observer) > 0; }
-    
-    /*!
-     * \brief 
-     */
     void run(void)
     {
             tcp_server_ptr_.reset(server_factory_.create_server(tcp, tcp_port_));
+            ip_address_ = tcp_server_ptr_->ip_address();
             tcp_port_ = tcp_server_ptr_->port();
             servers_group_.create_thread(boost::bind(&abstract_server::run, tcp_server_ptr_.get()));
 
@@ -208,7 +257,7 @@ public:
             udp_port_ = udp_server_ptr_->port();
             servers_group_.create_thread(boost::bind(&abstract_server::run, udp_server_ptr_.get()));
             
-            send_broadcast(udp_port_);
+            add_udp_broadcast_port(udp_port_);
     }
     
     /*!
@@ -220,6 +269,7 @@ public:
     bool send_query(const octopeer& _peer, const octoquery& _query)
     {
         BOOST_LOG_TRIVIAL(info) << "INFO octonet::send_query: start sending query to " << _peer.ip_address << ":" << _peer.tcp_port;
+        std::vector<boost::asio::const_buffer> buffers;
         try
         {
             std::ostringstream archive_stream;
@@ -232,7 +282,7 @@ public:
             if (!tcp_port_stream || tcp_port_stream.str().size() != octonet_port_header_length)
             {
                     BOOST_LOG_TRIVIAL(error) << "ERROR octonet::send_query: bad size header";
-                    return false;
+                    throw std::exception();
             }
             std::string tcp_port_str = tcp_port_stream.str();
 
@@ -241,39 +291,45 @@ public:
             if (!udp_port_stream || udp_port_stream.str().size() != octonet_port_header_length)
             {
                     BOOST_LOG_TRIVIAL(error) << "ERROR octonet::send_query: bad size header";
-                    return false;
+                    throw std::exception();
             }
             std::string udp_port_str = udp_port_stream.str();
 
-            std::ostringstream header_stream;
-            header_stream << std::setw(octonet_size_header_length) << std::hex << data_str.size();
-            if (!header_stream || header_stream.str().size() != octonet_size_header_length)
+            std::ostringstream size_stream;
+            size_stream << std::setw(octonet_size_header_length) << std::hex << data_str.size();
+            if (!size_stream || size_stream.str().size() != octonet_size_header_length)
             {
                     BOOST_LOG_TRIVIAL(error) << "ERROR octonet::send_query: bad size header";
-                    return false;
+                    throw std::exception();
             }
-            std::string header_str = header_stream.str();
+            std::string size_str = size_stream.str();
             
-            std::vector<boost::asio::const_buffer> buffers;
             buffers.push_back(boost::asio::buffer(octonet_version_header));
             buffers.push_back(boost::asio::buffer(tcp_port_str));
             buffers.push_back(boost::asio::buffer(udp_port_str));
-            buffers.push_back(boost::asio::buffer(header_str));
+            buffers.push_back(boost::asio::buffer(size_str));
             buffers.push_back(boost::asio::buffer(data_str));
-
+        }
+        catch (std::exception& e)
+        {
+            BOOST_LOG_TRIVIAL(error) << "ERROR octonet::send_query: " << e.what();
+            return false;
+        }
+        try
+        {
             tcp::socket sock(io_service_);
             tcp::endpoint endpoint(_peer.ip_address, _peer.tcp_port);
             sock.connect(endpoint);
             boost::asio::write(sock, buffers);
             BOOST_LOG_TRIVIAL(info) << "INFO octonet::send_query: query sent to " << _peer.ip_address << ":" << _peer.tcp_port;
-            return true;
         }
         catch (std::exception& e)
         {
             BOOST_LOG_TRIVIAL(error) << "ERROR octonet::send_query: " << e.what();
+            rem_peer(_peer);
+            return false;
         }
-        //rem_peer(op);
-        return false;
+        return true;
     }
 
     /*!
@@ -302,13 +358,13 @@ public:
                     udp::endpoint broadcast_endpoint(boost::asio::ip::address_v4::broadcast(), _port);
                     sock.send_to(boost::asio::buffer(data_str), broadcast_endpoint);
                     BOOST_LOG_TRIVIAL(info) << "INFO octonet::send_broadcast: broadcast sent on port " << _port << " %" << data_str;
-                    return true;
             }
             catch (std::exception& e)
             {
                     BOOST_LOG_TRIVIAL(error) << "ERROR octonet::send_broadcast: " << e.what();
+                    return false;
             }
-            return false;
+            return true;
     }
 };
 

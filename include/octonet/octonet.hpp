@@ -4,6 +4,10 @@
 #include <boost/asio.hpp>
 
 #include "octonet_manager.hpp"
+#include "octopeer.hpp"
+#include "octopeer_observer.hpp"
+#include "octoquery.hpp"
+#include "octoquery_observer.hpp"
 
 /*!
  * \class octonet
@@ -89,6 +93,14 @@ public:
     bool rem_peer_observer(octopeer_observer* _peer_observer)
     {
         return net_manager_.rem_peer_observer(_peer_observer);
+    }
+
+    /*!
+     * \brief 
+     */
+    void run(void)
+    {
+        net_manager_.run();
     }
 
     /*!
