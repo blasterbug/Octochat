@@ -32,8 +32,6 @@
  * @version 0.1
  */
 
-
-
 #include <string>
 #include "octouser.hpp"
 #include "octoroom.hpp"

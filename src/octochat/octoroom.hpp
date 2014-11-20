@@ -32,16 +32,17 @@
  * @version 0.1
  */
 
-
 #include <string>
 #include <vector>
 #include <map>
 #include "octouser.hpp"
 #include "octomail.hpp"
 
-#define MESSAGE_STACK_SIZE 50
-
+/* Must done because of circle dependencies */
 class octomail;
+
+/// Amount of messages to store
+#define MESSAGE_STACK_SIZE 50
 
 /**
  * Exceptions throwed by octoroom class
@@ -87,7 +88,6 @@ class octoroom {
 
 
 	public:
-
 		/**
 		 * Contructor for octo-room
 		 * @param[in] owner The octo-user who created the room

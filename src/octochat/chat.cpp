@@ -14,4 +14,3 @@ int main(int argc, char** argv ) {
 	sallon.post( &mail );
 	return 0;
 }
-

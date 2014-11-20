@@ -90,6 +90,11 @@ class octouser {
 			return __alive;
 		};
 
+	size_t hash_value( const octouser &user ) {
+		return hash_value( user.getName() ) ;
+	}
+
+	
 };
 
 #endif
