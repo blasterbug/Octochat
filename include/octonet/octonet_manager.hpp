@@ -11,6 +11,7 @@
 #define OCTONET_TCP_PORT_HEADER "TCP_PORT"
 #define OCTONET_UDP_PORT_HEADER "UDP_PORT"
 
+#include <boost/archive/text_iarchive.hpp>
 #include <boost/archive/text_oarchive.hpp>
 #include <boost/asio.hpp>
 #include <boost/bind.hpp>
@@ -20,6 +21,7 @@
 #include <iomanip>
 #include <set>
 #include <sstream>
+#include <string>
 #include <vector>
 
 #include "octopeer.hpp"
