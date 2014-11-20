@@ -2,6 +2,7 @@
 
 udp_server::udp_server(octonet_manager* _net_manager, unsigned short _port) : net_manager_(_net_manager), sock_(_net_manager->io_service(), udp::endpoint(udp::v4(), _port))
 {
+	ip_address_ = sock_.local_endpoint().address();
     port_ = sock_.local_endpoint().port();
 }
 
@@ -20,6 +21,11 @@ void udp_server::run(void)
 unsigned short udp_server::port(void)
 {
     return port_;
+}
+
+boost::asio::ip::address udp_server::ip_address(void)
+{
+	return ip_address_;
 }
 
 void udp_server::start_receive(void)

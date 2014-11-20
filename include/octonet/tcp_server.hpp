@@ -45,6 +45,7 @@ class tcp_server : public abstract_server
 {
 private:
     octonet_manager* net_manager_;
+    boost::asio::ip::address ip_address_;
     unsigned short port_;
     tcp::acceptor acceptor_;
     
@@ -56,6 +57,7 @@ public:
     ~tcp_server(void);
     virtual void run(void);
     virtual unsigned short port(void);
+    virtual boost::asio::ip::address ip_address(void);
 };
 
 #endif
