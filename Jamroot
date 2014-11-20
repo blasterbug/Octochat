@@ -13,5 +13,7 @@ project octonet
     :
     ;
 
-exe octotest : src/octotest/octotest.cpp ;
-# exe octochat : src/octochat/chat.cpp ;
+lib octonet : src/octonet/tcp_server.cpp src/octonet/udp_server.cpp ;
+
+exe octotest : src/octotest/octotest.cpp octonet ;
+exe octochat : src/octochat/chat.cpp octonet ;
