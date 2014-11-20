@@ -21,6 +21,7 @@ public:
             case tcp: return new tcp_server(net_manager_, _port);
             case udp: return new udp_server(net_manager_, _port);
         }
+        return 0;
     }
 };
 
