@@ -1,16 +1,8 @@
-#include <boost/log/utility/setup/file.hpp>
-
-#include <octonet/octonet.hpp>
-
-void init(void)
-{
-    //boost::log::add_file_log("octotest.log");
-}
+#include <octonet/octonet_manager.hpp>
 
 int main(void)
 {
-    init();
-    octonet on;
+    octonet_manager on(1234, 4321);
     on.run();
     std::string s;
     std::getline(std::cin, s);
