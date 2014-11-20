@@ -6,6 +6,7 @@
 class octopeer_observer
 {
     public:
+		virtual ~octopeer_observer(void) {}
         virtual void update_peer(const octopeer &op, octopeer_state s) = 0;
 };
 

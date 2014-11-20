@@ -6,6 +6,7 @@
 class octoquery_observer
 {
     public:
+		virtual ~octoquery_observer(void) {}
         virtual void update_query(const octoquery &oq) = 0;
         virtual std::string app() const = 0;
 };
