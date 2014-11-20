@@ -32,9 +32,13 @@
  * @version 0.1
  */
 
+/* forward declaration */
+class octomail;
+
 #include <string>
 #include "octouser.hpp"
 #include "octoroom.hpp"
+
 
 class octomail {
 
@@ -56,7 +60,7 @@ class octomail {
 			__destination( adressee ),
 			__content( text ),
 			__timeStmp( 0 ) /// TODO
-		{};
+		{}
 
 		/**
 		 * copy contructor for octo-mail
@@ -67,12 +71,15 @@ class octomail {
 			__destination( tocopy.__destination ),
 			__content( tocopy.__content ),
 			__timeStmp( tocopy.__timeStmp )
-		{};
+		{}
 
 		const octouser get_writer_name() {
 			return __from.get_name();
-		};
+		}
 
+		std::string to_string() {
+			return __from.get_name() + " : " + __content;
+		}
 };
 
 #endif

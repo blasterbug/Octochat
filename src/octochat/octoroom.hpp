@@ -47,7 +47,7 @@ class octomail;
 /**
  * Exceptions throwed by octoroom class
  */
-class octoroom_exception : std::exception {
+class octoroom_exception : public std::exception {
 	private:
 		std::string __cause; /** store exception description */
 	public:
@@ -56,21 +56,21 @@ class octoroom_exception : std::exception {
 		 */
 		octoroom_exception( std::string cause ) :
 			__cause( cause )
-			{};
+			{}
 
 		/** destructor
 		 * currently, do anything special
 		 */
 		virtual ~octoroom_exception() throw() {
 			// do nothing
-		};
+		}
 
 		/** virtual fonction from superclass,
 		 * usefull to get the exception description
 		 */
 		virtual const char* what()const throw() {
 			return __cause.c_str();
-		};
+		}
 };
 
 /**
@@ -103,7 +103,7 @@ class octoroom {
 			__messages = std::vector< const octomail* >( MESSAGE_STACK_SIZE );
 			// add the owner in his own room
 			__userlist[ owner->get_name() ] = owner;
-		};
+		}
 
 		/**
 		 * Adding user in the room
@@ -117,20 +117,32 @@ class octoroom {
 			} else {
 				throw octoroom_exception( "Octo-user already in the room" );
 			}
-		};
+		}
 
 		/*void ban_user( octouser &user ) const {
 			const string user_name = user->get_name();
 			if(__userlist.count( user_name ))
 				__userlist.erase( user_name );
 			__bannedusers[ user_name ] = user;
-		};*/
+		}*/
 
 		void post( const octomail *mail ) {
 			/// \todo muted user ? banned user ? etc.
 			__messages[ __msg_idx++ ] = mail;
 			__msg_idx %= MESSAGE_STACK_SIZE; // stay in the vector boundaries
-		};
+		}
+
+		std::string to_string() {
+			// circular roam into the messages vector
+			const int last_idx = (__msg_idx - 1) % MESSAGE_STACK_SIZE;
+			int read_idx = __msg_idx;
+			std::string ret = "";
+			while(last_idx != read_idx){
+				ret += __messages[ read_idx++ ]->to_string() + "\n";
+				read_idx %= MESSAGE_STACK_SIZE;
+			}
+			return ret;
+		}
 
 };
 

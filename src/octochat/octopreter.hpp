@@ -87,7 +87,7 @@ class post_mail : final_expression {
 		void interpret( const octoroom *room, std::string input ){
 			octomail to_send( user, room, input );
 			room->post( message );
-		};
-}
+		}
+};
 
  #endif

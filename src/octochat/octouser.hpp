@@ -44,57 +44,43 @@ class octouser {
 		bool __alive; /// Is the user on/offline ?
 
 	public:
-	/**
-	 * Create a new user
-	 * @param[in] name (Nick)name of the user
-	 * @param[in] socket User's network address
-	 */
+		/**
+		 * Create a new user
+		 * @param[in] name (Nick)name of the user
+		 * @param[in] socket User's network address
+		 */
 		octouser( std::string name) :
 			__name( name ),
 			//__peer( peer ),
 			__alive( false )
-		{};
+		{}
 
-	/**
-	 * Copy contructor, make a copy of the object
-	 * @param[in] tocopy Octo-user to copy
-	 */
+		/**
+		 * Copy contructor, make a copy of the object
+		 * @param[in] tocopy Octo-user to copy
+		 */
 		octouser( const octouser& tocopy ) :
 			__name( tocopy.__name ),
 			__peer( tocopy.__peer ),
 			__alive( tocopy.__alive )
-			{};
+			{}
 
-	/**
-	 * assignment operator, use pointers!
-	 * @param[in] toassig octo-user to assign
-	 * @return octo-user adresse to get the assigment
-	 */
-	/*octouser& operator=( const octouser& toassig ) {
-		return &this;
-	}*/
-
-	/**
-	 * What is the name of the user ?
-	 * @param[out] Name of the user
-	 */
-		const std::string get_name() const {
+		/**
+		 * What is the name of the user ?
+		 * @param[out] Name of the user
+		 */
+		std::string get_name() const {
 			return __name;
-		};
+		}
 
-	/**
-	 * Is the user online ?
-	 * @param[out] True if the user is online, else false is returned
-	 */
-		const bool isOnline() const {
+		/**
+		 * Is the user online ?
+		 * @param[out] True if the user is online, else false is returned
+		 */
+		bool is_online() const {
 			return __alive;
-		};
+		}
 
-	size_t hash_value( const octouser &user ) {
-		return hash_value( user.getName() ) ;
-	}
-
-	
 };
 
 #endif
