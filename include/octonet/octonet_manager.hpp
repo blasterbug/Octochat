@@ -14,7 +14,7 @@
 #include <boost/archive/text_oarchive.hpp>
 #include <boost/asio.hpp>
 #include <boost/bind.hpp>
-#include <boost/log/trivial.hpp>
+//#include <boost/log/trivial.hpp>
 #include <boost/smart_ptr.hpp>
 #include <boost/thread/thread.hpp>
 #include <ios>
@@ -142,7 +142,6 @@ public:
             octoquery query;
             if(send_query(_peer, query))
             {
-                BOOST_LOG_TRIVIAL(info) << "INFO octonet::add_peer: peer added";
                 peers_set_.insert(_peer);
                 notify_peer_observers(_peer, online);
             }
@@ -268,7 +267,6 @@ public:
      */
     bool send_query(const octopeer& _peer, const octoquery& _query)
     {
-        BOOST_LOG_TRIVIAL(info) << "INFO octonet::send_query: start sending query to " << _peer.ip_address << ":" << _peer.tcp_port;
         std::vector<boost::asio::const_buffer> buffers;
         try
         {
@@ -281,7 +279,6 @@ public:
             tcp_port_stream << std::setw(octonet_port_header_length) << std::hex << tcp_port_;
             if (!tcp_port_stream || tcp_port_stream.str().size() != octonet_port_header_length)
             {
-                    BOOST_LOG_TRIVIAL(error) << "ERROR octonet::send_query: bad size header";
                     throw std::exception();
             }
             std::string tcp_port_str = tcp_port_stream.str();
@@ -290,7 +287,6 @@ public:
             udp_port_stream << std::setw(octonet_port_header_length) << std::hex << udp_port_;
             if (!udp_port_stream || udp_port_stream.str().size() != octonet_port_header_length)
             {
-                    BOOST_LOG_TRIVIAL(error) << "ERROR octonet::send_query: bad size header";
                     throw std::exception();
             }
             std::string udp_port_str = udp_port_stream.str();
@@ -299,7 +295,6 @@ public:
             size_stream << std::setw(octonet_size_header_length) << std::hex << data_str.size();
             if (!size_stream || size_stream.str().size() != octonet_size_header_length)
             {
-                    BOOST_LOG_TRIVIAL(error) << "ERROR octonet::send_query: bad size header";
                     throw std::exception();
             }
             std::string size_str = size_stream.str();
@@ -312,7 +307,6 @@ public:
         }
         catch (std::exception& e)
         {
-            BOOST_LOG_TRIVIAL(error) << "ERROR octonet::send_query: " << e.what();
             return false;
         }
         try
@@ -321,11 +315,9 @@ public:
             tcp::endpoint endpoint(_peer.ip_address, _peer.tcp_port);
             sock.connect(endpoint);
             boost::asio::write(sock, buffers);
-            BOOST_LOG_TRIVIAL(info) << "INFO octonet::send_query: query sent to " << _peer.ip_address << ":" << _peer.tcp_port;
         }
         catch (std::exception& e)
         {
-            BOOST_LOG_TRIVIAL(error) << "ERROR octonet::send_query: " << e.what();
             rem_peer(_peer);
             return false;
         }
@@ -339,7 +331,6 @@ public:
      */
     bool send_broadcast(unsigned short _port)
     {
-            BOOST_LOG_TRIVIAL(info) << "INFO octonet::send_broadcast: start sending broadcast on port " << _port;
             try
             {
                     std::string data_str(octonet_version_header);
@@ -348,7 +339,6 @@ public:
                     tcp_port_stream << std::setw(octonet_port_header_length) << std::hex << tcp_port_;
                     if (!tcp_port_stream || tcp_port_stream.str().size() != octonet_port_header_length)
                     {
-                            BOOST_LOG_TRIVIAL(error) << "ERROR octonet::send_broadcast: bad tcp port header";
                             throw std::exception();
                     }
                     data_str += tcp_port_stream.str();
@@ -357,11 +347,9 @@ public:
                     sock.set_option(boost::asio::socket_base::broadcast(true));
                     udp::endpoint broadcast_endpoint(boost::asio::ip::address_v4::broadcast(), _port);
                     sock.send_to(boost::asio::buffer(data_str), broadcast_endpoint);
-                    BOOST_LOG_TRIVIAL(info) << "INFO octonet::send_broadcast: broadcast sent on port " << _port << " %" << data_str;
             }
             catch (std::exception& e)
             {
-                    BOOST_LOG_TRIVIAL(error) << "ERROR octonet::send_broadcast: " << e.what();
                     return false;
             }
             return true;

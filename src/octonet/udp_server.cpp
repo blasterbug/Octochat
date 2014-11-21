@@ -41,18 +41,16 @@ void udp_server::start_receive(void)
 
 void udp_server::handle_receive(const boost::system::error_code& _error, std::size_t _bytes_recvd)
 {
-    BOOST_LOG_TRIVIAL(info) << "INFO octonet::_handle_udp: new udp datagram from " << remote_endpoint_.address() << ":" << remote_endpoint_.port();
     if (!_error && (_bytes_recvd == data_len_) && (octonet_version_header == std::string(data_buf_.get(), octonet_version_header.size())))
     {
         std::istringstream tcp_is(std::string(data_buf_.get() + octonet_version_header.size(), octonet_port_header_length));
         unsigned short tcp_port = 0;
         if(!(tcp_is >> std::hex >> tcp_port))//TODO: remove if(!... -> if(...
         {
-            BOOST_LOG_TRIVIAL(error) << "ERROR octonet::_handle_udp: bad tcp port header";
+            ;
         }
         else
         {
-            BOOST_LOG_TRIVIAL(info) << "INFO octonet::_handle_udp: good tcp port header %"<<tcp_port;
             octopeer peer(remote_endpoint_.address(), tcp_port);
             net_manager_->add_peer(peer);
         }

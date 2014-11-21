@@ -41,7 +41,6 @@ tcp_connection::tcp_connection(octonet_manager* _net_manager) : net_manager_(_ne
 
 void tcp_connection::handle_check_version(const boost::system::error_code& _error, size_t _bytes_transferred)
 {
-    BOOST_LOG_TRIVIAL(info) << "INFO handle_check_version:";
     if (!_error && (_bytes_transferred == version_len_) && (octonet_version_header == std::string(version_buf_.get(), version_len_)))
     {
         tcp_port_len_ = octonet_port_header_length;
@@ -55,7 +54,6 @@ void tcp_connection::handle_check_version(const boost::system::error_code& _erro
 
 void tcp_connection::handle_read_tcp_port(const boost::system::error_code& _error, size_t _bytes_transferred)
 {
-    BOOST_LOG_TRIVIAL(info) << "INFO handle_read_tcp_port:";
     if (!_error && (_bytes_transferred == tcp_port_len_))
     {
         std::istringstream is(std::string(tcp_port_buf_.get(), tcp_port_len_));
@@ -76,7 +74,6 @@ void tcp_connection::handle_read_tcp_port(const boost::system::error_code& _erro
 
 void tcp_connection::handle_read_udp_port(const boost::system::error_code& _error, size_t _bytes_transferred)
 {
-    BOOST_LOG_TRIVIAL(info) << "INFO handle_read_udp_port:";
     if (!_error && (_bytes_transferred == udp_port_len_))
     {
         std::istringstream is(std::string(udp_port_buf_.get(), udp_port_len_));
@@ -132,15 +129,13 @@ void tcp_connection::handle_read_data(const boost::system::error_code& _error, s
             query.headers_map[octonet_tcp_port_header] = boost::lexical_cast<std::string>(tcp_port_);
             query.headers_map[octonet_udp_port_header] = boost::lexical_cast<std::string>(udp_port_);
 
-            BOOST_LOG_TRIVIAL(info) << "INFO octonet::_handle_udp: OK";
-
             net_manager_->add_peer(peer);
             net_manager_->notify_query_observers(query);
             net_manager_->add_udp_broadcast_port(udp_port_);
         }
         catch(std::exception& e)
         {
-            BOOST_LOG_TRIVIAL(info) << "ERROR handle_read_data: "<<e.what();
+            ;
         }
     }
 }
@@ -184,7 +179,6 @@ void tcp_server::start_accept(void)
 
 void tcp_server::handle_accept(boost::shared_ptr<tcp_connection> _new_connection, const boost::system::error_code& _error)
 {
-    BOOST_LOG_TRIVIAL(info) << "INFO handle_accept: handled";
     if (!_error)
     {
         _new_connection->start();
