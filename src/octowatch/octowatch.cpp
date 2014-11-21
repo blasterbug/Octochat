@@ -51,10 +51,8 @@ int main(void)
 {
     octowatch watch;
     octonet net;
-    octopeer_observer* watch_peer = &watch;
-    octoquery_observer* watch_query = &watch;
-    net.add_peer_observer(watch_peer);
-    net.add_query_observer(watch_query);
+    net.add_peer_observer(&watch);
+    net.add_query_observer(&watch);
     net.run();
     std::string s;
     std::getline(std::cin, s);
