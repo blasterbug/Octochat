@@ -55,6 +55,16 @@ public:
         return net_manager_.udp_port();
     }
 
+	/*!
+	 * \brief 
+	 * \param _peers : 
+	 * \return 
+	 */
+	 std::set<octopeer, octopeer_comparator>& peers(std::set<octopeer, octopeer_comparator>& _peers)
+	 {
+		 return net_manager_.peers(_peers);
+	 }
+
     /*!
      * \brief 
      * \param _query_observer : 

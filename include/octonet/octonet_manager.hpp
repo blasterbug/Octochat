@@ -116,6 +116,18 @@ public:
         return udp_port_;
     }
 
+	/*!
+	 * \brief 
+	 * \param _peers : 
+	 * \return 
+	 */
+	 std::set<octopeer, octopeer_comparator>& peers(std::set<octopeer, octopeer_comparator>& _peers)
+	 {
+		 boost::lock_guard<boost::mutex> guard(peers_set_mtx_);
+		 _peers.insert(peers_set_.begin(), peers_set_.end());
+		 return _peers;
+	 }
+
     /*!
      * \brief 
      * \param _port : 
