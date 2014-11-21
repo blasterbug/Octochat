@@ -33,8 +33,6 @@
  */
 
 #include <string>
-#include "octouser.hpp"
-#include "octoroom.hpp"
 
 /**
  * Octomail is a message send by an octouser into an octoroom
@@ -42,22 +40,59 @@
 class octomail {
 
 	private:
-		octouser __from; /// Whoe send the message?
-		const octoroom* __destination; /// Where the message should be posted?
+		std::string __from; /// Whoe send the message?
+		const std::string __destination; /// Where the message should be posted?
 		std::string __content; /// Content of the message, i.e. text bitch!
-		int __timeStmp; /// When the message was created? (local time)
+		int __timeStmp; /// When the message was created? (local time) \todo
 
 	public:
+		/**
+		 * constructor for a octo-mail
+		 * @param[in] writer the emitter of the message
+		 * @param[in] adressee Where the mail should be posted ?
+		 * @param[in] text content of the message
+		 */
+		octomail( std::string writer, std::string adressee, std::string text ) :
+			__from( writer ),
+			__destination( adressee ),
+			__content( text ),
+			__timeStmp( 0 ) /// TODO
+		{}
 
-		/// Constructor for octomail
-		octomail( octouser&, octoroom*, std::string );
-		/// copy constructor for octomail
-		octomail( const octomail& );
-		/// get the name of the mail writer
-		const std::string get_writer_name() const;
-		/// get the string reprensentation of the mail
-		const std::string to_string() const;
+		/**
+		 * copy contructor for octo-mail
+		 * @param[in] tocopy octo-mail to be copied
+		 */
+		octomail( const octomail& tocopy ) :
+			__from ( tocopy.__from ),
+			__destination( tocopy.__destination ),
+			__content( tocopy.__content ),
+			__timeStmp( tocopy.__timeStmp )
+		{}
+
+		/**
+		 * get the string representation of an octouser
+		 * @param[out] name of the octo-user
+		 */
+		const std::string get_writer_name() const {
+			return __from;
+		}
+
+		/**
+		 * get the string representation of the octomail
+		 * @param[out] The octomail as a string
+		 */
+		const std::string to_string() const {
+			return __from + " : " + __content;
+		}
+
+		/**
+		 * get the name of the mail destination
+		 * @param[out] destination of the mail
+		 */
+		const std::string get_destinee() const{
+			return __destination;
+		}
 };
 
-#include "octomail.cpp"
 #endif

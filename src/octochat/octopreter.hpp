@@ -6,7 +6,7 @@
  *
  * @section desc File description
  *
- * inpretor pattern to perform command in octochat
+ * header file for the interpreter pattern to perform command in octochat
  *
  * @section copyright Copyright
  *
@@ -36,9 +36,10 @@
 #include <string>
 #include "octouser.hpp"
 #include "octomail.hpp"
+#include "octoroom.hpp"
 
 /**
- * Abstract class for interpretor pattern
+ * Abstract class for interpreter pattern
  */
 class abstract_expression {
 	public:
@@ -46,33 +47,33 @@ class abstract_expression {
 		 * @param[in] octoroom contexte of the command
 		 * @param[in] string arguments of the command
 		 */
-		virtual void interpret( const octoroom*, std::string ) = 0 ;
+		virtual std::string interpret( const octoroom*, std::string ) = 0 ;
 };
 
 /**
- * Abstract class for final_expression in interpretor
+ * Abstract class for final_expression in interpreter
  */
-class final_expression : abstract_expression {
+class final_expression : public :abstract_expression {
 	public:
-		final void interpret( const octoroom*std::string ) = 0 ;
+		final std::string interpret( const octoroom*std::string ) = 0 ;
 };
 
 /**
- * Class for non terminal expression in the tree
+ * abstract class for non terminal expression in the tree
  */
-class non_terminal_expression : abstract_expression {
+class non_terminal_expression : public :abstract_expression {
 	protected:
-		/// sub tree in the intreprator tree
+		/// sub tree in the interpreter tree
 		std::map< std::string, abstract_expression > __subexp;
 
 	public:
-		final void interpret( const octoroom*, std:string  ) = 0;
+		final std::string interpret( const octoroom*, std:string  ) = 0;
 };
 
 /**
- * Class for post mail command
+ * command to post a mail
  */
-class post_mail : final_expression {
+class post_mail : public :final_expression {
 	private:
 		const octouser* __sender;
 	public:
@@ -80,14 +81,21 @@ class post_mail : final_expression {
 	 * constructeur for post mail command
 	 * @param[in] userfrom from who the mail is send
 	 */
-		post_mail( coutuser userfrom ) :
+		post_mail( octouser userfrom ) :
 			__sender( userfrom )
 			{};
-
-		void interpret( const octoroom *room, std::string input ){
-			octomail to_send( user, room, input );
-			room->post( message );
+		/**
+		 * perform the command :post a mail
+		 */
+		std::string interpret( const octoroom *room, std::string input ){
+			room->post( octomail( user, room, input ) );
+			return;
 		}
 };
+
+/**
+ * command to get infos about an user
+ * @param[in] user name
+ */
 
  #endif
