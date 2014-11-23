@@ -364,6 +364,9 @@ public:
             buffers.push_back(boost::asio::buffer(udp_port_str));
             buffers.push_back(boost::asio::buffer(size_str));
             buffers.push_back(boost::asio::buffer(data_str));
+#           ifdef OCTONET_LOG_ENABLE
+            BOOST_LOG_TRIVIAL(info) << "octonet_manager::send_query: data=" << data_str;
+#           endif
         }
         catch (std::exception& e)
         {

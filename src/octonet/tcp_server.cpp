@@ -154,6 +154,7 @@ void tcp_connection::handle_read_data(const boost::system::error_code& _error, s
     {
 #       ifdef OCTONET_LOG_ENABLE
         BOOST_LOG_TRIVIAL(info) << "tcp_server::handle_read_data: good data " << sock_.remote_endpoint().address() << ":" << sock_.remote_endpoint().port();
+        BOOST_LOG_TRIVIAL(info) << "tcp_server::handle_read_data: data=" << std::string(data_buf_.get(), data_len_);
 #       endif
         try
         {
