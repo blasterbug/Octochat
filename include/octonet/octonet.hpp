@@ -32,7 +32,16 @@ public:
      * \brief 
      * \return 
      */
-    boost::asio::ip::address ip_address(void)
+    std::string uuid(void) const
+    {
+        return net_manager_.uuid();
+    }
+
+    /*!
+     * \brief 
+     * \return 
+     */
+    boost::asio::ip::address ip_address(void) const
     {
         return net_manager_.ip_address();
     }
@@ -41,7 +50,7 @@ public:
      * \brief 
      * \return 
      */
-    unsigned short tcp_port(void)
+    unsigned short tcp_port(void) const
     {
         return net_manager_.tcp_port();
     }
@@ -50,7 +59,7 @@ public:
      * \brief 
      * \return 
      */
-    unsigned short udp_port(void)
+    unsigned short udp_port(void) const
     {
         return net_manager_.udp_port();
     }
@@ -119,7 +128,7 @@ public:
      * \param _query : 
      * \return 
      */
-    bool send_query(const octopeer& _peer, const octoquery& _query)
+    bool send_query(const octopeer& _peer, octoquery& _query)
     {
             return net_manager_.send_query(_peer, _query);
     }

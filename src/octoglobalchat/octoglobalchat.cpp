@@ -17,11 +17,12 @@ class octoglobalchat : public octopeer_observer, public octoquery_observer
 private:
     boost::mutex out_mtx_;
     const std::string app_;
-    const std::string ip_address_;
-    const std::string tcp_port_;
+    const std::string uuid_;
+    /*const std::string ip_address_;
+    const std::string tcp_port_;*/
 public:
-    octoglobalchat(boost::asio::ip::address _ip_address, unsigned short _tcp_port) : app_(OCTOGLOBALCHAT_APP_ID), ip_address_(_ip_address.to_string()), tcp_port_(boost::lexical_cast<std::string>(_tcp_port)) {}
-    octoglobalchat(void) {}
+    //octoglobalchat(std::string _uuid, boost::asio::ip::address _ip_address, unsigned short _tcp_port) : app_(OCTOGLOBALCHAT_APP_ID), uuid_(_uuid), ip_address_(_ip_address.to_string()), tcp_port_(boost::lexical_cast<std::string>(_tcp_port)) {}
+    octoglobalchat(std::string _uuid) : uuid_(_uuid) {}
 
     virtual void update_peer(const octopeer& _peer, octopeer_state _state)
     {
@@ -38,23 +39,13 @@ public:
 
     virtual void update_query(const octoquery& _query)
     {
-
-		std::map<std::string, std::string>::const_iterator ip_it = _query.headers_map.find(octonet_ip_address_header);
-		std::map<std::string, std::string>::const_iterator tcp_it = _query.headers_map.find(octonet_tcp_port_header);
-		if((ip_it == _query.headers_map.end()) || (tcp_it == _query.headers_map.end()))
-		{
-			return;
-		}
-
-		std::string ip_address = ip_it->second;
-		std::string tcp_port = tcp_it->second;
-		if((ip_address == ip_address_) && (tcp_port == tcp_port_))
+		if(_query.headers_map.find(octonet_uuid_header)->second == uuid_)
 		{
 			return;
 		}
 
         boost::lock_guard<boost::mutex> guard(out_mtx_);
-        std::cout << "[time] <" << ip_address << ":" << tcp_port << "> " << _query.content_str << std::cout << std::endl;
+        std::cout << "[time] <" << _query.headers_map.find(octonet_ip_address_header)->second << ":" << _query.headers_map.find(octonet_tcp_port_header)->second << "> " << _query.content_str << std::cout << std::endl;
     }
 
     virtual std::string app() const
@@ -65,8 +56,8 @@ public:
 
 int main(void)
 {
-    octoglobalchat globalchat;
     octonet net;
+    octoglobalchat globalchat(net.uuid());
     net.add_peer_observer(&globalchat);
     net.add_query_observer(&globalchat);
     net.run();

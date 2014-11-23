@@ -6,6 +6,7 @@
 #define OCTONET_SIZE_HEADER_LENGTH 8
 #define OCTONET_PORT_HEADER_LENGTH 4
 #define OCTONET_VERSION_HEADER "OCTONET1"
+#define OCTONET_UUID_HEADER "UUID"
 #define OCTONET_APP_ID_HEADER "APP_ID"
 #define OCTONET_IP_ADDRESS_HEADER "IP_ADDRESS"
 #define OCTONET_TCP_PORT_HEADER "TCP_PORT"
@@ -17,6 +18,9 @@
 //#include <boost/log/trivial.hpp>
 #include <boost/smart_ptr.hpp>
 #include <boost/thread/thread.hpp>
+#include <boost/uuid/uuid.hpp>
+#include <boost/uuid/uuid_io.hpp>
+#include <boost/uuid/random_generator.hpp>
 #include <ios>
 #include <set>
 #include <sstream>
@@ -34,6 +38,7 @@ static const unsigned short octonet_default_udp_port = OCTONET_DEFAULT_UDP_PORT;
 static const std::size_t octonet_size_header_length = OCTONET_SIZE_HEADER_LENGTH;
 static const std::size_t octonet_port_header_length = OCTONET_PORT_HEADER_LENGTH;
 static const std::string octonet_version_header = OCTONET_VERSION_HEADER;
+static const std::string octonet_uuid_header = OCTONET_UUID_HEADER;
 static const std::string octonet_app_id_header = OCTONET_APP_ID_HEADER;
 static const std::string octonet_ip_address_header = OCTONET_IP_ADDRESS_HEADER;
 static const std::string octonet_tcp_port_header = OCTONET_TCP_PORT_HEADER;
@@ -45,6 +50,8 @@ using boost::asio::ip::tcp;
 class octonet_manager
 {
 private:
+    const std::string uuid_;
+
     boost::asio::ip::address ip_address_;
     unsigned short tcp_port_;
     unsigned short udp_port_;
@@ -69,7 +76,7 @@ public:
     /*!
      * \brief 
      */
-    octonet_manager(unsigned short _tcp_port, unsigned short _udp_port) : tcp_port_(_tcp_port), udp_port_(_udp_port), server_factory_(this) {}
+    octonet_manager(unsigned short _tcp_port, unsigned short _udp_port) : uuid_(to_string(boost::uuids::random_generator()())), tcp_port_(_tcp_port), udp_port_(_udp_port), server_factory_(this) {}
 
     /*!
      * \brief 
@@ -93,7 +100,16 @@ public:
      * \brief 
      * \return 
      */
-    boost::asio::ip::address ip_address(void)
+    std::string uuid(void) const
+    {
+        return uuid_;
+    }
+
+    /*!
+     * \brief 
+     * \return 
+     */
+    boost::asio::ip::address ip_address(void) const
     {
         return ip_address_;
     }
@@ -102,7 +118,7 @@ public:
      * \brief 
      * \return 
      */
-    unsigned short tcp_port(void)
+    unsigned short tcp_port(void) const
     {
         return tcp_port_;
     }
@@ -111,7 +127,7 @@ public:
      * \brief 
      * \return 
      */
-    unsigned short udp_port(void)
+    unsigned short udp_port(void) const
     {
         return udp_port_;
     }
@@ -277,14 +293,15 @@ public:
      * \param _query : 
      * \return 
      */
-    bool send_query(const octopeer& _peer, const octoquery& _query)
+    bool send_query(const octopeer& _peer, octoquery& _query)
     {
         std::vector<boost::asio::const_buffer> buffers;
         try
         {
+            _query.headers_map[octonet_uuid_header] = uuid_;
             std::ostringstream archive_stream;
             boost::archive::text_oarchive archive(archive_stream);
-            archive << _query;
+            archive << static_cast<const octoquery>(_query);
             std::string data_str = archive_stream.str();
 
             std::ostringstream tcp_port_stream;
