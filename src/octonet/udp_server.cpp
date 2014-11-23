@@ -4,6 +4,7 @@
 
 #include <boost/asio.hpp>
 #include <boost/bind.hpp>
+#include <boost/log/trivial.hpp>
 #include <ios>
 #include <sstream>
 
@@ -41,6 +42,9 @@ void udp_server::start_receive(void)
 
 void udp_server::handle_receive(const boost::system::error_code& _error, std::size_t _bytes_recvd)
 {
+#   ifdef OCTONET_LOG_ENABLE
+    BOOST_LOG_TRIVIAL(info) << "udp_server::handle_receive: start " << remote_endpoint_.address() << ":" << remote_endpoint_.port();
+#   endif
     if (!_error && (_bytes_recvd == data_len_) && (octonet_version_header == std::string(data_buf_.get(), octonet_version_header.size())))
     {
         std::istringstream tcp_is(std::string(data_buf_.get() + octonet_version_header.size(), octonet_port_header_length));
@@ -51,6 +55,9 @@ void udp_server::handle_receive(const boost::system::error_code& _error, std::si
         }
         else
         {
+#           ifdef OCTONET_LOG_ENABLE
+            BOOST_LOG_TRIVIAL(info) << "udp_server::handle_receive: OK " << remote_endpoint_.address() << ":" << remote_endpoint_.port();
+#           endif
             octopeer peer(remote_endpoint_.address(), tcp_port);
             net_manager_->add_peer(peer);
         }

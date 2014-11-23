@@ -5,6 +5,7 @@
 #include <boost/asio.hpp>
 #include <boost/bind.hpp>
 #include <boost/lexical_cast.hpp>
+#include <boost/log/trivial.hpp>
 #include <ios>
 #include <sstream>
 
@@ -43,6 +44,9 @@ void tcp_connection::handle_check_version(const boost::system::error_code& _erro
 {
     if (!_error && (_bytes_transferred == version_len_) && (octonet_version_header == std::string(version_buf_.get(), version_len_)))
     {
+#       ifdef OCTONET_LOG_ENABLE
+        BOOST_LOG_TRIVIAL(info) << "tcp_server::handle_check_version: good version " << sock_.remote_endpoint().address() << ":" << sock_.remote_endpoint().port();
+#       endif
         tcp_port_len_ = octonet_port_header_length;
         tcp_port_buf_.reset(new char[tcp_port_len_]);
         sock_.async_read_some(boost::asio::buffer(tcp_port_buf_.get(), tcp_port_len_),
@@ -50,12 +54,21 @@ void tcp_connection::handle_check_version(const boost::system::error_code& _erro
             boost::asio::placeholders::error,
             boost::asio::placeholders::bytes_transferred));
     }
+    else
+    {
+#       ifdef OCTONET_LOG_ENABLE
+        BOOST_LOG_TRIVIAL(error) << "tcp_server::handle_check_version: bad version " << sock_.remote_endpoint().address() << ":" << sock_.remote_endpoint().port();
+#       endif
+    }
 }
 
 void tcp_connection::handle_read_tcp_port(const boost::system::error_code& _error, size_t _bytes_transferred)
 {
     if (!_error && (_bytes_transferred == tcp_port_len_))
     {
+#       ifdef OCTONET_LOG_ENABLE
+        BOOST_LOG_TRIVIAL(info) << "tcp_server::handle_read_tcp_port: good port " << sock_.remote_endpoint().address() << ":" << sock_.remote_endpoint().port();
+#       endif
         std::istringstream is(std::string(tcp_port_buf_.get(), tcp_port_len_));
         tcp_port_ = 0;
         if(!(is >> std::hex >> tcp_port_))
@@ -70,12 +83,21 @@ void tcp_connection::handle_read_tcp_port(const boost::system::error_code& _erro
             boost::asio::placeholders::error,
             boost::asio::placeholders::bytes_transferred));
     }
+    else
+    {
+#       ifdef OCTONET_LOG_ENABLE
+        BOOST_LOG_TRIVIAL(error) << "tcp_server::handle_read_tcp_port: bad port " << sock_.remote_endpoint().address() << ":" << sock_.remote_endpoint().port();
+#       endif
+    }
 }
 
 void tcp_connection::handle_read_udp_port(const boost::system::error_code& _error, size_t _bytes_transferred)
 {
     if (!_error && (_bytes_transferred == udp_port_len_))
     {
+#       ifdef OCTONET_LOG_ENABLE
+        BOOST_LOG_TRIVIAL(info) << "tcp_server::handle_read_udp_port: good port " << sock_.remote_endpoint().address() << ":" << sock_.remote_endpoint().port();
+#       endif
         std::istringstream is(std::string(udp_port_buf_.get(), udp_port_len_));
         udp_port_ = 0;
         if(!(is >> std::hex >> udp_port_))
@@ -90,12 +112,21 @@ void tcp_connection::handle_read_udp_port(const boost::system::error_code& _erro
             boost::asio::placeholders::error,
             boost::asio::placeholders::bytes_transferred));
     }
+    else
+    {
+#       ifdef OCTONET_LOG_ENABLE
+        BOOST_LOG_TRIVIAL(error) << "tcp_server::handle_read_udp_port: bad port " << sock_.remote_endpoint().address() << ":" << sock_.remote_endpoint().port();
+#       endif
+    }
 }
 
 void tcp_connection::handle_read_data_len(const boost::system::error_code& _error, size_t _bytes_transferred)
 {
     if (!_error && (_bytes_transferred == data_size_len_))
     {
+#       ifdef OCTONET_LOG_ENABLE
+        BOOST_LOG_TRIVIAL(info) << "tcp_server::handle_read_data_len: good length " << sock_.remote_endpoint().address() << ":" << sock_.remote_endpoint().port();
+#       endif
         std::istringstream is(std::string(data_size_buf_.get(), data_size_len_));
         data_len_ = 0;
         if(!(is >> std::hex >> data_len_))
@@ -109,12 +140,21 @@ void tcp_connection::handle_read_data_len(const boost::system::error_code& _erro
             boost::asio::placeholders::error,
             boost::asio::placeholders::bytes_transferred));
     }
+    else
+    {
+#       ifdef OCTONET_LOG_ENABLE
+        BOOST_LOG_TRIVIAL(error) << "tcp_server::handle_read_data_len: bad length " << sock_.remote_endpoint().address() << ":" << sock_.remote_endpoint().port();
+#       endif
+    }
 }
 
 void tcp_connection::handle_read_data(const boost::system::error_code& _error, size_t _bytes_transferred)
 {
     if (!_error && (_bytes_transferred == data_len_))
     {
+#       ifdef OCTONET_LOG_ENABLE
+        BOOST_LOG_TRIVIAL(info) << "tcp_server::handle_read_data: good data " << sock_.remote_endpoint().address() << ":" << sock_.remote_endpoint().port();
+#       endif
         try
         {
             octoquery query;
@@ -135,8 +175,16 @@ void tcp_connection::handle_read_data(const boost::system::error_code& _error, s
         }
         catch(std::exception& e)
         {
-            ;
+#           ifdef OCTONET_LOG_ENABLE
+            BOOST_LOG_TRIVIAL(error) << "tcp_server::handle_read_data: " << e.what();
+#           endif
         }
+    }
+    else
+    {
+#       ifdef OCTONET_LOG_ENABLE
+        BOOST_LOG_TRIVIAL(error) << "tcp_server::handle_read_data: bad data " << sock_.remote_endpoint().address() << ":" << sock_.remote_endpoint().port();
+#       endif
     }
 }
 
@@ -179,6 +227,9 @@ void tcp_server::start_accept(void)
 
 void tcp_server::handle_accept(boost::shared_ptr<tcp_connection> _new_connection, const boost::system::error_code& _error)
 {
+#   ifdef OCTONET_LOG_ENABLE
+    BOOST_LOG_TRIVIAL(info) << "tcp_server::handle_accept: start " << _new_connection->socket().remote_endpoint().address() << ":" << _new_connection->socket().remote_endpoint().port();
+#   endif
     if (!_error)
     {
         _new_connection->start();

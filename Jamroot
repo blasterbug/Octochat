@@ -6,7 +6,7 @@ project octonet
     # Source location
     :
     # Requirements
-    : requirements <include>include <source>/boost//serialization <source>/boost//system <source>/boost//thread #<source>/boost//log
+    : requirements <include>include <source>/boost//serialization <source>/boost//system <source>/boost//thread <define>OCTONET_LOG_ENABLE <source>/boost//log
     # Default build
     : default-build <threading>multi <link>static
     # Build directory

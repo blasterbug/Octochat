@@ -15,7 +15,7 @@
 #include <boost/archive/text_oarchive.hpp>
 #include <boost/asio.hpp>
 #include <boost/bind.hpp>
-//#include <boost/log/trivial.hpp>
+#include <boost/log/trivial.hpp>
 #include <boost/smart_ptr.hpp>
 #include <boost/thread/thread.hpp>
 #include <boost/uuid/uuid.hpp>
@@ -170,6 +170,9 @@ public:
             octoquery query;
             if(send_query(_peer, query))
             {
+#               ifdef OCTONET_LOG_ENABLE
+                BOOST_LOG_TRIVIAL(info) << "octonet_manager::add_peer: " << _peer.ip_address << ":" << _peer.tcp_port << " added";
+#               endif
                 peers_set_.insert(_peer);
                 notify_peer_observers(_peer, online);
             }
@@ -185,6 +188,9 @@ public:
         boost::lock_guard<boost::mutex> guard(peers_set_mtx_);
         if(peers_set_.erase(_peer) > 0)
         {
+#           ifdef OCTONET_LOG_ENABLE
+            BOOST_LOG_TRIVIAL(info) << "octonet_manager::rem_peer: " << _peer.ip_address << ":" << _peer.tcp_port << " removed";
+#           endif
             notify_peer_observers(_peer, offline);
         }
     }
@@ -239,6 +245,9 @@ public:
      */
     void notify_query_observers(const octoquery& _query)
     {
+#       ifdef OCTONET_LOG_ENABLE
+        BOOST_LOG_TRIVIAL(info) << "octonet_manager::notify_query_observers: start";
+#       endif
         std::string app_str;                            
         std::map<std::string, std::string>::const_iterator app_it = _query.headers_map.find(octonet_app_id_header);
         if(app_it != _query.headers_map.end())
@@ -262,7 +271,10 @@ public:
      * \param _state : 
      */
     void notify_peer_observers(const octopeer& _peer, octopeer_state _state)
-    {                    
+    {
+#       ifdef OCTONET_LOG_ENABLE
+        BOOST_LOG_TRIVIAL(info) << "octonet_manager::notify_peer_observers: " << _peer.ip_address << ":" << _peer.tcp_port << " " << _state;
+#       endif
         boost::lock_guard<boost::mutex> guard(peer_observers_set_mtx_);
         for(std::set<octopeer_observer*>::const_iterator it=peer_observers_set_.begin(); it!=peer_observers_set_.end(); ++it)
         {
@@ -275,6 +287,11 @@ public:
      */
     void run(void)
     {
+#       ifdef OCTONET_LOG_ENABLE
+        BOOST_LOG_TRIVIAL(info) << "octonet_manager::run: start";
+#       endif
+        try
+        {
             tcp_server_ptr_.reset(server_factory_.create_server(tcp, tcp_port_));
             ip_address_ = tcp_server_ptr_->ip_address();
             tcp_port_ = tcp_server_ptr_->port();
@@ -285,6 +302,17 @@ public:
             servers_group_.create_thread(boost::bind(&abstract_server::run, udp_server_ptr_.get()));
             
             add_udp_broadcast_port(udp_port_);
+        }
+        catch(std::exception& e)
+        {
+#           ifdef OCTONET_LOG_ENABLE
+            BOOST_LOG_TRIVIAL(error) << "octonet_manager::run: " << e.what();
+#           endif
+            throw e;
+        }
+#       ifdef OCTONET_LOG_ENABLE
+        BOOST_LOG_TRIVIAL(info) << "octonet_manager::run: stop";
+#       endif
     }
     
     /*!
@@ -295,6 +323,9 @@ public:
      */
     bool send_query(const octopeer& _peer, octoquery& _query)
     {
+#       ifdef OCTONET_LOG_ENABLE
+        BOOST_LOG_TRIVIAL(info) << "octonet_manager::send_query: start " << _peer.ip_address << ":" << _peer.tcp_port;
+#       endif
         std::vector<boost::asio::const_buffer> buffers;
         try
         {
@@ -336,6 +367,9 @@ public:
         }
         catch (std::exception& e)
         {
+#           ifdef OCTONET_LOG_ENABLE
+            BOOST_LOG_TRIVIAL(error) << "octonet_manager::send_query: " << e.what();
+#           endif
             return false;
         }
         try
@@ -347,9 +381,15 @@ public:
         }
         catch (std::exception& e)
         {
+#           ifdef OCTONET_LOG_ENABLE
+            BOOST_LOG_TRIVIAL(error) << "octonet_manager::send_query: " << e.what();
+#           endif
             rem_peer(_peer);
             return false;
         }
+#       ifdef OCTONET_LOG_ENABLE
+        BOOST_LOG_TRIVIAL(info) << "octonet_manager::send_query: end " << _peer.ip_address << ":" << _peer.tcp_port;
+#       endif
         return true;
     }
 
@@ -360,28 +400,37 @@ public:
      */
     bool send_broadcast(unsigned short _port)
     {
-            try
+#       ifdef OCTONET_LOG_ENABLE
+        BOOST_LOG_TRIVIAL(info) << "octonet_manager::send_broadcast: start " << _port;
+#       endif
+        try
+        {
+            std::string data_str(octonet_version_header);
+            
+            std::ostringstream tcp_port_stream;
+            tcp_port_stream << std::setw(octonet_port_header_length) << std::hex << tcp_port_;
+            if (!tcp_port_stream || tcp_port_stream.str().size() != octonet_port_header_length)
             {
-                    std::string data_str(octonet_version_header);
-                    
-                    std::ostringstream tcp_port_stream;
-                    tcp_port_stream << std::setw(octonet_port_header_length) << std::hex << tcp_port_;
-                    if (!tcp_port_stream || tcp_port_stream.str().size() != octonet_port_header_length)
-                    {
-                            throw std::exception();
-                    }
-                    data_str += tcp_port_stream.str();
+                    throw std::exception();
+            }
+            data_str += tcp_port_stream.str();
 
-                    udp::socket sock(io_service_, udp::endpoint(udp::v4(), 0));
-                    sock.set_option(boost::asio::socket_base::broadcast(true));
-                    udp::endpoint broadcast_endpoint(boost::asio::ip::address_v4::broadcast(), _port);
-                    sock.send_to(boost::asio::buffer(data_str), broadcast_endpoint);
-            }
-            catch (std::exception& e)
-            {
-                    return false;
-            }
-            return true;
+            udp::socket sock(io_service_, udp::endpoint(udp::v4(), 0));
+            sock.set_option(boost::asio::socket_base::broadcast(true));
+            udp::endpoint broadcast_endpoint(boost::asio::ip::address_v4::broadcast(), _port);
+            sock.send_to(boost::asio::buffer(data_str), broadcast_endpoint);
+        }
+        catch (std::exception& e)
+        {
+#           ifdef OCTONET_LOG_ENABLE
+            BOOST_LOG_TRIVIAL(error) << "octonet_manager::send_broadcast: " << e.what();
+#           endif
+            return false;
+        }
+#       ifdef OCTONET_LOG_ENABLE
+        BOOST_LOG_TRIVIAL(info) << "octonet_manager::send_broadcast: end " << _port;
+#       endif
+        return true;
     }
 };
 
