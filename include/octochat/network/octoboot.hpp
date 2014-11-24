@@ -1,12 +1,11 @@
-#ifndef OCTOPEER_HANDLER_HPP
-#define OCTOPEER_HANDLER_HPP
-
+#ifndef OCTOBOOT_HPP
+#define OCTOBOOT_HPP
 /**
- * @file octopeer_handler.hpp
+ * @file octoboot.hpp
  *
  * @section desc File description
  *
- * get notified when a new octopeer 
+ * Header file for octochat connexion object
  * 
  * @section copyright Copyright
  *
@@ -32,30 +31,28 @@
  * @version 0.1
  */
 
-#include <iostream>
 #include <string>
-#include <map>
+#include "octonet/octopeer.hpp"
+#include "octonet/octoquery.hpp"
+#include "octonet/octonet.hpp"
+#include "octonet/octoquery_observer.hpp"
+
+#include "octochat/octoroom.hpp"
 #include "octochat/octouser.hpp"
-#include "include/octonet/octopeer.hpp"
-#include "include/octonet/octonet_manager.hpp"
-#include "include/octonet/octopeer_observer.hpp"
+#include "octochat/octomail.hpp"
 
-
-class octoquery_handler : public octoquery_observer
+/***
+ * Class to allow a new octouser to be connected into a room
+ */
+class octoboot
 {
 	private :
-		octouser* __main_room; /// the octoroom for the session
-	public :
-		octoquery_handler( const octoroom* room ) :
-			__main_room( room )
-		{}
-		
-		void update_peer( const octopeer &peer, octopeer_state state )
-		{
-			/// \todo usefull, really ?
-		}
+		std::string __usr_name;
+		octopeer* __usr_peer;
+		octonet* __network;
 
-}
+	public :
+		/// \todo
+};
 
 #endif
-

@@ -3,28 +3,36 @@
 #include "octochat/octoroom.hpp"
 #include "octochat/octouser.hpp"
 #include "octochat/octomail.hpp"
-//#include "octochat/network/octoquery_handler.hpp"
+#include "octochat/octouser.hpp"
+#include "octochat/network/octochat_protocol.hpp"
+#include "octochat/network/octomanager.hpp"
+#include "octonet/octopeer.hpp"
+#include "octonet/octoquery.hpp"
+#include "octonet/octonet.hpp"
+#include "octonet/octoquery_observer.hpp"
 
-#include <ncurses.h> /// \todo !! :)
+#include <boost/asio.hpp>
+
+//#include <ncurses.h> /// \todo !! :)
 
 
 using namespace std;
 
-int main( int argc, char** argv ) {
+int main( int argc, char** argv )
+{
 
-	octouser alice( "Alice", 0 );
-	octoroom sallon( &alice, "alice alone" );
+	string en;
 	
-	octonet net();
-	//octomanager manager( &sallon, &alice, &net );
-	//net.run();
-
-	octouser bob( "Bob", 0 );
-	sallon.add_user( &bob );
-
-	sallon.post( octomail( "Alice", "alice alone", "blblblbl" ) );
-	sallon.post( octomail( "Bob", "alice alone", "blblblbl" ) );
+	//octoroom sallon;
+	//octouser usr;
 	
-	cout << sallon.to_string() << endl;
+	octonet net;
+	
+	//octomanager manager( 0, 0, &net );
+	
+	net.run();
+
+	cin >> en;
+	//cout << sallon.to_string() << endl;
 	return 0;
 }

@@ -5,7 +5,7 @@
  *
  * @section desc File description
  *
- * file to manage network query from octonet
+ * Header file to manage network query from octonet
  * 
  * @section copyright Copyright
  *
@@ -35,10 +35,10 @@
 #include "octonet/octopeer.hpp"
 #include "octonet/octoquery.hpp"
 #include "octonet/octonet.hpp"
+#include "octonet/octoquery_observer.hpp"
 #include "octochat/octoroom.hpp"
 #include "octochat/octouser.hpp"
 #include "octochat/octomail.hpp"
-#include "octcchat/network/octoquery_handler.hpp"
 
 /***
  * Class to link the chat to the octonetwork
@@ -55,58 +55,16 @@ class octomanager
 		octonet* __network; /// octonet objet to communicate over the LAN
 
 	public :
-		/**
-		 * Octomanager contructor
-		 * @param[in] room Room to manage
-		 * @param[in] user Octouser for the session
-		 * @param[in] network Octonet object for communication
-		 */ 
-		octomanager( octoroom* room, octouser* user, octonet* network ) :
-			__main_room( room ),
-			__user( user),
-			__network( network )
-		{
-			__network->add_peer_observer( octoquery_handler( this ) );
-		}
-
-		void err( std::string error_message )
-		{
-			__main_room->post( octomail( "~ ", __main_room->get_subject(), error_message );
-		}
-
-		/**
-		 * add a new octouser to the room
-		 * @param[in] user The new octouser to add
-		 * \todo register the the room owner and then add user in the for everyone
-		 */
-		void add_user( octouser* user )
-		{
-			try // if ( !( __main_room->name_is_used( user->get_name() ) ) )
-			{
-				__main_room->add_user( user );
-			}
-			catch( octoroom_exception exc ) // else 
-			{
-				///std::cerr << exc.what() << endl; \todo log ?
-				if ( __user == __main_room->get_owner )
-				{
-					octopeer peer( user->get_peer() );
-					octoquery query();
-					query.headers_map[ OCTOCHAT_PROTOCOL_ERR ] = OCTOCHAT_ERR_USERNAME_IN_USE;
-					query.content_str = exc.what();
-					__network->send_query( peer, query ); /// \todo query send ?
-				}
-			}
-		}
-
-		/**
-		 * Update the subject of a room
-		 * @param[in] new_sub The subject for a room
-		 */
-		void update_subject( std::string new_sub )
-		{
-			__main_room->set_subject( new_sub );
-		}
+		/// Octomanager contructor
+		octomanager( octoroom* room, octouser* user, octonet* network );
+		/// Print a error message in chat
+		void err( std::string error_message );
+		/// add a new octouser to the room
+		void add_user( octouser* user );
+		/// Update the subject of a room
+		void update_subject( std::string new_sub );
+		/// Post an new octomail into a room
+		void post( octomail mail );
 };
 
 #endif

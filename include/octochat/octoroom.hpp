@@ -108,6 +108,13 @@ class octoroom
 		{}
 
 		/**
+		 * Who is the owner of the room ?
+		 * @param[out] Name of the owner
+		 */
+		std::string get_owner_name(){
+			return __creator->get_name();
+		}
+		/**
 		 * Adding user in the room
 		 * @param[in] user User to add in the room
 		 * @exception Octoroom_exception throwed if the user is already registered

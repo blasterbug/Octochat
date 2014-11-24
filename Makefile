@@ -1,7 +1,7 @@
 all: bjam
 
 doc:
-	doxygen Doxyfile
+	@doxygen Doxyfile
 
 doc.latex: doc
 	make -C /doc/latex
@@ -18,4 +18,4 @@ endif
 clean: clean.doc
 
 clean.doc:
-	-rm -r ./doc
+	@-rm -r ./doc

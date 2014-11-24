@@ -35,17 +35,21 @@
 #include <iostream>
 #include <string>
 #include <map>
+#include <boost/lexical_cast.hpp> // for string to unsigned short
+#include <boost/asio.hpp> // for string to ip
+
 #include "octonet/octopeer.hpp"
 #include "octonet/octonet_manager.hpp"
 #include "octonet/octoquery.hpp"
 #include "octonet/octoquery_observer.hpp"
 #include "octonet/octonet.hpp"
+
 #include "octochat/octouser.hpp"
 #include "octochat/network/octochat_protocol.hpp"
 #include "octochat/network/octomanager.hpp"
 
 /**
- * Class to observ query from octoweb
+ * Class to observ query from octonetwork
  */
 class octoquery_handler : public octoquery_observer
 {
@@ -67,12 +71,12 @@ class octoquery_handler : public octoquery_observer
 		void update_query( const octoquery &query )
 		{
 			/// \todo change it to be more flexible and EXPANDABLE
-			std::string header = query.headers_map[ OCTONET_APP_ID_HEADER ];
+			std::string header = query.headers_map.find( OCTONET_APP_ID_HEADER )->second;
 			// the query is a message to post
 			if ( OCTOCHAT_PROTOCOL_MAIL == header )
 			{
-				__manager->post( octomail( query.headers_map[ OCTOCHAT_PROTOCOL_USER_NAME ],
-									query.headers_map[ OCTOCHAT_PROTOCOL_DESTINEE ],
+				__manager->post( octomail( query.headers_map.find( OCTOCHAT_PROTOCOL_USER_NAME )->second,
+									query.headers_map.find( OCTOCHAT_PROTOCOL_DESTINEE )->second,
 									query.content_str )
 				);
 				
@@ -81,9 +85,9 @@ class octoquery_handler : public octoquery_observer
 			else if ( OCTOCHAT_PROTOCOL_NEW_USER == header )
 			{
 				// add the new user
-				octopeer user_peer( query.headers_map[ OCTONET_IP_ADDRESS_HEADER ],
-									query.headers_map[ OCTONET_TCP_PORT_HEADER ] );
-				__manager->add_user( octouser( query.content_str, user_peer ) );
+				octopeer* user_peer = new octopeer( boost::asio::ip::address::from_string(query.headers_map.find( OCTONET_IP_ADDRESS_HEADER )->second),
+									boost::lexical_cast<unsigned short>(query.headers_map.find( OCTONET_TCP_PORT_HEADER )->second ));
+				__manager->add_user( new octouser( query.content_str, user_peer ) );
 			}
 			// subject room update query
 			else if ( OCTOCHAT_PROTOCOL_SUBJECT == header )

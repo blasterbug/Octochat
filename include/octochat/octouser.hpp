@@ -76,6 +76,15 @@ class octouser {
 		}
 
 		/**
+		 * Get the octopeer from the user
+		 * @param[out] Octopeer pointer to the octopeer for the user
+		 */
+		const octopeer* get_peer()
+		{
+			return __peer;
+		} 
+
+		/**
 		 * Is the user online ?
 		 * @param[out] True if the user is online, else false is returned
 		 */
