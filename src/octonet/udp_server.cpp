@@ -19,6 +19,7 @@ void udp_server::run(void)
     data_len_ = octonet_version_header.size() + octonet_port_header_length;
     data_buf_.reset(new char(data_len_));
     start_receive();
+    net_manager_->io_service().run();
 }
 
 unsigned short udp_server::port(void)
