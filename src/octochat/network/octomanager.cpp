@@ -43,7 +43,7 @@ octomanager::octomanager( octoroom* room, octouser* user, octonet* network ) :
 	__user( user),
 	__network( network )
 {
-	//__network->add_peer_observer( octoquery_handler( this ) );
+	__network->add_query_observer( new octoquery_handler( this ) );
 }
 
 void octomanager::err( std::string error_message )
