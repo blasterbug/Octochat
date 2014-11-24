@@ -8,10 +8,15 @@
 #include <ios>
 #include <sstream>
 
-udp_server::udp_server(octonet_manager* _net_manager, unsigned short _port) : net_manager_(_net_manager), sock_(_net_manager->io_service(), udp::endpoint(udp::v4(), _port))
+udp_server::udp_server(octonet_manager* _net_manager, unsigned short _port) : net_manager_(_net_manager), sock_(io_service_, udp::endpoint(udp::v4(), _port))
 {
 	ip_address_ = sock_.local_endpoint().address();
     port_ = sock_.local_endpoint().port();
+}
+
+void udp_server::stop(void)
+{
+    io_service_.stop();
 }
 
 void udp_server::run(void)
@@ -19,7 +24,7 @@ void udp_server::run(void)
     data_len_ = octonet_version_header.size() + octonet_port_header_length;
     data_buf_.reset(new char(data_len_));
     start_receive();
-    net_manager_->io_service().run();
+    io_service_.run();
 }
 
 unsigned short udp_server::port(void)

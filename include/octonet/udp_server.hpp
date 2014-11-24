@@ -13,6 +13,7 @@ class octonet_manager;
 class udp_server : public abstract_server
 {
 private:
+    boost::asio::io_service io_service_;
     octonet_manager* net_manager_;
     boost::asio::ip::address ip_address_;
     unsigned short port_;
@@ -26,6 +27,7 @@ private:
 
 public:
     udp_server(octonet_manager* _net_manager, unsigned short _port);
+    virtual void stop(void);
     virtual void run(void);
     virtual unsigned short port(void);
     virtual boost::asio::ip::address ip_address(void);

@@ -28,7 +28,7 @@ private:
     unsigned short tcp_port_;
     unsigned short udp_port_;    
 
-    tcp_connection(octonet_manager* _net_manager);
+    tcp_connection(boost::asio::io_service& _io_service, octonet_manager* _net_manager);
     void handle_check_version(const boost::system::error_code& _error, size_t _bytes_transferred);
     void handle_read_tcp_port(const boost::system::error_code& _error, size_t _bytes_transferred);
     void handle_read_udp_port(const boost::system::error_code& _error, size_t _bytes_transferred);
@@ -36,7 +36,7 @@ private:
     void handle_read_data(const boost::system::error_code& _error, size_t _bytes_transferred);
 
 public:
-    static boost::shared_ptr<tcp_connection> create(octonet_manager* _net_manager);
+    static boost::shared_ptr<tcp_connection> create(boost::asio::io_service& _io_service, octonet_manager* _net_manager);
     tcp::socket& socket(void);
     void start(void);
 };
@@ -44,6 +44,7 @@ public:
 class tcp_server : public abstract_server
 {
 private:
+    boost::asio::io_service io_service_;
     octonet_manager* net_manager_;
     boost::asio::ip::address ip_address_;
     unsigned short port_;
@@ -54,6 +55,7 @@ private:
 
 public:
     tcp_server(octonet_manager* _net_manager, unsigned short _port);
+    virtual void stop(void);
     virtual void run(void);
     virtual unsigned short port(void);
     virtual boost::asio::ip::address ip_address(void);

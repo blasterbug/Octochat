@@ -13,9 +13,9 @@
 
 //public
 
-boost::shared_ptr<tcp_connection> tcp_connection::create(octonet_manager* _net_manager)
+boost::shared_ptr<tcp_connection> tcp_connection::create(boost::asio::io_service& _io_service, octonet_manager* _net_manager)
 {
-    return boost::shared_ptr<tcp_connection>(new tcp_connection(_net_manager));
+    return boost::shared_ptr<tcp_connection>(new tcp_connection(_io_service, _net_manager));
 }
 
 tcp::socket& tcp_connection::socket(void)
@@ -35,7 +35,7 @@ void tcp_connection::start(void)
 
 //private
 
-tcp_connection::tcp_connection(octonet_manager* _net_manager) : net_manager_(_net_manager), sock_(_net_manager->io_service())
+tcp_connection::tcp_connection(boost::asio::io_service& _io_service, octonet_manager* _net_manager) : net_manager_(_net_manager), sock_(_io_service)
 {
     ;
 }
@@ -193,16 +193,21 @@ void tcp_connection::handle_read_data(const boost::system::error_code& _error, s
 
 //public
 
-tcp_server::tcp_server(octonet_manager* _net_manager, unsigned short _port) : net_manager_(_net_manager), acceptor_(_net_manager->io_service(), tcp::endpoint(tcp::v4(), _port))
+tcp_server::tcp_server(octonet_manager* _net_manager, unsigned short _port) : net_manager_(_net_manager), acceptor_(io_service_, tcp::endpoint(tcp::v4(), _port))
 {
 	ip_address_ = acceptor_.local_endpoint().address();
     port_ = acceptor_.local_endpoint().port();
 }
 
+void tcp_server::stop(void)
+{
+    io_service_.stop();
+}
+
 void tcp_server::run(void)
 {
     start_accept();
-    net_manager_->io_service().run();
+    io_service_.run();
 }
 
 unsigned short tcp_server::port(void)
@@ -217,7 +222,7 @@ boost::asio::ip::address tcp_server::ip_address(void)
 
 void tcp_server::start_accept(void)
 {
-    boost::shared_ptr<tcp_connection> new_connection = tcp_connection::create(net_manager_);
+    boost::shared_ptr<tcp_connection> new_connection = tcp_connection::create(io_service_, net_manager_);
 
     acceptor_.async_accept(new_connection->socket(),
         boost::bind(&tcp_server::handle_accept, this, new_connection,

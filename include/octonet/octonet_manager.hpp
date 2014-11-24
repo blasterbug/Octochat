@@ -83,7 +83,8 @@ public:
      */
     ~octonet_manager(void)
     {
-		io_service_.stop();
+		udp_server_ptr_->stop();
+        tcp_server_ptr_->stop();
 		servers_group_.join_all();
 	}
 
