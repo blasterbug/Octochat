@@ -1,9 +1,12 @@
-#include "octouser.hpp"
-#include "octoroom.hpp"
-#include "octomail.hpp"
-#include <octonet/octopeer.hpp>
-
 #include <iostream>
+#include "octonet/octonet.hpp"
+#include "octochat/octoroom.hpp"
+#include "octochat/octouser.hpp"
+#include "octochat/octomail.hpp"
+//#include "octochat/network/octoquery_handler.hpp"
+
+#include <ncurses.h> /// \todo !! :)
+
 
 using namespace std;
 
@@ -11,7 +14,10 @@ int main( int argc, char** argv ) {
 
 	octouser alice( "Alice", 0 );
 	octoroom sallon( &alice, "alice alone" );
-	sallon.add_user( &alice );
+	
+	octonet net();
+	//octomanager manager( &sallon, &alice, &net );
+	//net.run();
 
 	octouser bob( "Bob", 0 );
 	sallon.add_user( &bob );

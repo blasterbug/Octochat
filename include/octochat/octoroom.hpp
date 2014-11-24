@@ -37,8 +37,8 @@ class octoroom;
 #include <string>
 #include <vector>
 #include <map>
-#include "octouser.hpp"
-#include "octomail.hpp"
+#include "octochat/octouser.hpp"
+#include "octochat/octomail.hpp"
 
 /// Amount of messages to store
 #define MESSAGE_STACK_SIZE 5
@@ -46,9 +46,11 @@ class octoroom;
 /**
  * Exceptions throwed by octoroom class
  */
-class octoroom_exception : public std::exception {
+class octoroom_exception : public std::exception
+{
 	private:
 		std::string __cause; /** store exception description */
+		
 	public:
 		/** constructor
 		 * @param[in] cause description of exception origin
@@ -60,14 +62,16 @@ class octoroom_exception : public std::exception {
 		/** destructor
 		 * currently, do anything special
 		 */
-		virtual ~octoroom_exception() throw() {
+		virtual ~octoroom_exception() throw()
+		{
 			// do nothing
 		}
 
 		/** virtual fonction from superclass,
 		 * usefull to get the exception description
 		 */
-		virtual const char* what()const throw() {
+		virtual const char* what()const throw()
+		{
 			return __cause.c_str();
 		}
 };
@@ -75,7 +79,8 @@ class octoroom_exception : public std::exception {
 /**
  * An octo-room is the place where octo-users chat
  */
-class octoroom {
+class octoroom
+{
 
 	private:
 		octouser* __creator; /// Who created the room ? -Can be a ghost
@@ -99,42 +104,53 @@ class octoroom {
 			__bannedusers(),
 			__messages( std::vector< octomail* >( MESSAGE_STACK_SIZE ) ),
 			__last_msg( 0 ),
-			__first_msg( 0 ) {
-			// add the owner in his own room
-			//__userlist[ owner->get_name() ] = owner;
-		}
+			__first_msg( 0 )
+		{}
 
 		/**
 		 * Adding user in the room
 		 * @param[in] user User to add in the room
 		 * @exception Octoroom_exception throwed if the user is already registered
 		 */
-		bool add_user( octouser* user ) {
+		void add_user( octouser* user )
+		{
 			const std::string user_name = user->get_name();
 			if ( 1 > __bannedusers.count( user_name ) )
+			{
 				__userlist[ user_name ] = user;
+			}
 			else
+			{
 				throw octoroom_exception( user_name + " already joined " + __subject );
+			}
 		}
 
-		/*void ban_user( octouser &user ) const {
+		/**
+		void ban_user( octouser &user ) const
+		{
 			const string user_name = user->get_name();
 			if(__userlist.count( user_name ))
 				__userlist.erase( user_name );
-		}*/
+		}
+		*/
 
 		/**
 		 * Post a new octomail into the room
 		 * @param[int] mail mail to post
 		 */
-		void post( octomail mail ) {
+		void post( octomail mail )
+		{
 			/// \todo muted user ? banned user ? etc.
 			if ( 0 == __messages[ __last_msg ] )
+			{
 				delete __messages[ __last_msg ];
+			}
 			__messages[ __last_msg++ ] = new octomail( mail );
 			__last_msg %= MESSAGE_STACK_SIZE; // stay in the vector boundaries
 			if ( __last_msg == __first_msg )
+			{
 				__first_msg = ++__first_msg % MESSAGE_STACK_SIZE;
+			}
 		}
 
 		/**
@@ -142,13 +158,17 @@ class octoroom {
 		 * In particular, get the list of the last messages
 		 * @param[out] String representation of the room
 		 */
-		std::string to_string() {
+		std::string to_string()
+		{
 			// circular roaming into the messages vector
 			int read_idx = __first_msg;
 			std::string ret = "";
-			while(__last_msg != read_idx){
+			while(__last_msg != read_idx)
+			{
 				if( __messages[ read_idx ] )
+				{
 					ret += __messages[ read_idx++ ]->to_string() + "\n";
+				}
 				read_idx %= MESSAGE_STACK_SIZE;
 			}
 			return ret;
@@ -159,15 +179,27 @@ class octoroom {
 		 * @param[in] name to test
 		 * @param[out] true if the name is used, else false
 		 */
-		bool name_is_used( std::string name ) {
+		bool name_is_used( std::string name )
+		{
 			return 1 <= __userlist.count( name );
 		}
 
 		/**
-		 * change the title of a room
+		 * Get the title of a room
+		 * @param[out] The octoroom subject
 		 */
-		void set_subject( std::string new_subject ) {
-			__subject = new_subject ;
+		std::string get_subject( )
+		{
+			return __subject;
+		}
+		
+		/**
+		 * change the title of a room
+		 * @param[in] new_subject The new topoc of the octoroom
+		 */
+		void set_subject( std::string new_subject )
+		{
+			__subject = new_subject;
 		}
 };
 

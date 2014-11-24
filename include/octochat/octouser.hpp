@@ -50,10 +50,10 @@ class octouser {
 		 * @param[in] name (Nick)name of the user
 		 * @param[in] peer object for an user
 		 */
-		octouser( std::string name, const octopeer *peer) :
+		octouser( std::string name, const octopeer* peer) :
 			__name( name ),
 			__peer( peer ),
-			__alive( false )
+			__alive( true )
 		{}
 
 		/**
@@ -70,7 +70,8 @@ class octouser {
 		 * What is the name of the user ?
 		 * @param[out] Name of the user
 		 */
-		std::string get_name() const {
+		std::string get_name() const
+		{
 			return __name;
 		}
 
@@ -78,7 +79,8 @@ class octouser {
 		 * Is the user online ?
 		 * @param[out] True if the user is online, else false is returned
 		 */
-		bool is_online() const {
+		bool is_online() const
+		{
 			return __alive;
 		}
 };

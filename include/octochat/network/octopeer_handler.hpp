@@ -35,7 +35,7 @@
 #include <iostream>
 #include <string>
 #include <map>
-#include "../octouser.hpp"
+#include "octochat/octoroom.hpp"
 #include "include/octonet/octopeer.hpp"
 #include "include/octonet/octonet_manager.hpp"
 #include "include/octonet/octopeer_observer.hpp"

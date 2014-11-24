@@ -37,7 +37,8 @@
 /**
  * Octomail is a message send by an octouser into an octoroom
  */
-class octomail {
+class octomail
+{
 
 	private:
 		std::string __from; /// Whoe send the message?
@@ -74,7 +75,8 @@ class octomail {
 		 * get the string representation of an octouser
 		 * @param[out] name of the octo-user
 		 */
-		const std::string get_writer_name() const {
+		const std::string get_writer_name() const
+		{
 			return __from;
 		}
 
@@ -82,7 +84,8 @@ class octomail {
 		 * get the string representation of the octomail
 		 * @param[out] The octomail as a string
 		 */
-		const std::string to_string() const {
+		const std::string to_string() const
+		{
 			return __from + " : " + __content;
 		}
 
@@ -90,7 +93,8 @@ class octomail {
 		 * get the name of the mail destination
 		 * @param[out] destination of the mail
 		 */
-		const std::string get_destinee() const{
+		const std::string get_destinee() const
+		{
 			return __destination;
 		}
 };
