@@ -41,20 +41,22 @@
 #include "include/octonet/octopeer_observer.hpp"
 
 
-class octoquery_handler : public octoquery_observer
+class octopeer_handler : public octopeer_observer
 {
 	private :
-		octouser* __main_room; /// the octoroom for the session
+		vector< octopeer* > __queued_peers;
 	public :
-		octoquery_handler( const octoroom* room ) :
-			__main_room( room )
+		octopeer_handler( ) :
+			__queued_peers( );
 		{}
 		
 		void update_peer( const octopeer &peer, octopeer_state state )
 		{
-			/// \todo usefull, really ?
+			int i = 0;
+			while( i < vector.size() or __queued_peers[ i ] != ? ) /// \todo
+			{
+			}
 		}
-
 }
 
 #endif
