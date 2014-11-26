@@ -80,11 +80,11 @@ class connected_octostate : public octostate
 		{}
 
 		/**
-		 * The only reachable transition when session is connected is deconnection
+		 * The only reachable transition when session is connected is waiting state
 		 */
-		void disconnect()
+		void wait()
 		{
-			__session->set_current_state( __session->get_deconnected_state() );
+			__session->set_current_state( __session->get_waiting_state() );
 		}
 };
 
