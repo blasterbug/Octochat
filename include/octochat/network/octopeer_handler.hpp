@@ -6,8 +6,8 @@
  *
  * @section desc File description
  *
- * get notified when a new octopeer 
- * 
+ * get notified when a new octopeer
+ *
  * @section copyright Copyright
  *
  *
@@ -48,23 +48,39 @@ class octopeer_handler : public octopeer_observer
 {
 	private :
 	/// map to store connected peers on the network
-		map< boost::asio::ip::address, octopeer* > __queued_peers;
+		std::map< boost::asio::ip::address, octopeer* > __connected_peers;
 	public :
 		/**
 		 * constructeur
 		 */
 		octopeer_handler() :
-			__queued_peers()
+			__connected_peers()
 		{}
-		
+
 		/**
 		 * Get notified when new peers are connected to the octonetwork
 		 * @param[in] peer The new peer arrived to queue
 		 * @param[in] state State of the new peer, currently useless
 		 */
 		void update_peer(const octopeer& peer, octopeer_state state){
-			// currently erase two peers with the same ip address
-			__queued_peers[peer.ip_address] = peer;
+			if ( octopeer_state.online == state )
+			{
+				// currently erase two peers with the same ip address
+				__connected_peers[peer.ip_address] = peer;
+			}
+			/*else
+			{
+				/// \todo removing if the peer is there
+			}*/
+		}
+
+		/**
+		 * fill a given octopeer list with the peer currently connected
+		 * @param[in] peer_list the map to fill
+		 */
+		void get_peers( std::map< boost::asio::ip::address, octopeer*>* peer_list )
+		{
+			peer_list = new std::map( __connected_peers );
 		}
 }
 

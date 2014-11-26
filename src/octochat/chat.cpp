@@ -16,16 +16,15 @@
 #include <boost/asio.hpp>
 
 /// \todo an curses interface
-//#include <ncurses.h> 
+//#include <ncurses.h>
 
 
 using namespace std;
 
 /// Ask a nickanme to user
 string get_name_id();
-/// registered an user to the octonetwork
-bool registered_user( string name );
-
+///\todo connection !
+bool registered_user( string );
 int main( int argc, char** argv )
 {
 	// start local server
@@ -51,7 +50,7 @@ int main( int argc, char** argv )
 		en = get_name_id();
 	}
 	//octomanager manager( 0, 0, &net );
-	
+
 	//cin >> en;
 	//cout << sallon.to_string() << endl;
 	return 0;
@@ -79,14 +78,7 @@ string get_name_id()
 	}
 }
 
-/**
- * Register the user with a name into the ocotnetwork
- * @param[in] name Name of the user
- * @param[in] server Server to use for registration
- * @param[out] true if the user is registered, else false
- */
-bool registered_user( string name )
+bool registered_user( string nickname )
 {
-	
 	return false;
 }

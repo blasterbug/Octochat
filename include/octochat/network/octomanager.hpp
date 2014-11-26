@@ -6,7 +6,7 @@
  * @section desc File description
  *
  * Header file to manage network query from octonet
- * 
+ *
  * @section copyright Copyright
  *
  *
@@ -56,7 +56,6 @@ class octomanager
 		octonet* __network; /// octonet objet to communicate over the LAN
 		octoroom* __main_room; /// Main room to manager \todo several rooms
 		octouser* __user; /// user for the current session
-		map< std::string, octouser* > __
 
 	public :
 		/// Octomanager contructor

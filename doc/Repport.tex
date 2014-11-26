@@ -3,7 +3,7 @@
 \usepackage[frenchb]{babel}
 \usepackage{ifpdf}
 \usepackage{hyperref}
-\title{Octochat \\ \textit{Discuter sur le réseau local sans serveur}}
+\title{Octochat \\ \textit{Le chat décentralisé}}
 \author{Alexis \textsc{Giraudet} \and Benjamin \textsc{Sientzoff}}
 \date{\today}
 \ifpdf
@@ -44,23 +44,38 @@
 	
 		\subsection{Compilation du programme}
 			\paragraph{Compilation}{
-			Pour commencer, le projet à besoin d'un installation locale de \textit{boost}. Cette installation est faite
-			lorsque le \textit{makefile} est appelé pour la première fois, mais une installation en bonne et due forme est
-			préférable. Procédez comme suit.
+			Notre programme utilise deux bibliothèques à savoir la STL et Boost, plus précisément:
+			Boost.Build: le système de compilation (équivalant de make et des Makefile mais plus portable)
+			Boost.Thread: pour les thread et les mutex
+			Boost.Log: pour les log
+			Boost.Asio: pour les entrées/sorties asynchrones sur le réseau
+			Boost.Serialization: pour sérialiser les données envoyées sur le réseau
+			Boost.System: pour les Smart Pointer et le Lexical Cast
+
+			Pour compiler notre programme nous avons donc besoin d’un compilateur (incluant la STL) et d’installer Boost, c’est pourquoi nous avons réalisé un Makefile qui s’occupe d’installer Boost localement et de compiler le programme automatiquement.
+			Une fois la compilation terminée, les executables sont placés dans le dossier build:
+			\begin{itemize}
+				\item[octowatch] écoute le réseau
+				\item[octoglobalchat] propose de chatter avec toutes les paires connectées
+				\item[octochat] permet de chatter avec des utilisateurs
+			\end{itemize}
+
 			}
+			\paragraph{Remarque}{
+				Il est possible d’installer Boost avec un gestionnaire de paquets à condition d’avoir les privilèges suffisants.
+			}
+
+
+			\paragraph{}{
+				Pour compiler le projet, on commence par cloner le dépôt, puis on lance la commande make à la racine du projet.
+			}
+			
 			\begin{verbatim}
-				$ cd Octochat/
-				$ ./bin/install-boost.sh
-				$ ./bin/prepare-boost.sh
+				$ git clone https://github.com/blasterbug/Octochat.git
+				$ cd Octochat
 				$ make
 			\end{verbatim}
-			\paragraph{}{
-			La première commande permet d'aller dans le répertoire où se trouve notre projet.
-			La seconde commande va télécharger \textit{boost} dans le projet, cette étape peut être longue, comme la suivante\footnote{C'est le moment d'aller chercher un café, si vous en n'avez plus.}.
-			Ensuite on va \textit{preparer} \textit{boost} pour l'utiliser. C'est-à-dire qu'on va compiler les outils nécessaires.
-			La dernière commande fait appelle à l'outils \textit{make} pour compiler notre projet. En réalité, le \textit{makefile}
-			se contente d'appeler l'outil de compilation de \textit{boost}.
-			}
+
 			\paragraph{}{
 			Si toutes ces étapes se sont bien passées, vous êtes maintenant en mesure d'utiliser Octochat.
 			}
