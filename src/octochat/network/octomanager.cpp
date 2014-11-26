@@ -34,18 +34,21 @@
 
 /**
  * Octomanager contructor
- * @param[in] room Room to manage
- * @param[in] user Octouser for the session
  * @param[in] network Octonet object for communication
- */ 
-octomanager::octomanager( octoroom* room, octouser* user, octonet* network ) :
-	__main_room( room ),
-	__user( user),
+ */
+octomanager::octomanager( octonet* network ) :
 	__network( network )
 {
+	// register an observer to get notified on new queries
 	__network->add_query_observer( new octoquery_handler( this ) );
+	
+	
 }
 
+/**
+ * Print an error message into the chatroom
+ * @param[in] error_message String message to print
+ */
 void octomanager::err( std::string error_message )
 {
 	__main_room->post( octomail( "~ ", __main_room->get_subject(), error_message ) );

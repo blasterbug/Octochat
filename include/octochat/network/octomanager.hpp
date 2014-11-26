@@ -32,10 +32,13 @@
  */
 
 #include <string>
+#include <map>
+
 #include "octonet/octopeer.hpp"
 #include "octonet/octoquery.hpp"
 #include "octonet/octonet.hpp"
 #include "octonet/octoquery_observer.hpp"
+
 #include "octochat/octoroom.hpp"
 #include "octochat/octouser.hpp"
 #include "octochat/octomail.hpp"
@@ -50,21 +53,22 @@
 class octomanager
 {
 	private :
+		octonet* __network; /// octonet objet to communicate over the LAN
 		octoroom* __main_room; /// Main room to manager \todo several rooms
 		octouser* __user; /// user for the current session
-		octonet* __network; /// octonet objet to communicate over the LAN
+		map< std::string, octouser* > __
 
 	public :
 		/// Octomanager contructor
-		octomanager( octoroom* room, octouser* user, octonet* network );
+		octomanager( octonet* );
 		/// Print a error message in chat
-		void err( std::string error_message );
+		void err( std::string );
 		/// add a new octouser to the room
-		void add_user( octouser* user );
+		void add_user( octouser* );
 		/// Update the subject of a room
-		void update_subject( std::string new_sub );
+		void update_subject( std::string );
 		/// Post an new octomail into a room
-		void post( octomail mail );
+		void post( octomail );
 };
 
 #endif

@@ -6,7 +6,7 @@ project octonet
     # Source location
     :
     # Requirements
-    : requirements <include>include <source>/boost//serialization <source>/boost//system <source>/boost//thread <define>OCTONET_LOG_ENABLE <source>/boost//log
+    : requirements <include>include <source>/boost//serialization <source>/boost//system <source>/boost//thread # <define>OCTONET_LOG_ENABLE <source>/boost//log
     # Default build
     : default-build <threading>multi <link>static
     # Build directory
@@ -14,9 +14,8 @@ project octonet
     ;
 
 lib octonet : src/octonet/tcp_server.cpp src/octonet/udp_server.cpp ;
+lib octomanager : src/octochat/network/octomanager.cpp ;
 
 exe octowatch : src/octowatch/octowatch.cpp octonet ;
 exe octoglobalchat : src/octoglobalchat/octoglobalchat.cpp octonet ;
-
-lib octomanager : src/octochat/network/octomanager.cpp ;
 exe octochat : src/octochat/chat.cpp octonet octomanager ;

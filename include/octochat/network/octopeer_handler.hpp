@@ -32,30 +32,39 @@
  * @version 0.1
  */
 
-#include <iostream>
 #include <string>
 #include <map>
-#include "octochat/octouser.hpp"
+
+#include <boost/asio.hpp>
+
 #include "include/octonet/octopeer.hpp"
 #include "include/octonet/octonet_manager.hpp"
 #include "include/octonet/octopeer_observer.hpp"
 
-
+/**
+ * Class to maintain a list of octopeer currently connected to the octonetork
+ */
 class octopeer_handler : public octopeer_observer
 {
 	private :
-		vector< octopeer* > __queued_peers;
+	/// map to store connected peers on the network
+		map< boost::asio::ip::address, octopeer* > __queued_peers;
 	public :
-		octopeer_handler( ) :
-			__queued_peers( );
+		/**
+		 * constructeur
+		 */
+		octopeer_handler() :
+			__queued_peers()
 		{}
 		
-		void update_peer( const octopeer &peer, octopeer_state state )
-		{
-			int i = 0;
-			while( i < vector.size() or __queued_peers[ i ] != ? ) /// \todo
-			{
-			}
+		/**
+		 * Get notified when new peers are connected to the octonetwork
+		 * @param[in] peer The new peer arrived to queue
+		 * @param[in] state State of the new peer, currently useless
+		 */
+		void update_peer(const octopeer& peer, octopeer_state state){
+			// currently erase two peers with the same ip address
+			__queued_peers[peer.ip_address] = peer;
 		}
 }
 

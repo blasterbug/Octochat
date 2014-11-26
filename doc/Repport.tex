@@ -4,7 +4,7 @@
 \usepackage{ifpdf}
 \usepackage{hyperref}
 \title{Octochat \\ \textit{Discuter sur le réseau local sans serveur}}
-\author{Alexis \textsc{Giraudet}, Benjamin \textsc{Sientzoff}}
+\author{Alexis \textsc{Giraudet} \and Benjamin \textsc{Sientzoff}}
 \date{\today}
 \ifpdf
 \hypersetup{
@@ -20,33 +20,68 @@
 	\newpage % passer à la page suivante
 	
 	\section*{Introduction}
-	% présenter le cadre du projet
-	% présenter le prjet en lui-même, idées de base, inspiration
+		\paragraph{}{
+		Ce projet a été réalisé dans le cadre du cours \textit{Objet et développement d'applications}
+		dans lequel M. \textsc{Richoux} nous a enseigné l'utilisation des \textit{Design Patterns}.
+		L'ambition de ce projet ne s'arrête pas là, car nous souhaitons poursuite le développement de notre 
+		programme. Le sujet de notre projet est la création d'un client de chat qui n'utilise pas de serveur
+		principal comme c'est le cas pour ce genre d'application réseau. Le fonctionnement est détaillé plus loin.
+		}
+		\paragraph{}{
+		Octochat, notre programme, est donc un client de chat qui n'a pas besoin de serveur pour fonctionner.
+		Lancer le programme, choisissez un nom d'utilisateur est c'est parti.
+		}
 	
+	\newpage
 	
-	\section{titre de la section}
+	\section{Utilisation et fonctionnement global}
 	
-		\subsection{Présentation génrale}
-		% présentation des principales classes, méthodes
-		% à quoi elles servent?
-		\paragraph{titre du paragraphe}{contenu}
-		\paragraph{}{paragraphe sans titre}
+		\paragraph{Boost}{
+		Pour des questions de dépendances et pour faciliter le développement du programme, notamment pour ce qui est du réseau,
+		nous avons choisi d'utiliser la librairie \textit{Boost}.
+		L’utilisation de cette librairie nous permet également d'utiliser le système de compilation associé.
+		}
+	
+		\subsection{Compilation du programme}
+			\paragraph{Compilation}{
+			Pour commencer, le projet à besoin d'un installation locale de \textit{boost}. Cette installation est faite
+			lorsque le \textit{makefile} est appelé pour la première fois, mais une installation en bonne et due forme est
+			préférable. Procédez comme suit.
+			}
+			\begin{verbatim}
+				$ cd Octochat/
+				$ ./bin/install-boost.sh
+				$ ./bin/prepare-boost.sh
+				$ make
+			\end{verbatim}
+			\paragraph{}{
+			La première commande permet d'aller dans le répertoire où se trouve notre projet.
+			La seconde commande va télécharger \textit{boost} dans le projet, cette étape peut être longue, comme la suivante\footnote{C'est le moment d'aller chercher un café, si vous en n'avez plus.}.
+			Ensuite on va \textit{preparer} \textit{boost} pour l'utiliser. C'est-à-dire qu'on va compiler les outils nécessaires.
+			La dernière commande fait appelle à l'outils \textit{make} pour compiler notre projet. En réalité, le \textit{makefile}
+			se contente d'appeler l'outil de compilation de \textit{boost}.
+			}
+			\paragraph{}{
+			Si toutes ces étapes se sont bien passées, vous êtes maintenant en mesure d'utiliser Octochat.
+			}
 		
-		\subsection{Premier pattern}
-		% l'observeur
-		\paragraph{titre du paragraphe}{contenu}
-		\paragraph{}{paragraphe sans titre}
+		\subsection{Utilisation}
+			\paragraph{}{
+			Pour lancer l'application taper simplement \verb|./octochat|
+			}
 		
-		\subsection{Second pattern}
-		% le décorateur
-		\paragraph{titre du paragraphe}{contenu}
-		\paragraph{}{paragraphe sans titre}
+		\subsection{Sous le capot}
 		
-		\subsection{Troisième pattern}
-		% toto
-		\paragraph{titre du paragraphe}{contenu}
-		\paragraph{}{paragraphe sans titre}
+		\newpage
+		
+	\section{Patrons de conception}
+			% diagramme UML 
+			% parapgraphes qui explique le pourquoi du comment
+		\subsection{Observer}
+		\subsection{Factory method}
+		\subsection{Interpretor}
 	
+	\newpage
 	
 	\section*{Conclusion}
 		\paragraph{}{je conclu}

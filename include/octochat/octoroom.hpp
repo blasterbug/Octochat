@@ -86,6 +86,7 @@ class octoroom
 		octouser* __creator; /// Who created the room ? -Can be a ghost
 		std::string __subject; /// subject of the room
 		std::map < const std::string, octouser* > __userlist; /// octo-users in the room
+		// currently non implmented
 		std::map < const std::string, octouser* > __bannedusers; /// Who is not allowed here
 		std::vector< octomail* > __messages; /// Messages in da room
 		int __last_msg; /// current index of the last message posted in the room

@@ -61,9 +61,10 @@ class octoquery_handler : public octoquery_observer
 		 * Constructor for Octoquery handlers
 		 * @param[in] manager Octomanger to notify when receiving a new query
 		 */
-		octoquery_handler( octomanager* manager  ) :
-			__manager( manager )
-		{}
+		octoquery_handler( octomanager* manager  )
+		{
+			__manager = manager;
+		}
 
 		/**
 		 *  Member function called when a new octoqueries arrive

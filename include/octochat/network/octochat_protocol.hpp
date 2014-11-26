@@ -46,8 +46,8 @@
 #define OCTOCHAT_PROTOCOL_SUBJECT "title"
 
 /// query content
-#define OCTOCHAT_ERR_USERNAME_IN_USE "username already used"
-#define OCTOCHAT_ERR_USERNAME_FREE "username free"
+#define OCTOCHAT_ERR_USERNAME_IN_USE "username in used"
+#define OCTOCHAT_USERNAME_FREE "username free"
 
 #endif
 
