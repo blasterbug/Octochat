@@ -21,12 +21,12 @@ int main( int argc, char** argv )
 	//net.run();
 	//octosession session;
 	string en;
-	cout << argc << endl;
+
+	// if the program has arguments
 	if ( 1 < argc )
 	{
 		// user name in parameters
 		en = argv[1];
-		cout << en << endl;
 	}
 	else
 	{
