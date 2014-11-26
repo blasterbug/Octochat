@@ -93,4 +93,3 @@ void octomanager::post( octomail mail )
 {
 	__main_room->post( mail );
 }
-
