@@ -1,12 +1,10 @@
-#ifndef OCTOBOOT_HPP
-#define OCTOBOOT_HPP
 /**
- * @file octoboot.hpp
+ * @file octosession.cpp
  *
  * @section desc File description
  *
- * Header file for octochat connexion object
- * 
+ * Define a session in the octosystem, use state design pattern
+ *
  * @section copyright Copyright
  *
  *
@@ -31,28 +29,3 @@
  * @version 0.1
  */
 
-#include <string>
-#include "octonet/octopeer.hpp"
-#include "octonet/octoquery.hpp"
-#include "octonet/octonet.hpp"
-#include "octonet/octoquery_observer.hpp"
-
-#include "octochat/octoroom.hpp"
-#include "octochat/octouser.hpp"
-#include "octochat/octomail.hpp"
-
-/***
- * Class to allow a new octouser to be connected into a room
- */
-class octoboot
-{
-	private :
-		std::string __usr_name;
-		octopeer* __usr_peer;
-		octonet* __network;
-
-	public :
-		/// \todo
-};
-
-#endif

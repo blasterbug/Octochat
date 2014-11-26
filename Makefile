@@ -4,7 +4,7 @@ doc:
 	@doxygen Doxyfile
 
 doc.latex: doc
-	make -C /doc/latex
+	@make -C ./doc/build/latex
 
 bjam:
 ifeq ($(wildcard ./boost/.*),)
@@ -18,4 +18,4 @@ endif
 clean: clean.doc
 
 clean.doc:
-	@-rm -r ./build
+	@-rm -r ./doc/build

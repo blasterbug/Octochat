@@ -81,6 +81,15 @@ class octomail
 		}
 
 		/**
+		 * Get the content of an octomail
+		 * @param[out] content of the mail
+		 */
+		const std::string get_content() const
+		{
+			return __content;
+		}
+
+		/**
 		 * get the string representation of the octomail
 		 * @param[out] The octomail as a string
 		 */

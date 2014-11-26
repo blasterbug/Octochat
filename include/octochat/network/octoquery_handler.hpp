@@ -7,7 +7,7 @@
  * @section desc File description
  *
  * file to manage network query from octonet
- * 
+ *
  * @section copyright Copyright
  *
  *
@@ -55,7 +55,7 @@ class octoquery_handler : public octoquery_observer
 {
 	private :
 		octomanager* __manager; /// the octoroom for the session
-		
+
 	public :
 		/**
 		 * Constructor for Octoquery handlers
@@ -77,10 +77,10 @@ class octoquery_handler : public octoquery_observer
 			if ( OCTOCHAT_PROTOCOL_MAIL == header )
 			{
 				__manager->post( octomail( query.headers_map.find( OCTOCHAT_PROTOCOL_USER_NAME )->second,
-									query.headers_map.find( OCTOCHAT_PROTOCOL_DESTINEE )->second,
+									query.headers_map.find( OCTOCHAT_PROTOCOL_MAIL )->second,
 									query.content_str )
 				);
-				
+
 			}
 			// the query is  new user
 			else if ( OCTOCHAT_PROTOCOL_NEW_USER == header )
@@ -108,7 +108,7 @@ class octoquery_handler : public octoquery_observer
 		std::string app() const
 		{
 			return OCTONET_APP_ID_HEADER;
-		} 
+		}
 
 };
 

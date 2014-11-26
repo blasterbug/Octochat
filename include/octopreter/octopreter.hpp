@@ -47,21 +47,21 @@ class abstract_expression {
 		 * @param[in] octoroom contexte of the command
 		 * @param[in] string arguments of the command
 		 */
-		virtual std::string interpret( const octoroom*, std::string ) = 0 ;
+		virtual std::string interpret( std::string ) = 0 ;
 };
 
 /**
  * Abstract class for final_expression in interpreter
  */
-class final_expression : public :abstract_expression {
+class final_expression : public abstract_expression {
 	public:
-		final std::string interpret( const octoroom*std::string ) = 0 ;
+		final std::string interpret( std::string ) = 0 ;
 };
 
 /**
  * abstract class for non terminal expression in the tree
  */
-class non_terminal_expression : public :abstract_expression {
+class non_terminal_expression : public abstract_expression {
 	protected:
 		/// sub tree in the interpreter tree
 		std::map< std::string, abstract_expression > __subexp;
@@ -73,7 +73,7 @@ class non_terminal_expression : public :abstract_expression {
 /**
  * command to post a mail
  */
-class post_mail : public :final_expression {
+class post_mail : public final_expression {
 	private:
 		const octouser* __sender;
 	public:
@@ -87,8 +87,8 @@ class post_mail : public :final_expression {
 		/**
 		 * perform the command :post a mail
 		 */
-		std::string interpret( const octoroom *room, std::string input ){
-			room->post( octomail( user, room, input ) );
+		std::string interpret( const octomanager *manager, std::string input ){
+			manager->post( octomail( user, room, input ) );
 			return;
 		}
 };

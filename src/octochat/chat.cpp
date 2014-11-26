@@ -1,19 +1,9 @@
 #include <iostream>
 
 #include "octonet/octonet.hpp"
-#include "octonet/octopeer.hpp"
-#include "octonet/octoquery.hpp"
-#include "octonet/octonet.hpp"
-#include "octonet/octoquery_observer.hpp"
 
-#include "octochat/octoroom.hpp"
-#include "octochat/octouser.hpp"
-#include "octochat/octomail.hpp"
-#include "octochat/octouser.hpp"
-#include "octochat/network/octochat_protocol.hpp"
-#include "octochat/network/octomanager.hpp"
+//#include "octochat/octosession.hpp"
 
-#include <boost/asio.hpp>
 
 /// \todo an curses interface
 //#include <ncurses.h>
@@ -23,19 +13,20 @@ using namespace std;
 
 /// Ask a nickanme to user
 string get_name_id();
-///\todo connection !
-bool registered_user( string );
+
 int main( int argc, char** argv )
 {
 	// start local server
 	octonet net;
-	net.run();
+	//net.run();
+	//octosession session;
 	string en;
-
-	if ( argc > 1 )
+	cout << argc << endl;
+	if ( 1 < argc )
 	{
 		// user name in parameters
 		en = argv[1];
+		cout << en << endl;
 	}
 	else
 	{
@@ -44,7 +35,7 @@ int main( int argc, char** argv )
 		en = get_name_id();
 	}
 	// while the username can't be used
-	while ( not registered_user( en ) )
+	//while ( not registered_user( en ) )
 	{
 		// ask a new one to user
 		en = get_name_id();
@@ -67,18 +58,13 @@ string get_name_id()
 	string nickname = "";
 	cout << "Please enter a nickname: ";
 	cin >> nickname;
-	if ( registered_user( nickname ) )
+	//if ( registered_user( nickname ) )
 	{
 		return nickname;
 	}
-	else
+	//else
 	{
 		cout << nickname << " is already used" << endl;
 		return "";
 	}
-}
-
-bool registered_user( string nickname )
-{
-	return false;
 }

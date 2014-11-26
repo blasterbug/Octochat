@@ -4,7 +4,7 @@
  * @section desc File description
  *
  * file to manage network query from octonet, implementation
- * 
+ *
  * @section copyright Copyright
  *
  *
@@ -30,7 +30,7 @@
  */
 
 #include "octochat/network/octoquery_handler.hpp"
-#include "octochat/network/octomanager.hpp" 
+#include "octochat/network/octomanager.hpp"
 
 /**
  * Octomanager contructor
@@ -41,8 +41,8 @@ octomanager::octomanager( octonet* network ) :
 {
 	// register an observer to get notified on new queries
 	__network->add_query_observer( new octoquery_handler( this ) );
-	
-	
+
+
 }
 
 /**
@@ -65,11 +65,12 @@ void octomanager::add_user( octouser* user )
 	{
 		__main_room->add_user( user );
 	}
-	catch( octoroom_exception exc ) // else 
+	catch( octoroom_exception exc ) // else
 	{
 		///std::cerr << exc.what() << endl; \todo log ?
 		if ( __user->get_name() == __main_room->get_owner_name() )
 		{
+			// send the error message to user who try to connect
 			octopeer peer( *user->get_peer() );
 			octoquery query;
 			query.headers_map[ OCTOCHAT_PROTOCOL_ERR ] = OCTOCHAT_ERR_USERNAME_IN_USE;
