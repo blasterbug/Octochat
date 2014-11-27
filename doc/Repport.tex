@@ -26,37 +26,36 @@
 		\paragraph{}{
 		Ce projet a été réalisé dans le cadre du cours \textit{Objet et développement d'applications}
 		dans lequel M. \textsc{Richoux} nous a enseigné l'utilisation des \textit{Design Patterns}.
-		L'ambition de ce projet ne s'arrête pas là, car nous souhaitons poursuite le développement de notre
-		programme. Le sujet de notre projet est la création d'un client de chat qui n'utilise pas de serveur
-		principal comme c'est le cas pour ce genre d'application réseau. Le fonctionnement est détaillé plus loin.
+		L'ambition de ce projet ne s'arrête pas là, car nous souhaitons poursuivre le développement de notre
+		programme. Le sujet de notre projet est la création d'un client de chat décentralisé dans l'esprit du
+		\textit{peer to peer}.
 		}
 		\paragraph{}{
-		Octochat, notre programme, est donc un client de chat qui n'a pas besoin de serveur pour fonctionner.
+		Octochat, notre programme, est donc un client de chat qui n'a pas besoin de serveur central pour fonctionner.
 		Lancer le programme, choisissez un nom d'utilisateur est c'est parti. Cependant, la mise en place d'une telle
 		application n'est pas aisée. Ce rapport retrace la conception d'Octochat jusqu'au 26 novembre 2014. Il met en évidence les points qui ont posés problèmes et les différents \textit{patterns} utilisés.
+		}
+		\paragraph{}{
+		Dans une première partie, nous verrons comment compiler et lancer notre projet. Dans cette même
+		partie nous présentons les principes et idées à la base du projet. Puis nous présenterons les patrons
+		de conception utilisés.
 		}
 
 	\newpage
 
 	\section{Utilisation et fonctionnement global}
 
-		\paragraph{Boost}{
-		Pour des questions de dépendances et pour faciliter le développement du programme, notamment pour ce qui est du réseau,
-		nous avons choisi d'utiliser la librairie \textit{Boost}.
-		L’utilisation de cette librairie nous permet également d'utiliser le système de compilation associé.
-		}
-
 		\subsection{Compilation du programme}
 			\paragraph{Compilation}{
 			Notre programme utilise deux bibliothèques à savoir la librairie standard du langage ( \textit{STL} et \textit{Boost}, plus précisément:
 			\begin{itemize}
 				\item[Boost.Build] le système de compilation (équivalant de \textit{make} et des \textit{Makefile} mais plus portable)
-				\item[Boost.Thread] pour les \textit{thread]} et les \textit{mutex}
-				\item[Boost.Log] pour les \textit{logs}
+				\item[Boost.Thread] pour les \textit{threads} et les \textit{mutex}
+				\item[Boost.Log] pour les \textit{logs} et le débogage
 				\item[Boost.Asio] pour les entrées/sorties asynchrones sur le réseau
-				\item[Boost.Serialization] pour sérialiser les données envoyées sur le réseau
+				\item[Boost.Serialization] pour (dé)sérialiser les données envoyées sur le réseau
 				\item[Boost.System] pour les \textit{Smart Pointers} et le \textit{Lexical Cast}
-				\item[Boost.Uuid] pour la sérialisation
+				\item[Boost.Uuid] pour l'identification d'objets de manière unique
 			\end{itemize}
 			}
 			\paragraph{}{
@@ -65,9 +64,9 @@
 			d’installer \textit{Boost} localement et de compiler le programme automatiquement.
 			Une fois la compilation terminée, les exécutables sont placés dans le dossier \textit{build}:
 			\begin{itemize}
-				\item[octowatch] écoute le réseau
-				\item[octoglobalchat] propose de chatter avec toutes les paires connectées
-				\item[octochat] permet de chatter avec des utilisateurs
+				\item[\textsf{octowatch}] écoute le réseau
+				\item[\textsf{octoglobalchat}] propose de chatter avec toutes les paires connectées
+				\item[\textsf{octochat}] permet de chatter avec des utilisateurs
 			\end{itemize}
 
 			}
@@ -88,7 +87,7 @@
 
 		\subsection{Utilisation}
 			\paragraph{}{
-			Si toutes les précédentes étapes se sont bien passées, vous êtes maintenant en mesure d'utiliser Octochat.
+			Si toutes les étapes précédentes se sont bien passées, vous êtes maintenant en mesure d'utiliser Octochat.
 			Pour lancer l'application taper simplement \verb|./octochat|
 			}
 
@@ -107,7 +106,7 @@
 			l’utilisation du \textit{pattern observer} s’est révélé naturel.
 			}
 
-			\paragraph{Couche réseau}{
+			\paragraph{Couche applicatif}{
 			La couche applicatif permet de définir un protocole sur lequel Octochat peut reposer permettant ainsi
 			de gérer les utilisateurs d'un salon (une \textit{octoroom}), leur connexion et leur déconnexion au sein
 			des salons.
@@ -117,7 +116,7 @@
 
 	\section{Patrons de conception}
 	
-		\section{abstract factory}
+		\subsection{Abstract factory}
 		
 			\paragraph{}{
 			Les pairs c’est à dire les instances de l’application réseau sont appelées \textit{octopeer}, 
@@ -149,10 +148,9 @@
 			une \textit{octoquery} peut très bien être encapsulée dans un paquet TCP ou bien être transférée via HTTP,
 			 voire même fonctionner uniquement sur la boucle locale.
 			}
-			
 			\begin{figure}[!h]
 					\centering
-					\includegraphics[scale=0.5]{UML/octonet_factory1.png}
+					\includegraphics[scale=0.4]{UML/octonet_factory1.png}
 					\caption{\label{factory_uml} Diagramme UML du \textit{pattern abstract factory}}
 			\end{figure}
 						
@@ -253,7 +251,7 @@
 			Si il n'y a pas d'autre pair sur le réseau, la session passe directement dans l'état \textbf{connecté}.
 			}
 			
-			\begin{figure}
+			\begin{figure}[!h]
 				\centering
 				\includegraphics[scale=0.6]{UML/state.png}
 				%\input{UML/state.tex}
@@ -275,9 +273,27 @@
 			Enfin, un modificateur dans la classe \textit{octosession} permet de changer l'état courant de l'objet 
 			(stocké dans un attribut). 
 			}
+			
 	\newpage
 
 	\section*{Conclusion}
-		\paragraph{}{je conclu}
+		\paragraph{}{
+		La réalisation de ce projet nous a permis d'appliquer les notions vu en cours.
+		L'utilisation de la librairie \textit{Boost}, nous a permis de nous familiariser avec l'une des 
+		librairies les plus populaires existantes pour le C++.
+		}
+		\paragraph{}{
+		Malgré les difficultés rencontrés, le projet ne fonctionnement pas comme nous l'espérions.
+		En effet le développement d'une application réseau et l'assimilation de la librairie \textit{Boost}
+		ont été des obstacles significatifs. \newline
+		Cependant les briques du projet restent viables. En effet, l'exploration et la connexion aux
+		pairs locales fonctionnent.
+		}
+		\paragraph{}{
+		L'utilisation de patrons de conception a permis de rendre le projet modulable.
+		En particulier la conception par niveau d’abstraction rend possible l'utilisation du serveur avec
+		d'autre type d'applications. Notre code peut donc être réutilisé. Des évolutions possibles sont
+		déjà envisagées, comme un système de partage de fichiers.
+		}
 
 \end{document}
