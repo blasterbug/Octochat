@@ -18,7 +18,7 @@
 \begin{document}
 	% page de garde avec sommaire
 	\maketitle
-	\vspace{10cm}
+	\vspace{9cm}
 	\tableofcontents
 	\newpage % passer à la page suivante
 
@@ -56,9 +56,13 @@
 				\item[Boost.Asio] pour les entrées/sorties asynchrones sur le réseau
 				\item[Boost.Serialization] pour sérialiser les données envoyées sur le réseau
 				\item[Boost.System] pour les \textit{Smart Pointers} et le \textit{Lexical Cast}
+				\item[Boost.Uuid] pour la sérialisation
 			\end{itemize}
 			}
-			\paragraph{}{Pour compiler notre programme nous avons donc besoin d’un compilateur (incluant la \textit{STL}) et d’installer \textit{Boost}, c’est pourquoi nous avons réalisé un \textit{Makefile} qui s’occupe d’installer \textit{Boost} localement et de compiler le programme automatiquement.
+			\paragraph{}{
+			Pour compiler notre programme nous avons donc besoin d’un compilateur (incluant la \textit{STL})
+			et d’installer \textit{Boost}, c’est pourquoi nous avons réalisé un \textit{Makefile} qui s’occupe
+			d’installer \textit{Boost} localement et de compiler le programme automatiquement.
 			Une fois la compilation terminée, les exécutables sont placés dans le dossier \textit{build}:
 			\begin{itemize}
 				\item[octowatch] écoute le réseau
@@ -95,51 +99,170 @@
 			qui pourrait être découper elle aussi en deux parties s'occupe des aspect applicatif du programme.
 			}
 
-			\paragraph{Couche réseau}{
-			C'est la partie du programme la plus critique et la plus difficile à mettre en œuvre.
-			Le serveur, \textit{octonet} qui tourne en local sur chaque client, utilise deux \textit{threads}.
-			Le premier permet d'écouter sur un premier port. L'écoute de ce port assure le maillage des pairs local.
-			En effet, à chaque fois qu'un pair arrive, une tram réseau est envoyé sur ce port en \textit{broadcast}.
-			On peut ainsi maintenir une liste des pairs connectées.
-			Le second \textit{thread} écoute un second port qui permet de recevoir des requêtes réseau permettant de
-			transmettre des données une fois qu'on connaît les paires locales. Ces requêtes permettent notamment à
-			la couche de plus au niveau de mettre en place un protocole, \textit{octochat protocol}. Un protocole
-			spécialement conçu pour notre programme.
+			\paragraph{Couche Réseau}{
+			Lors du développement de la couche réseau, nous avons cherché à découplé le plus possible les
+			applications clientes de l’application réseau c’est pourquoi nous avons utilisé le \textit{pattern
+			abstract factory}. \\
+			En ce qui concerne la communication des données entre la couche réseau et les application clientes,
+			l’utilisation du \textit{pattern observer} s’est révélé naturel.
 			}
 
-			\paragraph{Couche applicatif}{
+			\paragraph{Couche réseau}{
 			La couche applicatif permet de définir un protocole sur lequel Octochat peut reposer permettant ainsi
 			de gérer les utilisateurs d'un salon (une \textit{octoroom}), leur connexion et leur déconnexion au sein
 			des salons.
 			}
+			
 		\newpage
 
 	\section{Patrons de conception}
-			% diagramme UML
-			% parapgraphes qui explique le pourquoi du comment
+	
+		\section{abstract factory}
+		
+			\paragraph{}{
+			Les pairs c’est à dire les instances de l’application réseau sont appelées octopeer, 
+			une octopeer est identifiée de manière unique grâce à un UUID généré à sa création. \newline
+			Une octopeer peut transmettre des données via une octoquery, une octoquery est composée
+			 d’une string contenant les données (données sérialisées) et d’une octopeer correspondant à 
+			 l’émetteur ou bien au destinataire suivant que l’on envoie ou bien que l’on reçoive cette octoquery.
+			}
+			
+			\paragraph{}{
+			Dans notre cas, nous avons voulu que “décentralisé” rime avec “autonomie”, c’est pourquoi nous 
+			avons identifié deux services distincts capables de gérer les entrées/sorties des pairs.
+			}
+			\begin{itemize}
+				\item Le premier service, est le service d’exploration qui consiste à identifier des pairs
+				potentielles en vue de communiquer avec elles. Nous avons appelé ce service exploration\_server 
+				(le mot serveur est un abus de langage mais dans ce cas le concept associé est plus intuitif). 
+				Un service d’exploration très simple pourrait tout simplement consister à lire un fichier contenant
+				des informations de connexions sur les pairs (ip/port, nom d'hôte…) ou bien de manière plus évoluée, 
+				envoyer un broadcast sur le réseau local et observer les réponses puis tester ces pairs potentielles 
+				grâce au second service.
+				
+				\item Le second service propose de tester si une pair se cache derrière les informations fournis 
+				par l’explorateur, puis de transmettre des octoquery aux pairs vérifiées, il s’agit du communicator\_server.
+			\end{itemize}
+			
+			\paragraph{}{
+			L’avantage de cette approche est l’indépendance envers les protocoles de communications, en effet
+			une octoquery peut très bien être encapsulée dans un paquet TCP ou bien être transférée via HTTP,
+			 voire même fonctionner uniquement sur la boucle locale.
+			}
+			
+			\begin{figure}[!h]
+					\centering
+					\includegraphics[scale=0.5]{UML/octonet_factory1.png}
+					\caption{\label{factory_uml} Diagramme UML du \textit{pattern abstract factory}}
+			\end{figure}
+						
+			
+			\paragraph{}{
+			Pour définir précisément ses services et orienter leur implémentation nous avons utilisé le
+			\textit{pattern abstract factory}, comme on peut le voir à la figure \ref{factory_uml}.
+			}
+				\subparagraph{Remarque}{Sur le schéma UML à la figure \ref{factory_uml}, X et Y sont des types génériques.}
+				
+			\paragraph{}{
+			Nous avons donc implémenté server\_factory avec le protocole UDP pour explorer le réseau et le
+			protocole TCP pour la communication entre les pairs. \newline
+			udp\_server: la fonction explore se charge d’envoyer un broadcast contenant les informations de
+			connexion (à savoir l’adresse IP et le port du serveur de communication), la fonction run 
+			se chargera donc de lancer le serveur qui réceptionnera ces informations pour les
+			transmettre au communicator\_server.
+			}
+			
+			\paragraph{}{
+			tcp\_server: la fonction check\_peer se charge d’établir une connexion avec une potentielle octopeer
+			(comme nous le vérons dans la partie sur le pattern observer, si la connexion réussie alors les
+			octopeer\_observer seront notifiés), la fonction send\_query permet d’envoyer une octoquery et 
+			run lance le serveur TCP qui recevra les octoquery (et notifiera les octoquery\_observer).
+			}
+			
+			\paragraph{}{
+			Nous avons donc implémenté server\_factory avec le protocole UDP/TCP, mais il est tout à fait 
+			possible d’utiliser d’autres protocoles pouvant utiliser les noms de domaine par exemple.
+			}
+
 		\subsection{Observer}
-		\subsection{Factory method}
+		
+			\paragraph{}{
+			Ensuite pour interagir avec les applications nous avons naturellement utilisé le \textit{design pattern observer},
+			visible à la figure \ref{observer_uml}.
+			}
+
+			\begin{figure}[!h]
+				\centering
+				\includegraphics[scale=0.65]{UML/octonet_observer1.png}
+				\caption{\label{observer_uml} Diagramme UML du \textit{pattern Observer}}
+			\end{figure}
+			
+			\paragraph{}{
+			En effet, les applications pourrons être notifiées de la connexion/déconnexion d’une
+			\textit{octopeer} en implémentant l’interface \textit{octopeer\_observer}.
+			}
+			\paragraph{}{
+			Ensuite les applications devront être notifiées de l’arrivée d’une nouvelle \textit{octoquery}. 
+			Pour cela, nous avons rajouté un système de filtre très simple pour que les applications 
+			puissent communiquer avec leurs homologues distant voir même avec d’autres applications. \newline
+			Pour cela, nous avons ajouté un membre \textit{app\_id} aux \textit{octoquery} et les applications réalisant 
+			l’interface octoquery\_observer retournent leur propre app\_id. Donc, lorsqu’une octoquery
+			est reçue, seules les applications ayant le même \textit{app\_id} que l’\textit{octoquery} sont notifiées 
+			(un \textit{octoquery\_observer} retournant un \textit{app\_id} vide sera toujours notifié).
+			}
+
+			\paragraph{}{
+			Ce système de notifications permet donc à divers applications d’interagir ensemble, prenons par 
+			exemple une application de partage de fichiers et une application de chat: on pourrait très bien 
+			imaginer la possibilité d’utiliser ces deux applications de manière complémentaire, c’est à dire 
+			pouvoir partager des fichiers dans le chat.
+			}
+			
+			\paragraph{}{
+			La classe \textit{octonet\_manager} est donc à la fois la classe cliente du pattern abstract \textit{factory} 
+			mais aussi la classe observable du \textit{pattern observer}, nous avons donc rajouté la façade 
+			\textit{octonet} pour masquer certaines fonctionnalités aux applications (notamment les fonctions de notification).
+			}
+		
+		\newpage 
+		
 		\subsection{State}
-			\begin{center}
-				\begin{figure}
-					\input{schema/automate_state.tex}
-					\caption{\label{state_schema} Automate des transitions des états de \textit{octosession}}
-				\end{figure}
-			\end{center}
+		
 			\paragraph{}{
 			L'une des difficultés rencontrés lors de ce projet était la gestion des utilisateurs. Ces derniers doivent
-			utiliser des speudonymes unique dans chaque salon. Le problème est que le salon que veut rejoindre un utilisateur
-			peut se trouver sur plusieurs postes. Dans quel poste alors se connecter en premier ? Et dans le cas où le nom
-			de l'utilisateur est pris, qui doit l'avertir ?
+			utiliser des pseudonymes uniques dans chaque salon. Le problème est que le salon que veut rejoindre un utilisateur
+			se trouve sur plusieurs postes. Dans quel poste alors se connecter en premier ? Et dans le cas où le nom
+			de l'utilisateur est pris, qui doit l'avertir ? Ces questions se règlent facilement en y réfléchissant un peu plus.
+			L'utilisateur se connectera simultanément
 			Le \textit{pattern state} nous a permis de gérer la connexion des utilisateurs. Le diagramme UML est visible à la figure \ref{state_uml}.
 			}
-			\begin{center}
-				\begin{figure}
-					\includegraphics[scale=0.6]{UML/state.png}
-					%{UML/state.tex}
-					\caption{\label{state_uml} Diagramme UML du \textit{pattern state}}
-				\end{figure}
-			\end{center}
+			
+			\begin{figure}[!h]
+				\centering
+				\input{schema/automate_state.tex}
+				\caption{\label{state_schema} Automate des transitions des états de \textit{octosession}}
+			\end{figure}
+			
+			\paragraph{}{
+			Donc, une \textit{octosession}, au démarrage de l'application, est dans l'état \textbf{déconnecté}.
+			Ensuite, l'utilisateur donne un pseudonyme. La session passe alors dans l'état d'\textbf{attente}.
+			Si il y a des pairs, qui font tourner \textit{octochat} sur le réseau, une requête est envoyée à ces pairs 
+			avec le nom de nouvel utilisateur. Si le nom est pris, la pair qui est désignée comme \textit{maître} 
+			envoie le message d'erreur correspondant. Sinon, une approbation est retourné à l'utilisateur qui est 
+			alors \textbf{connecté}. \newline
+			Si il n'y a pas d'autre pair sur le réseau, la session passe directement dans l'état \textbf{connecté}.
+			}
+			
+			\begin{figure}
+				\centering
+				\includegraphics[scale=0.6]{UML/state.png}
+				%\input{UML/state.tex}
+				\caption{\label{state_uml} Diagramme UML du \textit{pattern state}}
+			\end{figure}
+			
+			\paragraph{}{
+			On obtient alors le diagramme à la figure \ref{state_uml}. On a donc trois états, \textit{text}
+			}
 	\newpage
 
 	\section*{Conclusion}
