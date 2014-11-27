@@ -261,7 +261,19 @@
 			\end{figure}
 			
 			\paragraph{}{
-			On obtient alors le diagramme à la figure \ref{state_uml}. On a donc trois états, \textit{text}
+			On obtient alors le diagramme à la figure \ref{state_uml}. On a donc trois états concrets, \textit{connected\_octostate}, \textit{waiting\_state} et \textit{deconnected\_octostate}.
+			Ces états sont dans le programme transcrit en classes, c'est le principe même du \textit{pattern
+			state}. Ces trois classes héritent de la classe abstraite \textit{octostate}.
+			Dans la classe abstraite on y définit les fonctions membres qui correspondent aux transitions de l'automate.
+			Le comportement par défaut de ces fonctions consiste à ne rien faire. Les classes qui utilisent ces transitions
+			redéfinissent alors le comportement des fonctions.
+			}
+			\paragraph{}{
+			Dans la classe utilisatrice des états, \textit{octosession}, on construit une instance de chaque états.
+			Ensuite les sélecteurs adéquats nous permettent de récupérer ces instances lorsqu'un état veut franchir 
+			une transitions. \newline
+			Enfin, un modificateur dans la classe \textit{octosession} permet de changer l'état courant de l'objet 
+			(stocké dans un attribut). 
 			}
 	\newpage
 
