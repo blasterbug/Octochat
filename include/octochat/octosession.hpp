@@ -54,7 +54,7 @@ class octosession
 		/// the waiting state
 		const waiting_octostate __wait_state;
 		/// the connected state
-		const connected_octostate __connect_state;
+		const connected_octostate __connected_state;
 
 		/// current state of the session
 		octostate* __current_state;
@@ -62,13 +62,18 @@ class octosession
 		octoroom* __room;
 		/// user for the session
 		octouser* __user;
+		/// manage local chat
+		octomanager* __local_manager;
+		/// manage octonetwork output
+		octopostman* __postman;
 
 	public:
 	/**
 	 * constructor
 	 */
 	octosession();
-	/** getter for state pattern : deconnected state
+	/**
+	 * getter for state pattern : deconnected state
 	 * @param[out] deconnected state
 	 */
 	deconnected_octostate get_deconnected_state() const;
@@ -84,12 +89,35 @@ class octosession
 	 * @param[in] state The new state of the session
 	 */
 	void set_current_state( const octostate& state ) const;
-
 	/**
 	 * post a new mail into the room
-	 * @param[in] mai
+	 * @param[in] mail to post into an octoroom
 	 */
 	void receive_mail( octomail );
+	/**
+	 * send a mail to the octonetwork
+	 * @param[in] mail  The octomail to send
+	 */
+	void send_mail( octomail );
+	/**
+	 * Receive an error from the network
+	 * @param[in] error Error string from the octonetwork
+	 */
+	void receive_error( std::string );
+	/**
+	 * Send a error over the octonetwork
+	 */
+	void send_error( std::strig );
+	/**
+	 * start the chat session
+	 * @param[in] nickname Nickname for the user
+	 */
+	void start_session( std::string );
+	/**
+	 * Stp the current session
+	 * @param[out] ??
+	 */
+	void end_session();
 
 }
 #endif

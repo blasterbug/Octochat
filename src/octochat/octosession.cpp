@@ -29,3 +29,84 @@
  * @version 0.1
  */
 
+octosession::octosession();
+/**
+ * getter for state pattern : deconnected state
+ * @param[out] deconnected state
+ */
+deconnected_octostate octosession::get_deconnected_state() const
+{
+	return __deco_state;
+}
+/** getter for state pattern : connected state
+ * @param[out] connected state
+ */
+connected_octostate octosession::get_connected_state() const
+{
+	return __connected_state;
+}
+/** getter for state pattern : waiting state
+ * @param[out] waiting state
+ */
+waiting_octostate octosession::get_waiting_state() const
+{
+	return __wait_state;
+}
+/** setter for state pattern
+ * @param[in] state The new state of the session
+ */
+void octosession::set_current_state( const octostate& state ) const
+{
+	__current_state = state;
+}
+/**
+ * post a new mail into the room
+ * @param[in] mail to post into an octoroom
+ */
+void octosession::receive_mail( octomail mail )
+{
+	__manager.post( mail );
+}
+/**
+ * send a mail to the octonetwork
+ * @param[in] mail  The octomail to send
+ */
+void octosession::send_mail( octomail mail )
+{
+	__postman.send( mail )
+}
+/**
+ * Receive an error from the network
+ * @param[in] error Error string from the octonetwork
+ */
+void octosession::receive_error( std::string );
+/**
+ * Send an error over the octonetwork
+ * @param[in] message The error to send
+ */
+void octosession::send_error( std::strig mesage )
+{
+	octopeer peer( *user->get_peer() );
+	octoquery query;
+	query.headers_map[ OCTOCHAT_PROTOCOL_ERR ] = ??; /// \todo
+	query.content_str = err_message;
+	__network->send_query( peer, query ); /// \todo query send ?
+}
+/**
+ * start the chat session
+ * @param[in] nickname Nickname for the user
+ */
+void octosession::start_session( std::string )
+{
+	// send the error message to user who try to connect
+	octopeer peer( *user->get_peer() );
+	octoquery query;
+	query.headers_map[ OCTOCHAT_PROTOCOL_ERR ] = OCTOCHAT_ERR_USERNAME_IN_USE;
+	query.content_str = err_message;
+	__network->send_query( peer, query ); /// \todo query send ?
+}
+/**
+ * Stp the current session
+ * @param[out] ??
+ */
+void octosession::end_session();

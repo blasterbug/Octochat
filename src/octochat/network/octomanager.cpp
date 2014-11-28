@@ -29,20 +29,17 @@
  * @version 0.1
  */
 
-#include "octochat/network/octoquery_handler.hpp"
-#include "octochat/network/octomanager.hpp"
+#include "octochat/octosession.hpp"
 
 /**
  * Octomanager contructor
  * @param[in] network Octonet object for communication
  */
-octomanager::octomanager( octonet* network ) :
-	__network( network )
+octomanager::octomanager( octosession* session ) :
+	__session( session )
 {
 	// register an observer to get notified on new queries
 	__network->add_query_observer( new octoquery_handler( this ) );
-
-
 }
 
 /**
@@ -70,12 +67,7 @@ void octomanager::add_user( octouser* user )
 		///std::cerr << exc.what() << endl; \todo log ?
 		if ( __user->get_name() == __main_room->get_owner_name() )
 		{
-			// send the error message to user who try to connect
-			octopeer peer( *user->get_peer() );
-			octoquery query;
-			query.headers_map[ OCTOCHAT_PROTOCOL_ERR ] = OCTOCHAT_ERR_USERNAME_IN_USE;
-			query.content_str = exc.what();
-			__network->send_query( peer, query ); /// \todo query send ?
+			__session.send_error( exc.what() );
 		}
 	}
 }

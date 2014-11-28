@@ -85,9 +85,9 @@ class octoroom
 	private:
 		octouser* __creator; /// Who created the room ? -Can be a ghost
 		std::string __subject; /// subject of the room
-		std::map < const std::string, octouser* > __userlist; /// octo-users in the room
+		std::map < const std::string, octouser* > __user_list; /// octo-users in the room
 		// currently non implmented
-		std::map < const std::string, octouser* > __bannedusers; /// Who is not allowed here
+		std::map < const std::string, octouser* > __banned_users; /// Who is not allowed here
 		std::vector< octomail* > __messages; /// Messages in da room
 		int __last_msg; /// current index of the last message posted in the room
 		int __first_msg; /// index of the first message posted in the room
@@ -101,8 +101,8 @@ class octoroom
 		octoroom( octouser* owner, std::string title ) :
 			__creator( owner ),
 			__subject( title ),
-			__userlist(),
-			__bannedusers(),
+			__user_list(),
+			__banned_users(),
 			__messages( std::vector< octomail* >( MESSAGE_STACK_SIZE ) ),
 			__last_msg( 0 ),
 			__first_msg( 0 )
@@ -123,9 +123,9 @@ class octoroom
 		void add_user( octouser* user )
 		{
 			const std::string user_name = user->get_name();
-			if ( 1 > __bannedusers.count( user_name ) )
+			if ( 1 > __banned_users.count( user_name ) )
 			{
-				__userlist[ user_name ] = user;
+				__user_list[ user_name ] = user;
 			}
 			else
 			{
@@ -189,7 +189,7 @@ class octoroom
 		 */
 		bool name_is_used( std::string name )
 		{
-			return 1 <= __userlist.count( name );
+			return 1 <= __user_list.count( name );
 		}
 
 		/**

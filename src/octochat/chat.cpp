@@ -18,6 +18,7 @@ int main( int argc, char** argv )
 {
 	// start local server
 	octonet net;
+	octosession session;
 	//net.run();
 	//octosession session;
 	string en;

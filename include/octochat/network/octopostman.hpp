@@ -2,11 +2,12 @@
 #define OCTOPOSTMAN_HPP
 
 /**
- * @file octopostman.cpp
+ * @file octopostman.hpp
  *
  * @section desc File description
  *
- * define ways to send data over the octonet
+ * header file for the octopostman object
+ * Define a simple way to send query over the octonetwork
  *
  * @section copyright Copyright
  *
@@ -103,12 +104,12 @@
 		}
 
 		/**
-		 * registered an user to the octonetwork
+		 * register an user to the octonetwork
 		 * @param[in] name The choosen name for the user
 		 * @param[in] room_name The room to be connected in
 		 * @param[out] true if connected, else false
 		 */
-		void registered_user( std::string name, std::string room_name)
+		void register_user( std::string name, std::string room_name)
 		{
 			// if there is not other peer
 			if( __connected_peers.empty() )

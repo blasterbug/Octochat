@@ -44,24 +44,17 @@
 #include "octochat/octomail.hpp"
 
 /***
- * Class to link the chat to the octonetwork
- * Basically :
- * 	- get update by query_handler,
- * 	- update local room (adding/removing octouser, messaging, etc.),
- * 	- manager errors
+ * Class to link the local chat to the octonetwork
  */
 class octomanager
 {
 	private :
-		octonet* __network; /// octonet objet to communicate over the LAN
+		octosession* __session; /// the current session
 		octoroom* __main_room; /// Main room to manager \todo several rooms
-		octouser* __user; /// user for the current session
 
 	public :
 		/// Octomanager contructor
-		octomanager( octonet* );
-		/// Print a error message in chat
-		void err( std::string );
+		octomanager( octosession* );
 		/// add a new octouser to the room
 		void add_user( octouser* );
 		/// Update the subject of a room

@@ -32,15 +32,6 @@
  * @version 0.1
  */
 
-#include <string>
-
-#include "octonet/octonet.hpp"
-
-#include "octochat/octouser.hpp"
-#include "octochat/octomail.hpp"
-#include "octochat/octoroom.hpp"
-
-#include "octochat/network/octochat_protocol.hpp"
 #include "octochat/octostate/session.hpp"
 
 /**
@@ -92,7 +83,7 @@ class connected_octostate : public octostate
 class deconnected_octostate : public octostate
 {
 	public:
-			/**
+		/**
 		 * constructor
 		 * @param[in] session The current session
 		 */
