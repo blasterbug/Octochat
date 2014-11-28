@@ -18,6 +18,6 @@ lib octomanager : src/octochat/network/octomanager.cpp ;
 
 exe octowatch : src/octowatch/octowatch.cpp octonet ;
 exe octoglobalchat : src/octoglobalchat/octoglobalchat.cpp octonet ;
-exe octochat : src/octochat/chat.cpp octonet octomanager ;
+#exe octochat : src/octochat/chat.cpp octonet octomanager ;
 
 install build : octowatch octoglobalchat octochat ;

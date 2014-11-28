@@ -32,7 +32,7 @@
  * @version 0.1
  */
 
-#include "octochat/octostate/session.hpp"
+#include "octochat/octostate/octosession.hpp"
 
 /**
  * Class to represent a state
@@ -49,11 +49,17 @@ class octostate
 		 */
 		virtual octostate( octosession* session) = 0;
 		/// connection transition
-		void connect(){}
+		void connect() {}
 		/// deconnection transition
-		void disconnect(){}
+		void disconnect() {}
 		/// waiting transition
-		void wait(){}
+		void wait() {}
+		void start_session() {}
+		void close_session() {}
+		void receive_mail( octomail mail ) {}
+		void receive_error( std::string error ) {}
+		void post_mail( octomail mail ) {}
+		void post_error( std::string error ) {}
 };
 
 /**
@@ -77,6 +83,22 @@ class connected_octostate : public octostate
 		{
 			__session->set_current_state( __session->get_waiting_state() );
 		}
+		void receive_mail( octomail mail )
+		{
+			__session.get_octomanager()->post( mail );
+		}
+		void receive_error( std::string error )
+		{
+			__session.get_octomanager()->post( octomail( "ERROR", "world", error ) );
+		}
+		void post_mail( octomail mail )
+		{
+			__session.get_octopostman()->post_mail( mail );
+		}
+		void post_error( std::string error )
+		{
+			__session.get_octomanager()->post_error( error );
+		}
 };
 
 /// deconnected state class
@@ -94,6 +116,13 @@ class deconnected_octostate : public octostate
 		void wait()
 		{
 			__session->set_current_state( __session->get_waitting_state() );
+		}
+		void start_session() {
+			__session->connexion();
+		}
+		void set_nickname( std::string nickname )
+		{
+			//__session->
 		}
 };
 

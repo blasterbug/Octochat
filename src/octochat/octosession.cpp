@@ -29,7 +29,37 @@
  * @version 0.1
  */
 
-octosession::octosession();
+#include <typeinfo.h>
+		/// attributs for state pattern
+		/// the deconnected state
+		const deconnected_octostate __deco_state;
+		/// the waiting state
+		const waiting_octostate __wait_state;
+		/// the connected state
+		const connected_octostate __connected_state;
+
+		/// current state of the session
+		octostate* __current_state;
+		/// room for the session
+		octoroom* __room;
+		/// user name for the session
+		std::string __name;
+		/// manage local chat
+		octomanager* __local_manager;
+		/// manage octonetwork output
+		octopostman* __postman;
+		
+/**
+ * constructor
+ */
+octosession::octosession()
+	__deco_state( deconnected_octostate( this ) ),
+	__wait_state( waiting_octostate( this ) ),
+	__connected_state( connected_octostate( this ) ),
+	__current_state( __deco_state ),
+	__local_manager( octomanager( this ) ),
+	__postman( octopostman( this ) )
+{}
 /**
  * getter for state pattern : deconnected state
  * @param[out] deconnected state
@@ -57,7 +87,7 @@ waiting_octostate octosession::get_waiting_state() const
  */
 void octosession::set_current_state( const octostate& state ) const
 {
-	__current_state = state;
+	typeid(__current_state) = typeid(state);
 }
 /**
  * post a new mail into the room
@@ -96,17 +126,14 @@ void octosession::send_error( std::strig mesage )
  * start the chat session
  * @param[in] nickname Nickname for the user
  */
-void octosession::start_session( std::string )
+void start_session( std::string nickname)
 {
-	// send the error message to user who try to connect
-	octopeer peer( *user->get_peer() );
-	octoquery query;
-	query.headers_map[ OCTOCHAT_PROTOCOL_ERR ] = OCTOCHAT_ERR_USERNAME_IN_USE;
-	query.content_str = err_message;
-	__network->send_query( peer, query ); /// \todo query send ?
+	__current_state->
 }
 /**
- * Stp the current session
- * @param[out] ??
+ * Close the current session
  */
-void octosession::end_session();
+void octosession::close_session()
+{
+	__current_state.disconnect();
+}

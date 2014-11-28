@@ -68,56 +68,32 @@ class octosession
 		octopostman* __postman;
 
 	public:
-	/**
-	 * constructor
-	 */
+	/// constructor
 	octosession();
-	/**
-	 * getter for state pattern : deconnected state
-	 * @param[out] deconnected state
-	 */
+	/// getter for state pattern : deconnected state
 	deconnected_octostate get_deconnected_state() const;
-	/** getter for state pattern : connected state
-	 * @param[out] connected state
-	 */
+	/// getter for state pattern : connected state
 	connected_octostate get_connected_state() const ;
-	/** getter for state pattern : waiting state
-	 * @param[out] waiting state
-	 */
+	/// getter for state pattern : waiting state
 	waiting_octostate get_waiting_state() const;
-	/** setter for state pattern
-	 * @param[in] state The new state of the session
-	 */
+	/// setter for state pattern
 	void set_current_state( const octostate& state ) const;
-	/**
-	 * post a new mail into the room
-	 * @param[in] mail to post into an octoroom
-	 */
+	/// get the current manager for the session
+	octomanager* get_octosmanager();
+	/// Get the current postman for the current session
+	octopostman* get_octopostman();
+	/// post a new mail into a room
 	void receive_mail( octomail );
-	/**
-	 * send a mail to the octonetwork
-	 * @param[in] mail  The octomail to send
-	 */
+	/// send a mail to the octonetwork
 	void send_mail( octomail );
-	/**
-	 * Receive an error from the network
-	 * @param[in] error Error string from the octonetwork
-	 */
+	/// Receive an error from the network
 	void receive_error( std::string );
-	/**
-	 * Send a error over the octonetwork
-	 */
+	/// Send a error over the octonetwork
 	void send_error( std::strig );
-	/**
-	 * start the chat session
-	 * @param[in] nickname Nickname for the user
-	 */
+	/// start the chat session
 	void start_session( std::string );
-	/**
-	 * Stp the current session
-	 * @param[out] ??
-	 */
-	void end_session();
+	/// close the current session
+	void close_session();
 
 }
 #endif

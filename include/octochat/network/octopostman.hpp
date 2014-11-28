@@ -114,6 +114,7 @@
 			// if there is not other peer
 			if( __connected_peers.empty() )
 			{
+				__session.start( name );
 			}
 			else
 			{

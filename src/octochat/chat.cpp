@@ -2,7 +2,7 @@
 
 #include "octonet/octonet.hpp"
 
-//#include "octochat/octosession.hpp"
+#include "octochat/octosession.hpp"
 
 
 /// \todo an curses interface
