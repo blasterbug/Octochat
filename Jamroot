@@ -14,7 +14,7 @@ project octonet
     ;
 
 lib octonet : src/octonet/tcp_server.cpp src/octonet/udp_server.cpp ;
-lib octomanager : src/octochat/network/octomanager.cpp ;
+#lib octomanager : src/octochat/network/octomanager.cpp ;
 
 exe octowatch : src/octowatch/octowatch.cpp octonet ;
 exe octoglobalchat : src/octoglobalchat/octoglobalchat.cpp octonet ;
