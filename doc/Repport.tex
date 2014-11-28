@@ -26,14 +26,15 @@
 		\paragraph{}{
 		Ce projet a été réalisé dans le cadre du cours \textit{Objet et développement d'applications}
 		dans lequel M. \textsc{Richoux} nous a enseigné l'utilisation des \textit{Design Patterns}.
-		L'ambition de ce projet ne s'arrête pas là, car nous souhaitons poursuivre le développement de notre
+		L'ambition de ce projet ne s'arrête pas là car nous souhaitons poursuivre le développement de notre
 		programme. Le sujet de notre projet est la création d'un client de chat décentralisé dans l'esprit du
 		\textit{peer to peer}.
 		}
 		\paragraph{}{
 		Octochat, notre programme, est donc un client de chat qui n'a pas besoin de serveur central pour fonctionner.
 		Lancer le programme, choisissez un nom d'utilisateur est c'est parti. Cependant, la mise en place d'une telle
-		application n'est pas aisée. Ce rapport retrace la conception d'Octochat jusqu'au 26 novembre 2014. Il met en évidence les points qui ont posés problèmes et les différents \textit{patterns} utilisés.
+		application n'est pas aisée. Ce rapport retrace la conception d'Octochat jusqu'au 26 novembre 2014. Il met en
+		évidence les points qui ont posés problèmes et les différents \textit{patterns} utilisés.
 		}
 		\paragraph{}{
 		Dans une première partie, nous verrons comment compiler et lancer notre projet. Dans cette même
@@ -47,7 +48,7 @@
 
 		\subsection{Compilation du programme}
 			\paragraph{Compilation}{
-			Notre programme utilise deux bibliothèques à savoir la librairie standard du langage ( \textit{STL} et \textit{Boost}, plus précisément:
+			Notre programme utilise deux bibliothèques à savoir la librairie standard du langage C++ ( \textit{STL} et \textit{Boost}, plus précisément:
 			\begin{itemize}
 				\item[Boost.Build] le système de compilation (équivalant de \textit{make} et des \textit{Makefile} mais plus portable)
 				\item[Boost.Thread] pour les \textit{threads} et les \textit{mutex}
@@ -70,7 +71,7 @@
 			\end{itemize}
 
 			}
-			\paragraph{Remarque}{
+			\subparagraph{Remarque}{
 				Il est possible d’installer \textit{Boost} avec un gestionnaire de paquets à condition d’avoir les privilèges suffisants.
 			}
 
@@ -95,14 +96,14 @@
 			\paragraph{}{
 			Dès le début, nous avons décidé de diviser notre application en couches.
 			Une première couche s'occupe de la gestion du réseau à proprement parler. Une seconde couche,
-			qui pourrait être découper elle aussi en deux parties s'occupe des aspect applicatif du programme.
+			qui pourrait être découper elle aussi en deux parties s'occupe de l'aspect applicatif du programme.
 			}
 
 			\paragraph{Couche Réseau}{
 			Lors du développement de la couche réseau, nous avons cherché à découplé le plus possible les
 			applications clientes de l’application réseau c’est pourquoi nous avons utilisé le \textit{pattern
 			abstract factory}. \\
-			En ce qui concerne la communication des données entre la couche réseau et les application clientes,
+			En ce qui concerne la communication des données entre la couche réseau et les applications clientes,
 			l’utilisation du \textit{pattern observer} s’est révélé naturel.
 			}
 
@@ -120,14 +121,14 @@
 		
 			\paragraph{}{
 			Les pairs c’est à dire les instances de l’application réseau sont appelées \textit{octopeer}, 
-			une \textit{octopeer} est identifiée de manière unique grâce à un UUID généré à sa création. \newline
-			Une \textit{octopeer} peut transmettre des données via une \textit{octoquery}, une \textit{octoquery} est composée
-			 d’une string contenant les données (données sérialisées) et d’une \textit{octopeer} correspondant à 
+			une \textit{octopeer} est identifiée de manière unique grâce à un UUID généré à sa création.
+			Une \textit{octopeer} peut transmettre des données via une \textit{octoquery}, une \textit{octoquery} est
+			composée d’une string contenant les données (données sérialisées) et d’une \textit{octopeer} correspondant à 
 			 l’émetteur ou bien au destinataire suivant que l’on envoie ou bien que l’on reçoive cette \textit{octoquery}.
 			}
 			
 			\paragraph{}{
-			Dans notre cas, nous avons voulu que “décentralisé” rime avec “autonomie”, c’est pourquoi nous 
+			Dans notre cas, nous avons voulu faire rimer “décentralisé” avec “autonomie”, c’est pourquoi nous 
 			avons identifié deux services distincts capables de gérer les entrées/sorties des pairs.
 			}
 			\begin{itemize}
@@ -136,19 +137,19 @@
 				(le mot serveur est un abus de langage mais dans ce cas le concept associé est plus intuitif). 
 				Un service d’exploration très simple pourrait tout simplement consister à lire un fichier contenant
 				des informations de connexions sur les pairs (ip/port, nom d’hôte) ou bien de manière plus évoluée, 
-				envoyer un \textit{broadcast} sur le réseau local et observer les réponses puis tester ces pairs potentielles 
-				grâce au second service.
+				envoyer un \textit{broadcast} sur le réseau local et observer les réponses puis tester ces pairs 
+				potentielles grâce au second service.
 				
 				\item Le second service propose de tester si une pair se cache derrière les informations fournis 
 				par l’explorateur, puis de transmettre des \textit{octoquery} aux pairs vérifiées, il s’agit du \textit{communicator\_server}.
 			\end{itemize}
 			
 			\paragraph{}{
-			L’avantage de cette approche est l’indépendance envers les protocoles de communications, en effet
+			L’avantage de cette approche est l’indépendance envers les protocoles de communication, en effet
 			une \textit{octoquery} peut très bien être encapsulée dans un paquet TCP ou bien être transférée via HTTP,
-			 voire même fonctionner uniquement sur la boucle locale.
+			voire même fonctionner uniquement sur la boucle locale.
 			}
-			\begin{figure}[!h]
+			\begin{figure}[!ht]
 					\centering
 					\includegraphics[scale=0.4]{UML/octonet_factory1.png}
 					\caption{\label{factory_uml} Diagramme UML du \textit{pattern abstract factory}}
@@ -163,18 +164,21 @@
 				
 			\paragraph{}{
 			Nous avons donc implémenté \textit{server\_factory} avec le protocole UDP pour explorer le réseau et le
-			protocole TCP pour la communication entre les pairs. \newline
-			\textit{udp\_server}: la fonction explore se charge d’envoyer un \textit{broadcast} contenant les informations de
-			connexion (à savoir l’adresse IP et le port du serveur de communication), la fonction \textit{run} 
-			se chargera donc de lancer le serveur qui réceptionnera ces informations pour les
+			protocole TCP pour la communication entre les pairs.
+			}
+			\paragraph{\textit{udp\_server}}{
+			La fonction explore se charge d’envoyer un \textit{broadcast} contenant les
+			informations de connexion (à savoir l’adresse IP et le port du serveur de communication), la 
+			fonction \textit{run} se chargera donc de lancer le serveur qui réceptionnera ces informations pour les
 			transmettre au \textit{communicator\_server}.
 			}
 			
-			\paragraph{}{
-			\textit{tcp\_server}: la fonction \textit{check\_peer} se charge d’établir une connexion avec une potentielle octopeer
-			(comme nous le verrons dans la partie sur le pattern observer, si la connexion réussie alors les
-			\textit{octopeer\_observer} seront notifiés), la fonction \textit{send\_query} permet d’envoyer une \textit{octoquery} et 
-			\textit{run} lance le serveur TCP qui recevra les \textit{octoquery} (et notifiera les \textit{octoquery\_observer}).
+			\paragraph{\textit{tcp\_server}}{
+			La fonction \textit{check\_peer} se charge d’établir une connexion avec une potentielle \textit{octopeer}
+			(comme nous le verrons dans la partie sur le \textit{pattern observer}. Si la connexion réussie alors les
+			\textit{octopeer\_observer} seront notifiés). La fonction \textit{send\_query} permet d’envoyer une
+			\textit{octoquery} et \textit{run} lance le serveur TCP qui recevra les \textit{octoquery} 
+			(et notifiera les \textit{octoquery\_observer}).
 			}
 			
 			\paragraph{}{
@@ -185,28 +189,29 @@
 		\subsection{Observer}
 		
 			\paragraph{}{
-			Ensuite pour interagir avec les applications nous avons naturellement utilisé le \textit{design pattern observer},
-			visible à la figure \ref{observer_uml}.
+			Ensuite pour interagir avec les applications nous avons naturellement utilisé le 
+			\textit{design pattern observer}, visible à la figure \ref{observer_uml}.
 			}
 
-			\begin{figure}[!h]
+			\begin{figure}[!ht]
 				\centering
 				\includegraphics[scale=0.65]{UML/octonet_observer1.png}
 				\caption{\label{observer_uml} Diagramme UML du \textit{pattern Observer}}
 			\end{figure}
 			
 			\paragraph{}{
-			En effet, les applications pourrons être notifiées de la connexion/déconnexion d’une
+			En effet, les applications pourront être notifiées de la connexion ou déconnexion d’une
 			\textit{octopeer} en implémentant l’interface \textit{octopeer\_observer}.
 			}
 			\paragraph{}{
 			Ensuite les applications devront être notifiées de l’arrivée d’une nouvelle \textit{octoquery}. 
-			Pour cela, nous avons rajouté un système de filtre très simple pour que les applications 
-			puissent communiquer avec leurs homologues distant voir même avec d’autres applications. \newline
-			Pour cela, nous avons ajouté un membre \textit{app\_id} aux \textit{octoquery} et les applications réalisant 
-			l’interface \textit{octoquery\_observer} retournent leur propre app\_id. Donc, lorsqu’une \textit{octoquery}
-			est reçue, seules les applications ayant le même \textit{app\_id} que l’\textit{octoquery} sont notifiées 
-			(un \textit{octoquery\_observer} retournant un \textit{app\_id} vide sera toujours notifié).
+			Pour cela, nous avons ajouté un système de filtre très simple pour que les applications 
+			puissent communiquer avec leurs homologues distant, voire même avec d’autres applications. \newline
+			Pour cela, nous avons ajouté un membre \textit{app\_id} aux \textit{octoquery} et les applications implémentant 
+			l’interface \textit{octoquery\_observer} retournent leur propre \textit{app\_id}. 
+			Donc, lorsqu’une \textit{octoquery} est reçue, seules les applications ayant le même 
+			\textit{app\_id} que l’\textit{octoquery} sont notifiées (un \textit{octoquery\_observer} retournant 
+			un \textit{app\_id} vide sera toujours notifié).
 			}
 
 			\paragraph{}{
@@ -217,41 +222,54 @@
 			}
 			
 			\paragraph{}{
-			La classe \textit{octonet\_manager} est donc à la fois la classe cliente du pattern abstract \textit{factory} 
-			mais aussi la classe observable du \textit{pattern observer}, nous avons donc rajouté la façade 
-			\textit{octonet} pour masquer certaines fonctionnalités aux applications (notamment les fonctions de notification).
+			La classe \textit{octonet\_manager} est donc à la fois la classe cliente du \textit{pattern abstract factory} 
+			mais aussi la classe \textit{observable} de l'\textit{observer}. Nous avons donc rajouté la façade 
+			\textit{octonet} pour masquer certaines fonctionnalités aux applications (notamment les fonctions 
+			de notification).
 			}
-		
-		\newpage 
 		
 		\subsection{State}
 		
 			\paragraph{}{
 			L'une des difficultés rencontrés lors de ce projet était la gestion des utilisateurs. Ces derniers doivent
-			utiliser des pseudonymes uniques dans chaque salon. Le problème est que le salon que veut rejoindre un utilisateur
-			se trouve sur plusieurs postes. Dans quel poste alors se connecter en premier ? Et dans le cas où le nom
-			de l'utilisateur est pris, qui doit l'avertir ? Ces questions se règlent facilement en y réfléchissant un peu plus.
-			L'utilisateur se connectera simultanément
-			Le \textit{pattern state} nous a permis de gérer la connexion des utilisateurs. Le diagramme UML est visible à la figure \ref{state_uml}.
+			utiliser des pseudonymes uniques dans chaque salon. Le problème est que le salon que peut vouloir rejoindre un
+			utilisateur se trouve sur plusieurs postes. Dans quel poste alors se connecter en premier ? Et si l'utilisateur
+			a choisi un pseudonyme déjà utilisé, qui doit le prévenir ? Ces questions se règlent facilement en y
+			réfléchissant un peu plus. L'utilisateur se connectera simultanément aux divers salons distants.
+			Mais s'agissant d'une application réseau, il faut gérer la latence du réseau. La connexion et la 
+			déconnexion d'un utilisateur au sein d'un salon n'est pas instantané. On a alors introduit le 
+			\textit{pattern state}. Ainsi, l'application a trois états.
 			}
 			
 			\begin{figure}[!h]
 				\centering
 				\input{schema/automate_state.tex}
-				\caption{\label{state_schema} Automate des transitions des états de \textit{octosession}}
+				\caption{\label{state_schema} Automate du comportement de \textit{octosession}}
 			\end{figure}
 			
-			\paragraph{}{
-			Donc, une \textit{octosession}, au démarrage de l'application, est dans l'état \textbf{déconnecté}.
-			Ensuite, l'utilisateur donne un pseudonyme. La session passe alors dans l'état d'\textbf{attente}.
-			Si il y a des pairs, qui font tourner \textit{octochat} sur le réseau, une requête est envoyée à ces pairs 
-			avec le nom de nouvel utilisateur. Si le nom est pris, la pair qui est désignée comme \textit{maître} 
-			envoie le message d'erreur correspondant. Sinon, une approbation est retourné à l'utilisateur qui est 
-			alors \textbf{connecté}. \newline
-			Si il n'y a pas d'autre pair sur le réseau, la session passe directement dans l'état \textbf{connecté}.
+			\paragraph{}{Le premier état, \textbf{déconnecté}, est l'état dans lequel l'application démarre. Une fois que
+			l'utilisateur a choisi un pseudonyme et qu'il se connecte, l'application passe dans l'état \textbf{attente}.
+			Lorsque l'application rentre dans cet état, elle va chercher à se connecter aux pairs locales (si il y en
+			a). \newline
+			Deux cas de figure sont envisageables. 
+			    \begin{itemize}
+	                \item Le premier cas a considérer, le plus simple a traité, est lorsque le utilisateur 
+	                est effectivement connecté à un salon avec le pseudonyme choisi. Le programme est 
+	                alors dans l'état \textbf{connecté}.
+		            \item Le second cas qui peut survenir est lorsque le nom de l'utilisateur est déjà 
+		            utilisé. L'application retourne alors dans l'état \textbf{déconnecté} et l'utilisateur 
+		            est invité a choisir un autre pseudonyme.
+			    \end{itemize}
 			}
 			
-			\begin{figure}[!h]
+			\paragraph{}{
+			Le \textit{pattern state} nous permet à présent de gérer la connexion des utilisateurs. D'autre part,
+			on peut maintenant influer sur le comportement de l'application. En effet, suivant les états du programme,
+			des actions sont autorisées ou interdites à l'utilisateur. Le diagramme UML présentant le \textit{pattern}
+			est visible à la figure \ref{state_uml}.
+			}
+			
+			\begin{figure}[!ht]
 				\centering
 				\includegraphics[scale=0.6]{UML/state.png}
 				%\input{UML/state.tex}
@@ -259,19 +277,25 @@
 			\end{figure}
 			
 			\paragraph{}{
-			On obtient alors le diagramme à la figure \ref{state_uml}. On a donc trois états concrets, \textit{connected\_octostate}, \textit{waiting\_state} et \textit{deconnected\_octostate}.
-			Ces états sont dans le programme transcrit en classes, c'est le principe même du \textit{pattern
-			state}. Ces trois classes héritent de la classe abstraite \textit{octostate}.
-			Dans la classe abstraite on y définit les fonctions membres qui correspondent aux transitions de l'automate.
-			Le comportement par défaut de ces fonctions consiste à ne rien faire. Les classes qui utilisent ces transitions
-			redéfinissent alors le comportement des fonctions.
+			Le diagramme à la figure \ref{state_uml} représente l'automate traduit en terme de classes dans l'application.
+			On a donc trois classes concrètes pour les trois états possibles.
+			    \begin{itemize}
+			        \item[\textit{connected\_octostate}] qui correspond à l'état \textbf{connecté}
+			        \item[\textit{waiting\_state}] qui correspond à l'état \textbf{attente}
+			        \item[\textit{deconnected\_state}] qui correspond à l'état \textbf{déconnecté}
+			    \end{itemize}
+			Ces trois classes héritent de la classe abstraite \textit{octostate}. Dans cette classe abstraite on y définit
+			les fonctions membres qui correspondent aux transitions de l'automate, mais pas seulement. On y met également les
+			fonctions de \textit{octosession} qu'on souhaite activer ou désactiver selon l'état du programme. Le comportement
+			par défaut de toutes ses méthodes consiste à ne rien faire (corps des fonctions vide). Pour activer telle ou
+			telle fonction, on la redéfinie dans la classe de l'état approprié.
 			}
 			\paragraph{}{
 			Dans la classe utilisatrice des états, \textit{octosession}, on construit une instance de chaque états.
 			Ensuite les sélecteurs adéquats nous permettent de récupérer ces instances lorsqu'un état veut franchir 
 			une transitions. \newline
-			Enfin, un modificateur dans la classe \textit{octosession} permet de changer l'état courant de l'objet 
-			(stocké dans un attribut). 
+			Pour finir, un modificateur dans la classe \textit{octosession} permet de changer l'état courant de l'objet 
+			(stocké dans un attribut). Seulement les états sont sensés utiliser cette fonction.
 			}
 			
 	\newpage
