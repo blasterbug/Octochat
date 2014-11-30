@@ -2,6 +2,7 @@
 #define OCTOQUERY_HPP
 
 #include <boost/serialization/map.hpp>
+#include <boost/serialization/string.hpp>
 #include <map>
 #include <string>
 
