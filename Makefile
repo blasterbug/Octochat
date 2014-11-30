@@ -18,4 +18,5 @@ endif
 clean: clean.doc
 
 clean.doc:
-	@-rm -r ./doc/build
+	-rm -r ./build
+	-rm -r ./doc/build
