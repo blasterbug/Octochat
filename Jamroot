@@ -14,11 +14,10 @@ project octonet
     ;
 
 lib octonet : src/octonet/tcp_server.cpp src/octonet/udp_server.cpp ;
-lib octomanager : src/octochat/octomanager.cpp ;
-lib octosession : src/octochat/octosession.cpp src/octochat/octostates.cpp ;
+lib octolib : src/octochat/octomanager.cpp src/octochat/octosession.cpp src/octochat/octostates.cpp ;
 
 exe octowatch : src/octowatch/octowatch.cpp octonet ;
 exe octoglobalchat : src/octoglobalchat/octoglobalchat.cpp octonet ;
-exe octochat : src/octochat/chat.cpp octonet octosession octomanager ;
+exe octochat : src/octochat/chat.cpp octonet octolib ;
 
 install build : octowatch octoglobalchat octochat ;
