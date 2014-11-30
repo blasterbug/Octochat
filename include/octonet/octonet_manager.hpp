@@ -259,7 +259,7 @@ public:
         boost::lock_guard<boost::mutex> guard(query_observers_set_mtx_);
         for(std::set<octoquery_observer*>::const_iterator it=query_observers_set_.begin(); it!=query_observers_set_.end(); ++it)
         {
-            if((*it)->app() == app_str)
+            if((*it)->app().empty() || ((*it)->app() == app_str)
             {
                 (*it)->update_query(_query);
             }
