@@ -44,9 +44,9 @@
 #include "octonet/octoquery_observer.hpp"
 #include "octonet/octonet.hpp"
 
-#include "octochat/octouser.hpp"
-#include "octochat/network/octochat_protocol.hpp"
-#include "octochat/network/octomanager.hpp"
+#include "octochat.hpp"
+#include "octochat/octochat_protocol.hpp"
+#include "octochat/octomanager.hpp"
 
 /**
  * Class to observ query from octonetwork
@@ -61,9 +61,9 @@ class octoquery_handler : public octoquery_observer
 		 * Constructor for Octoquery handlers
 		 * @param[in] manager Octomanger to notify when receiving a new query
 		 */
-		octoquery_handler( octomanager* manager  )
+		octoquery_handler( octomanager* manager ) :
+			__manager( manager )
 		{
-			__manager = manager;
 		}
 
 		/**
@@ -88,17 +88,31 @@ class octoquery_handler : public octoquery_observer
 				// add the new user
 				octopeer* user_peer = new octopeer( boost::asio::ip::address::from_string(query.headers_map.find( OCTONET_IP_ADDRESS_HEADER )->second),
 									boost::lexical_cast<unsigned short>(query.headers_map.find( OCTONET_TCP_PORT_HEADER )->second ));
-				__manager->add_user( new octouser( query.content_str, user_peer ) );
+				try {
+					__manager->add_user( new octouser( query.content_str, user_peer ) );
+				}
+				catch( octoroom_exception exp )
+				{
+					//todo send a erro to user_peer
+				}
 			}
 			// subject room update query
 			else if ( OCTOCHAT_PROTOCOL_SUBJECT == header )
+			{
 				__manager->update_subject( query.content_str );
+			}
 			// the query is an error
+			/*
 			else if ( OCTOCHAT_PROTOCOL_ERR == header )
+			{
 				__manager->err( query.content_str );
+			}
+			*/
 			// the query is a weird, tread it like an error
 			else
-				__manager->err( query.content_str );
+			{
+				__manager->post( octomail( "ERROR", OCTOCHAT_DEFAULT_ROOM_NAME, query.content_str ) );
+			}
 		}
 
 		/**

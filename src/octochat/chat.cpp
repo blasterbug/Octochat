@@ -1,7 +1,6 @@
 #include <iostream>
 
 #include "octonet/octonet.hpp"
-
 #include "octochat/octosession.hpp"
 
 
@@ -18,7 +17,7 @@ int main( int argc, char** argv )
 {
 	// start local server
 	octonet net;
-	octosession session;
+	octosession session( &net );
 	//net.run();
 	//octosession session;
 	string en;

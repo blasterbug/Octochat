@@ -1,12 +1,12 @@
- #ifndef OCTOROOM_HPP
- #define OCTOROOM_HPP
+#ifndef OCTOCHAT_HPP
+#define OCTOCHAT_HPP
 
 /**
- * @file octoroom.cpp
+ * @file octouser.hpp
  *
  * @section desc File description
  *
- * header for octoroom class
+ * header for octouser class
  *
  * @section copyright Copyright
  *
@@ -24,24 +24,159 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
- *
+	 *
  * @section infos File informations
  *
- * @date 2014/10/16
+ * @date 2014/10/07
  * @author Benjamin Sientzoff
- * @version 0.1
+ * @version 0.2
  */
 
-class octoroom;
 
 #include <string>
 #include <vector>
 #include <map>
-#include "octochat/octouser.hpp"
-#include "octochat/octomail.hpp"
+
+#include "octonet/octopeer.hpp"
 
 /// Amount of messages to store
-#define MESSAGE_STACK_SIZE 5
+#define OCTOROOM_MESSAGE_STACK_SIZE 5
+
+/// define a default name for octorooms
+#define OCTOCHAT_DEFAULT_ROOM_NAME "octochat hub"
+
+class octouser {
+
+	private:
+		std::string __name; /// user (unique) name
+		const octopeer* __peer; /// "connect" to user
+		bool __alive; /// Is the user on/offline ?
+
+	public:
+
+		/**
+		 * Create a new user
+		 * @param[in] name (Nick)name of the user
+		 * @param[in] peer object for an user
+		 */
+		octouser( std::string name, const octopeer* peer) :
+			__name( name ),
+			__peer( peer ),
+			__alive( true )
+		{}
+
+		/**
+		 * Copy contructor, make a copy of the object
+		 * @param[in] tocopy Octo-user to copy
+		 */
+		octouser( const octouser& tocopy ) :
+			__name( tocopy.__name ),
+			__peer( tocopy.__peer ),
+			__alive( tocopy.__alive )
+		{}
+
+		/**
+		 * What is the name of the user ?
+		 * @param[out] Name of the user
+		 */
+		std::string get_name() const
+		{
+			return __name;
+		}
+
+		/**
+		 * Get the octopeer from the user
+		 * @param[out] Octopeer pointer to the octopeer for the user
+		 */
+		const octopeer* get_peer()
+		{
+			return __peer;
+		}
+
+		/**
+		 * Is the user online ?
+		 * @param[out] True if the user is online, else false is returned
+		 */
+		bool is_online() const
+		{
+			return __alive;
+		}
+};
+
+/**
+ * Octomail is a message send by an octouser into an octoroom
+ */
+class octomail
+{
+
+	private:
+		std::string __from; /// Whoe send the message?
+		const std::string __destination; /// Where the message should be posted?
+		std::string __content; /// Content of the message, i.e. text bitch!
+		int __timeStmp; /// When the message was created? (local time) \todo
+
+	public:
+		/**
+		 * constructor for a octo-mail
+		 * @param[in] writer the emitter of the message
+		 * @param[in] adressee Where the mail should be posted ?
+		 * @param[in] text content of the message
+		 */
+		octomail( std::string writer, std::string adressee, std::string text ) :
+			__from( writer ),
+			__destination( adressee ),
+			__content( text ),
+			__timeStmp( 0 ) /// TODO
+		{}
+
+		/**
+		 * copy contructor for octo-mail
+		 * @param[in] tocopy octo-mail to be copied
+		 */
+		octomail( const octomail& tocopy ) :
+			__from ( tocopy.__from ),
+			__destination( tocopy.__destination ),
+			__content( tocopy.__content ),
+			__timeStmp( tocopy.__timeStmp )
+		{}
+
+		/**
+		 * get the string representation of an octouser
+		 * @param[out] name of the octo-user
+		 */
+		const std::string get_writer_name() const
+		{
+			return __from;
+		}
+
+		/**
+		 * Get the content of an octomail
+		 * @param[out] content of the mail
+		 */
+		const std::string get_content() const
+		{
+			return __content;
+		}
+
+		/**
+		 * get the string representation of the octomail
+		 * @param[out] The octomail as a string
+		 */
+		const std::string to_string() const
+		{
+			return __from + " : " + __content;
+		}
+
+		/**
+		 * get the name of the mail destination
+		 * @param[out] destination of the mail
+		 */
+		const std::string get_destinee() const
+		{
+			return __destination;
+		}
+};
+
 
 /**
  * Exceptions throwed by octoroom class
@@ -50,7 +185,7 @@ class octoroom_exception : public std::exception
 {
 	private:
 		std::string __cause; /** store exception description */
-		
+
 	public:
 		/** constructor
 		 * @param[in] cause description of exception origin
@@ -83,7 +218,8 @@ class octoroom
 {
 
 	private:
-		octouser* __creator; /// Who created the room ? -Can be a ghost
+	std::string __roomname; /// The name of the octoroom
+		octouser* __creator; /// Who created the room ?
 		std::string __subject; /// subject of the room
 		std::map < const std::string, octouser* > __user_list; /// octo-users in the room
 		// currently non implmented
@@ -99,11 +235,12 @@ class octoroom
 		 * @param[in] title The subject of the room
 		 */
 		octoroom( octouser* owner, std::string title ) :
+			__roomname( OCTOCHAT_DEFAULT_ROOM_NAME ),
 			__creator( owner ),
 			__subject( title ),
 			__user_list(),
 			__banned_users(),
-			__messages( std::vector< octomail* >( MESSAGE_STACK_SIZE ) ),
+			__messages( std::vector< octomail* >( OCTOROOM_MESSAGE_STACK_SIZE ) ),
 			__last_msg( 0 ),
 			__first_msg( 0 )
 		{}
@@ -154,10 +291,12 @@ class octoroom
 				delete __messages[ __last_msg ];
 			}
 			__messages[ __last_msg++ ] = new octomail( mail );
-			__last_msg %= MESSAGE_STACK_SIZE; // stay in the vector boundaries
+			__last_msg %= OCTOROOM_MESSAGE_STACK_SIZE; // stay in the vector boundaries
+			// if erasing first posted messages
 			if ( __last_msg == __first_msg )
 			{
-				__first_msg = ++__first_msg % MESSAGE_STACK_SIZE;
+				// increment the pointer to it
+				__first_msg = ++__first_msg % OCTOROOM_MESSAGE_STACK_SIZE;
 			}
 		}
 
@@ -177,7 +316,7 @@ class octoroom
 				{
 					ret += __messages[ read_idx++ ]->to_string() + "\n";
 				}
-				read_idx %= MESSAGE_STACK_SIZE;
+				read_idx %= OCTOROOM_MESSAGE_STACK_SIZE;
 			}
 			return ret;
 		}
@@ -200,7 +339,7 @@ class octoroom
 		{
 			return __subject;
 		}
-		
+
 		/**
 		 * change the title of a room
 		 * @param[in] new_subject The new topoc of the octoroom

@@ -28,33 +28,27 @@
  *
  * @date 2014/11/10
  * @author Benjamin Sientzoff
- * @version 0.1
+ * @version 0.2
  */
 
 #include <string>
-#include <map>
 
-#include "octonet/octopeer.hpp"
-#include "octonet/octoquery.hpp"
-#include "octonet/octonet.hpp"
-#include "octonet/octoquery_observer.hpp"
-
-#include "octochat/octoroom.hpp"
-#include "octochat/octouser.hpp"
-#include "octochat/octomail.hpp"
+#include "octochat.hpp"
+//#include "octochat/octosession.hpp"
 
 /***
- * Class to link the local chat to the octonetwork
+ * Manage local octorooms from octonetwork
  */
 class octomanager
 {
 	private :
-		octosession* __session; /// the current session
-		octoroom* __main_room; /// Main room to manager \todo several rooms
+		//octosession* __session; /// the current session
+		octoroom* __main_room; /// Main room to manager
+		// std::map< std::string, octoroom* > __rooms; \todo several rooms
 
 	public :
 		/// Octomanager contructor
-		octomanager( octosession* );
+		octomanager();
 		/// add a new octouser to the room
 		void add_user( octouser* );
 		/// Update the subject of a room

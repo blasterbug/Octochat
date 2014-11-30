@@ -44,11 +44,8 @@
 #include "octonet/octopeer_observer.hpp"
 #include "octonet/octonet.hpp"
 
-#include "octochat/octouser.hpp"
-#include "octochat/octomail.hpp"
-#include "octochat/octoroom.hpp"
-
-#include "octochat/network/octochat_protocol.hpp"
+#include "octochat.hpp"
+#include "octochat/octochat_protocol.hpp"
 
 /**
  * Octopost provides a simple way to send messages over the octonetwork
@@ -59,11 +56,14 @@
 	 private:
 	 /// the server to comunicate
 		octonet* __server;
-		/// map to store connected peers on the network
+		/// the current session
+		//const octosession* __session;
+		/// set to store connected peers on the network
 		std::set< octopeer, octopeer_comparator > __connected_peers;
 
 		/**
 		 * function to send a query for each peer connected
+		 * @param[in] query The octoquery to send to peers
 		 */
 		void __send_query( octoquery query)
 		{
@@ -105,30 +105,30 @@
 
 		/**
 		 * register an user to the octonetwork
-		 * @param[in] name The choosen name for the user
+		 * @param[in] name The choosen nickname for the user
 		 * @param[in] room_name The room to be connected in
-		 * @param[out] true if connected, else false
 		 */
 		void register_user( std::string name, std::string room_name)
 		{
 			// if there is not other peer
 			if( __connected_peers.empty() )
 			{
-				__session.start( name );
+				//__session->connect();
 			}
 			else
 			{
-			// create a query to send to every peer connected
-			// to get the user registered into the other room(s)
-			octoquery query;
-			// add app id in headers
-			query.headers_map[ OCTONET_APP_ID_HEADER ] = OCTONET_APP_ID_HEADER;
-			// add user name in headers
-			query.headers_map[ OCTOCHAT_PROTOCOL_NEW_USER ] = name;
-			// add room name in headers
-			query.headers_map[ OCTOCHAT_PROTOCOL_DESTINEE ] = room_name;
-			// send the query for each peers connected
-			__send_query( query );
+				// create a query to send to every peer connected
+				// to get the user registered into the other room(s)
+				octoquery query;
+				// add app id in headers
+				query.headers_map[ OCTONET_APP_ID_HEADER ] = OCTONET_APP_ID_HEADER;
+				// add user name in headers
+				query.headers_map[ OCTOCHAT_PROTOCOL_NEW_USER ] = name;
+				// add room name in headers
+				query.headers_map[ OCTOCHAT_PROTOCOL_DESTINEE ] = room_name;
+				// send the query for each peers connected
+				__send_query( query );
+			}
 		}
 
 		/**
@@ -148,7 +148,7 @@
 			// add content
 			query.content_str = mail.get_content();
 			// final send the query
-			__send_query( query);
+			__send_query( query );
 		}
 
 };

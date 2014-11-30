@@ -1,12 +1,10 @@
-#ifndef OCTOCHAT_PROTOCOL_HPP
-#define OCTOCHAT_PROTOCOL_HPP
 /**
- * @file octochat_protocol.hpp
+ * @file octomanager.cpp
  *
  * @section desc File description
  *
- * Header file to define severak macros for Octochat protocol
- * 
+ * file to manage network query from octonet, implementation
+ *
  * @section copyright Copyright
  *
  *
@@ -31,24 +29,42 @@
  * @version 0.1
  */
 
+#include "octochat.hpp"
+#include "octochat/octomanager.hpp"
+//#include "octochat/octoquery_handler.hpp"
 
 /**
- * Define some usefull constante to share.
- * This constante are use for the network query
+ * Octomanager contructor
+ * @param[in] session The current session
  */
+octomanager::octomanager()
+	//__session( session )
+{
+}
 
- /// header for query 
-#define OCTOCHAT_PROTOCOL_MAIL "msg"
-#define OCTOCHAT_PROTOCOL_NEW_USER "user"
-#define OCTOCHAT_PROTOCOL_USER_NAME "nickaname"
-#define OCTOCHAT_PROTOCOL_AUTH_OK "user accepted"
-#define OCTOCHAT_PROTOCOL_DESTINEE "to"
-#define OCTOCHAT_PROTOCOL_ERR "err"
-#define OCTOCHAT_PROTOCOL_SUBJECT "title"
+/**
+ * add a new octouser to the room
+ * @param[in] user The new octouser to add
+ */
+void octomanager::add_user( octouser* user )
+{
+		__main_room->add_user( user );
+}
 
-/// query content
-#define OCTOCHAT_ERR_USERNAME_IN_USE "username in used"
-#define OCTOCHAT_USERNAME_FREE "username free"
+/**
+ * Update the subject of a room
+ * @param[in] new_sub The subject for a room
+ */
+void octomanager::update_subject( std::string new_sub )
+{
+	__main_room->set_subject( new_sub );
+}
 
-#endif
-
+/**
+ *  Post an new octomail into a room
+ * @param[in] mail Message to post
+ */
+void octomanager::post( octomail mail )
+{
+	__main_room->post( mail );
+}

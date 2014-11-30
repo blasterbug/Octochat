@@ -3,7 +3,7 @@
  *
  * @section desc File description
  *
- * Define a session in the octosystem, use state design pattern
+ * Define a session in the octosystem, use state design pattern by GoF
  *
  * @section copyright Copyright
  *
@@ -26,114 +26,146 @@
  *
  * @date 2014/11/10
  * @author Benjamin Sientzoff
- * @version 0.1
+ * @version 0.2
  */
 
-#include <typeinfo.h>
-		/// attributs for state pattern
-		/// the deconnected state
-		const deconnected_octostate __deco_state;
-		/// the waiting state
-		const waiting_octostate __wait_state;
-		/// the connected state
-		const connected_octostate __connected_state;
+#include <string>
+#include "octochat/octosession.hpp"
+#include "octochat/octostates.hpp"
+#include "octochat/octoquery_handler.hpp"
 
-		/// current state of the session
-		octostate* __current_state;
-		/// room for the session
-		octoroom* __room;
-		/// user name for the session
-		std::string __name;
-		/// manage local chat
-		octomanager* __local_manager;
-		/// manage octonetwork output
-		octopostman* __postman;
-		
 /**
  * constructor
+ * @param[in] server Octonet instance
  */
-octosession::octosession()
+octosession::octosession( octonet* server ) :
+	// initiate states
 	__deco_state( deconnected_octostate( this ) ),
 	__wait_state( waiting_octostate( this ) ),
 	__connected_state( connected_octostate( this ) ),
-	__current_state( __deco_state ),
-	__local_manager( octomanager( this ) ),
-	__postman( octopostman( this ) )
-{}
+	__current_state( &__deco_state ),
+	// initiate session stuffs
+	__local_manager(),
+	__postman( new octopostman( server ) )
+{
+	// register an observer to get notified on new queries
+	server->add_query_observer( new octoquery_handler( __local_manager ) );
+}
+
 /**
- * getter for state pattern : deconnected state
+ *  getter for state pattern : deconnected state
  * @param[out] deconnected state
  */
-deconnected_octostate octosession::get_deconnected_state() const
+octostate octosession::get_deconnected_state()
 {
 	return __deco_state;
 }
-/** getter for state pattern : connected state
+/**
+ * getter for state pattern : connected state
  * @param[out] connected state
  */
-connected_octostate octosession::get_connected_state() const
+octostate octosession::get_connected_state()
 {
 	return __connected_state;
 }
-/** getter for state pattern : waiting state
+/**
+ * getter for state pattern : waiting state
  * @param[out] waiting state
  */
-waiting_octostate octosession::get_waiting_state() const
+octostate octosession::get_waiting_state()
 {
 	return __wait_state;
 }
-/** setter for state pattern
- * @param[in] state The new state of the session
+/**
+ * setter for state pattern
+ * @param[in] state The nex state
+ * This function is supposed to be only called by octostate objects
  */
-void octosession::set_current_state( const octostate& state ) const
+void octosession::set_current_state( octostate state )
 {
-	typeid(__current_state) = typeid(state);
+	__current_state = &state;
 }
 /**
- * post a new mail into the room
- * @param[in] mail to post into an octoroom
+ * When the session is connected
+ */
+void octosession::connect()
+{
+	__current_state->connect();
+}
+/**
+ * When the session is being disconnected
+ */
+void octosession::disconnect(){
+	__current_state->disconnect();
+}
+/**
+ *  get the current manager for the session
+ * @param[out] reference to octomanager for the session
+ */
+octomanager* octosession::get_octomanager()
+{
+	return __local_manager;
+}
+/**
+ * Get the current postman for the current session
+ * @param[out] reference to the octopostman for the session
+ */
+octopostman* octosession::get_octopostman()
+{
+	return __postman;
+}
+/**
+ *  When receiving octomails from octonetwork
+ * @param[in] mail The octomail to post in the local room
  */
 void octosession::receive_mail( octomail mail )
 {
-	__manager.post( mail );
+	__current_state->receive_mail( mail );
 }
 /**
- * send a mail to the octonetwork
- * @param[in] mail  The octomail to send
+ * send a mail over the octonetwork
+ * @param[in] mail octomail to send
  */
 void octosession::send_mail( octomail mail )
 {
-	__postman.send( mail )
-}
-/**
- * Receive an error from the network
- * @param[in] error Error string from the octonetwork
- */
-void octosession::receive_error( std::string );
-/**
- * Send an error over the octonetwork
- * @param[in] message The error to send
- */
-void octosession::send_error( std::strig mesage )
-{
-	octopeer peer( *user->get_peer() );
-	octoquery query;
-	query.headers_map[ OCTOCHAT_PROTOCOL_ERR ] = ??; /// \todo
-	query.content_str = err_message;
-	__network->send_query( peer, query ); /// \todo query send ?
+	__current_state->send_mail( mail );
 }
 /**
  * start the chat session
- * @param[in] nickname Nickname for the user
  */
-void start_session( std::string nickname)
+void octosession::start_session()
 {
-	__current_state->
+	__current_state->start_session();
 }
 /**
- * Close the current session
+ * close the current session
  */
 void octosession::close_session()
 {
-	__current_state.disconnect();
+	__current_state->close_session();
+}
+/**
+ * set the nickname user for the session
+ * @param[in] nickname username for the session
+ */
+void octosession::set_nickname( std::string nickname )
+{
+	__current_state->set_nickname( nickname );
+}
+/**
+ * get the nickname for the session
+ * @return The actual nickname
+ */
+std::string octosession::get_nickname()
+{
+	return __username;
+}
+/**
+ * Change the name of the user
+ * (only callable from octostates )
+ * @param[in] nickname The new nickname
+ */
+void octosession::edit_nickname( std::string nickname )
+{
+	__username = nickname;
 }
