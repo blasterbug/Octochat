@@ -32,9 +32,7 @@
  */
 
 #include <string>
-
 #include "octochat.hpp"
-//#include "octochat/octosession.hpp"
 
 /***
  * Manage local octorooms from octonetwork
@@ -42,13 +40,16 @@
 class octomanager
 {
 	private :
-		//octosession* __session; /// the current session
 		octoroom* __main_room; /// Main room to manager
 		// std::map< std::string, octoroom* > __rooms; \todo several rooms
 
 	public :
 		/// Octomanager contructor
 		octomanager();
+		/// initiate the local octo-room
+		void open_local_octoroom( octouser* , std::string );
+		/// get the name of the room owner
+		std::string get_room_owner_name();
 		/// add a new octouser to the room
 		void add_user( octouser* );
 		/// Update the subject of a room

@@ -49,7 +49,7 @@ octosession::octosession( octonet* server ) :
 	__postman( new octopostman( server ) )
 {
 	// register an observer to get notified on new queries
-	server->add_query_observer( new octoquery_handler( __local_manager ) );
+	server->add_query_observer( new octoquery_handler( __local_manager, this ) );
 }
 
 /**
@@ -168,4 +168,21 @@ std::string octosession::get_nickname()
 void octosession::edit_nickname( std::string nickname )
 {
 	__username = nickname;
+}
+/**
+ * Send a query to an octo-user when he tried to joint
+ * the local octo-room
+ * @param[in] user user for the connection
+ * @param[in] accepted True if the user joined, else false
+ */
+void octosession::notify_user_auth( octouser* user, bool added )
+{
+	if ( added )
+	{
+		__postman->send_auth_ok( user, __username );
+	}
+	else
+	{
+		__postman->send_auth_ko( user );
+	}
 }

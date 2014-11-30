@@ -50,14 +50,13 @@
 /**
  * Octopost provides a simple way to send messages over the octonetwork
  * Octopost postman is also usefull for octouser connection
+ * \todo : user a factory to build queries?
  */
  class octopostman : octopeer_observer
  {
 	 private:
 	 /// the server to comunicate
 		octonet* __server;
-		/// the current session
-		//const octosession* __session;
 		/// set to store connected peers on the network
 		std::set< octopeer, octopeer_comparator > __connected_peers;
 
@@ -124,8 +123,10 @@
 				query.headers_map[ OCTONET_APP_ID_HEADER ] = OCTONET_APP_ID_HEADER;
 				// add user name in headers
 				query.headers_map[ OCTOCHAT_PROTOCOL_NEW_USER ] = name;
+				// and in content
+				query.content_str = name;
 				// add room name in headers
-				query.headers_map[ OCTOCHAT_PROTOCOL_DESTINEE ] = room_name;
+				query.headers_map[ OCTOCHAT_PROTOCOL_ROOM ] = room_name;
 				// send the query for each peers connected
 				__send_query( query );
 			}
@@ -137,18 +138,59 @@
 		 */
 		void send( octomail mail)
 		{
-			// create a new query to send
+			// create the new query to send
 			octoquery query;
 			// add the right app id
 			query.headers_map[ OCTONET_APP_ID_HEADER ] = OCTONET_APP_ID_HEADER;
-			// add the writer name in the header
+			// add the query type in headers
+			query.headers_map[ OCTOCHAT_PROTOCOL_MAIL ] = OCTOCHAT_PROTOCOL_MAIL;
+			// add the writer name in headers
 			query.headers_map[ OCTOCHAT_PROTOCOL_NEW_USER] = mail.get_writer_name();
 			// add the destinee
-			query.headers_map[ OCTOCHAT_PROTOCOL_MAIL ] = mail.get_destinee();
+			query.headers_map[ OCTOCHAT_PROTOCOL_ROOM ] = mail.get_destinee();
 			// add content
 			query.content_str = mail.get_content();
-			// final send the query
+			// finally send the query
 			__send_query( query );
+		}
+
+		/**
+		 * The query to send when a new user is connected in a room
+		 * @param[in] user Approved octo-user
+		 * @param[in] owner The room owner name
+		 */
+		void send_auth_ok( octouser* user, std::string owner )
+		{
+			// create the new query to send
+			octoquery query;
+			// add the right app id
+			query.headers_map[ OCTONET_APP_ID_HEADER ] = OCTONET_APP_ID_HEADER;
+			// add the query type in headers
+			query.headers_map[ OCTOCHAT_PROTOCOL_AUTH_OK ] = OCTOCHAT_PROTOCOL_AUTH_OK;
+			// add room owner in headers
+			query.headers_map[ OCTOCHAT_PROTOCOL_OWNER] = owner;
+			// add content
+			query.content_str = user->get_name();
+			// finally send the query
+			__server->send_query( *(user->get_peer()), query );
+		}
+
+		/**
+		 * send a query to noticed a user he can't joint an octo-room
+		 * @param[in] user Rejected octo-user
+		 */
+		void send_auth_ko( octouser* user )
+		{
+			// create the new query to send
+			octoquery query;
+			// add the right app id
+			query.headers_map[ OCTONET_APP_ID_HEADER ] = OCTONET_APP_ID_HEADER;
+			// add the query type in headers
+			query.headers_map[ OCTOCHAT_PROTOCOL_AUTH_KO ] = OCTOCHAT_PROTOCOL_AUTH_KO;
+			// add user's name in content
+			query.content_str = user->get_name();
+			// finally send the query to octopeer
+			__server->send_query( (*user->get_peer()), query );
 		}
 
 };

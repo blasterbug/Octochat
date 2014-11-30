@@ -99,6 +99,8 @@ class octosession
 	std::string get_nickname();
 	/// Change the name of the user (only callable from octostates
 	void edit_nickname( std::string );
+	/// send a query to an octo-user when he tried to joint the local room
+	void notify_user_auth( octouser*, bool );
 
 };
 #endif

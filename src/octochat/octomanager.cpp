@@ -31,17 +31,31 @@
 
 #include "octochat.hpp"
 #include "octochat/octomanager.hpp"
-//#include "octochat/octoquery_handler.hpp"
 
 /**
  * Octomanager contructor
- * @param[in] session The current session
  */
 octomanager::octomanager()
-	//__session( session )
+{}
+
+/**
+ * open the local octo-room
+ * @param[in] owner owner of the room
+ * @param[in] name The name of the joined octo-room
+ */
+void octomanager::open_local_octoroom( octouser* owner, std::string name )
 {
+	__main_room = new octoroom( owner, name );
 }
 
+/**
+ * Get the name of the room owner
+ * @param[out] Name of the octoroom owner
+ */
+std::string octomanager::get_room_owner_name()
+{
+	return __main_room->get_owner_name();
+}
 /**
  * add a new octouser to the room
  * @param[in] user The new octouser to add
@@ -57,7 +71,7 @@ void octomanager::add_user( octouser* user )
  */
 void octomanager::update_subject( std::string new_sub )
 {
-	__main_room->set_subject( new_sub );
+	//__main_room->set_subject( new_sub );
 }
 
 /**

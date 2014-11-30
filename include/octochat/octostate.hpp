@@ -1,11 +1,12 @@
-#ifndef OCTOCHAT_PROTOCOL_HPP
-#define OCTOCHAT_PROTOCOL_HPP
+#ifndef OCTOSTATE_HPP
+#define OCTOSTATE_HPP
+
 /**
- * @file octochat_protocol.hpp
+ * @file octostate.hpp
  *
  * @section desc File description
  *
- * Header file for cotochat protocol words
+ * Header file for octosession abstract state (design pattern from GoF)
  *
  * @section copyright Copyright
  *
@@ -31,22 +32,30 @@
  * @version 0.1
  */
 
+#include <string>
+
+#include "octochat.hpp"
 
 /**
- * Define octochat protocol words
+ * Class to represent a state
  */
-
-/// headers for query
-#define OCTOCHAT_PROTOCOL_NEW_USER "user"
-#define OCTOCHAT_PROTOCOL_USER_NAME "nickname"
-#define OCTOCHAT_PROTOCOL_AUTH_OK "accepted"
-#define OCTOCHAT_PROTOCOL_AUTH_KO "username in used"
-#define OCTOCHAT_PROTOCOL_MAIL "msg"
-#define OCTOCHAT_PROTOCOL_DESTINEE "to"
-#define OCTOCHAT_PROTOCOL_SUBJECT "title"
-#define OCTOCHAT_PROTOCOL_OWNER "owner"
-#define OCTOCHAT_PROTOCOL_ROOM "roomname"
-#define OCTOCHAT_PROTOCOL_ERR "error"
+class octostate
+{
+	public:
+		/// connection transition
+		void connect();
+		/// deconnection transition
+		void disconnect();
+		/// start the session
+		void start_session();
+		/// stop the session
+		void close_session();
+		/// Set the nickname for the user
+		void set_nickname( std::string );
+		/// receive a new mail
+		void receive_mail( octomail mail );
+		/// send a new octomail
+		void send_mail( octomail mail );
+};
 
 #endif
-

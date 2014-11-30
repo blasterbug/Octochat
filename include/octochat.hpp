@@ -220,7 +220,7 @@ class octoroom
 	private:
 	std::string __roomname; /// The name of the octoroom
 		octouser* __creator; /// Who created the room ?
-		std::string __subject; /// subject of the room
+		std::string __subject; /// subject of the room, for the moment useless
 		std::map < const std::string, octouser* > __user_list; /// octo-users in the room
 		// currently non implmented
 		std::map < const std::string, octouser* > __banned_users; /// Who is not allowed here
@@ -232,12 +232,11 @@ class octoroom
 		/**
 		 * Contructor for octo-room
 		 * @param[in] owner The octo-user who created the room
-		 * @param[in] title The subject of the room
+		 * @param[in] name The name of the room
 		 */
-		octoroom( octouser* owner, std::string title ) :
-			__roomname( OCTOCHAT_DEFAULT_ROOM_NAME ),
+		octoroom( octouser* owner, std::string name ) :
 			__creator( owner ),
-			__subject( title ),
+			__roomname( name ),
 			__user_list(),
 			__banned_users(),
 			__messages( std::vector< octomail* >( OCTOROOM_MESSAGE_STACK_SIZE ) ),
@@ -332,10 +331,19 @@ class octoroom
 		}
 
 		/**
+		 * Get the name of the octoroom
+		 * @param[out] The name of the octoroom
+		 */
+		std::string get_name()
+		{
+			return __roomname;
+		}
+
+		/** currently incompleted implementation, we're working on
 		 * Get the title of a room
 		 * @param[out] The octoroom subject
-		 */
-		std::string get_subject( )
+		 *
+		std::string get_subject()
 		{
 			return __subject;
 		}
