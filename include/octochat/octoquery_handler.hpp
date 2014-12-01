@@ -49,6 +49,7 @@
 #include "octochat/octomanager.hpp"
 #include "octochat/octosession.hpp"
 
+#include <iostream>
 
 /**
  * Class to observ query from octonetwork
@@ -76,7 +77,8 @@ class octoquery_handler : public octoquery_observer
 		void update_query( const octoquery &query )
 		{
 			// get the query type
-			std::string header = query.headers_map.find( OCTONET_APP_ID_HEADER )->second;
+			std::string header = query.headers_map.find( OCTOCHAT_PROTOCOL_HEADER )->second;
+			std::cout << header << std::endl;
 			// the query is a message to post
 			if ( OCTOCHAT_PROTOCOL_MAIL == header )
 			{
@@ -119,8 +121,10 @@ class octoquery_handler : public octoquery_observer
 				{
 					added = false;
 				}
+				std::cout << __session->get_nickname() << new_user->get_name() << std::endl;
 				// if the owner is the local user
-				if ( __manager->get_room_owner_name() == new_user->get_name() )
+				if ( __manager->get_room_owner_name() == new_user->get_name()
+					|| __session->get_nickname() == new_user->get_name() )
 				{
 					// send a query to the user to tell him he can be connected (or not)
 					__session->notify_user_auth( new_user, added );

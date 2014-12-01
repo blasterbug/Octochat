@@ -75,9 +75,9 @@ void octopostman::update_peer(const octopeer& peer, octopeer_state state){
 void octopostman::register_user( std::string name, std::string room_name)
 {
 	// if there is not other peer
-	if( __connected_peers.empty() )
+	if( 2 < __connected_peers.size() )
 	{
-		__session->connect();
+		__session->connect_as_owner();
 	}
 	else
 	{
@@ -86,6 +86,8 @@ void octopostman::register_user( std::string name, std::string room_name)
 		octoquery query;
 		// add app id in headers
 		query.headers_map[ OCTONET_APP_ID_HEADER ] = OCTONET_APP_ID_HEADER;
+		// add query type
+		query.headers_map[ OCTOCHAT_PROTOCOL_HEADER] = OCTOCHAT_PROTOCOL_NEW_USER;
 		// add user name in headers
 		query.headers_map[ OCTOCHAT_PROTOCOL_NEW_USER ] = name;
 		// add room name in headers
@@ -106,6 +108,8 @@ void octopostman::send( octomail mail)
 	octoquery query;
 	// add the right app id
 	query.headers_map[ OCTONET_APP_ID_HEADER ] = OCTONET_APP_ID_HEADER;
+	// add query type
+		query.headers_map[ OCTOCHAT_PROTOCOL_HEADER] = OCTOCHAT_PROTOCOL_MAIL;
 	// add the writer name in the header
 	query.headers_map[ OCTOCHAT_PROTOCOL_NEW_USER] = mail.get_writer_name();
 	// add the destinee

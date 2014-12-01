@@ -74,12 +74,9 @@ void deconnected_octostate::start_session() {
 							__session->get_nickname(), OCTOCHAT_DEFAULT_ROOM_NAME );
 	__session->notify( waiting );
 }
-#include <iostream>
 /// change the nickname for chat
 void deconnected_octostate::set_nickname( std::string& nickname )
 {
-	std::cout << "(1)" << nickname << " edit" << std::endl;
-	std::cout << "(2)" << __session->get_nickname() << " edit" << std::endl;
 	// change name of the user
 	// call set_nickname cause calling this function => infinite loop
 	__session->edit_nickname( nickname );

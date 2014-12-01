@@ -59,6 +59,8 @@ class octosession : public octo_subject
 		/// manage octonetwork output
 		octopostman* __postman;
 
+		octonet* __server;
+
 	public:
 	/// constructor
 	octosession( octonet* );
@@ -66,6 +68,8 @@ class octosession : public octo_subject
 	void set_current_state( octostate* );
 	/// When the session is connected
 	void connect();
+	/// when there are no peers on octonetwork
+	void connect_as_owner();
 	/// When the session is being disconnected
 	void disconnect();
 	/// get the current manager for the session
@@ -75,7 +79,7 @@ class octosession : public octo_subject
 	/// post a new mail into a room
 	void receive_mail( octomail );
 	/// send a mail to the octonetwork
-	void send_mail( octomail );
+	void send_mail( std::string );
 	/// start the chat session
 	void start_session();
 	/// close the current session

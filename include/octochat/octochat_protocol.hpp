@@ -35,6 +35,8 @@
 /**
  * Define octochat protocol words
  */
+ /// Told to octochat app which query is
+#define OCTOCHAT_PROTOCOL_HEADER "octochat header"
  /// for new users
 #define OCTOCHAT_PROTOCOL_NEW_USER "user"
  /// to include username in octoqueries

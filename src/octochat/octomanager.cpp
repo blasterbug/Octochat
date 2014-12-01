@@ -73,7 +73,7 @@ void octomanager::add_user( octouser* user )
  */
 void octomanager::update_subject( std::string new_sub )
 {
-	//__main_room->set_subject( new_sub );
+	__main_room->set_subject( new_sub );
 }
 
 /**

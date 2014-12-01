@@ -42,6 +42,10 @@ class octo_ui : public octobserver
 		set_name_id();
 		__session->start_session();
 	}
+	void send( string message )
+	{
+		__session->send_mail( message );
+	}
 	/**
 	 * Ask to user a nickname for chatting
 	 * And be sure the name it's not already used
@@ -77,7 +81,7 @@ int main( int argc, char** argv )
 		}
 		else
 		{
-			cout << user_input << endl;
+			ui.send( user_input );
 		}
 	}
 

@@ -122,8 +122,10 @@
 				// create a query to send to every peer connected
 				// to get the user registered into the other room(s)
 				octoquery query;
-				// add app id in headers
+				// add app id in headers and put query type as value
 				query.headers_map[ OCTONET_APP_ID_HEADER ] = OCTONET_APP_ID_HEADER;
+				// add query type
+				query.headers_map[ OCTOCHAT_PROTOCOL_HEADER ] = OCTOCHAT_PROTOCOL_NEW_USER;
 				// add user name in headers
 				query.headers_map[ OCTOCHAT_PROTOCOL_NEW_USER ] = name;
 				// and in content
@@ -146,7 +148,7 @@
 			// add the right app id
 			query.headers_map[ OCTONET_APP_ID_HEADER ] = OCTONET_APP_ID_HEADER;
 			// add the query type in headers
-			query.headers_map[ OCTOCHAT_PROTOCOL_MAIL ] = OCTOCHAT_PROTOCOL_MAIL;
+			query.headers_map[ OCTOCHAT_PROTOCOL_HEADER ] = OCTOCHAT_PROTOCOL_MAIL;
 			// add the writer name in headers
 			query.headers_map[ OCTOCHAT_PROTOCOL_NEW_USER] = mail.get_writer_name();
 			// add the destinee
@@ -169,7 +171,7 @@
 			// add the right app id
 			query.headers_map[ OCTONET_APP_ID_HEADER ] = OCTONET_APP_ID_HEADER;
 			// add the query type in headers
-			query.headers_map[ OCTOCHAT_PROTOCOL_AUTH_OK ] = OCTOCHAT_PROTOCOL_AUTH_OK;
+			query.headers_map[ OCTOCHAT_PROTOCOL_HEADER ] = OCTOCHAT_PROTOCOL_AUTH_OK;
 			// add room owner in headers
 			query.headers_map[ OCTOCHAT_PROTOCOL_OWNER] = owner;
 			// add content
@@ -189,7 +191,7 @@
 			// add the right app id
 			query.headers_map[ OCTONET_APP_ID_HEADER ] = OCTONET_APP_ID_HEADER;
 			// add the query type in headers
-			query.headers_map[ OCTOCHAT_PROTOCOL_AUTH_KO ] = OCTOCHAT_PROTOCOL_AUTH_KO;
+			query.headers_map[ OCTOCHAT_PROTOCOL_HEADER ] = OCTOCHAT_PROTOCOL_AUTH_KO;
 			// add user's name in content
 			query.content_str = user->get_name();
 			// finally send the query to octopeer

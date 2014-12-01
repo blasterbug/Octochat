@@ -30,6 +30,7 @@
  */
 
 #include <string>
+
 #include "octochat/octosession.hpp"
 #include "octochat/octostates.hpp"
 #include "octochat/octoquery_handler.hpp"
@@ -43,6 +44,7 @@ octosession::octosession( octonet* server ) :
 	__current_state( new deconnected_octostate( this ) ),
 	// initiate session stuffs
 	__local_manager(),
+	__server( server ) ,
 	__postman( new octopostman( server ) )
 {
 	// register an observer to get notified on new queries
@@ -62,6 +64,14 @@ void octosession::set_current_state( octostate* state )
  */
 void octosession::connect()
 {
+	__current_state->connect();
+}
+/// when there are no peers on octonetwork
+void octosession::connect_as_owner()
+{
+	__local_manager->open_local_octoroom(
+			new octouser( __username, 	new octopeer( __server->ip_address(), __server->tcp_port()) ),
+			OCTOMANAGER_DEFAULT_OWNER_NAME );
 	__current_state->connect();
 }
 /**
@@ -96,20 +106,18 @@ void octosession::receive_mail( octomail mail )
 }
 /**
  * send a mail over the octonetwork
- * @param[in] mail octomail to send
+ * @param[in] message message content to send
  */
-void octosession::send_mail( octomail mail )
+void octosession::send_mail( std::string message )
 {
-	__current_state->send_mail( mail );
+	__current_state->send_mail( octomail( __username, OCTOCHAT_DEFAULT_ROOM_NAME, message) );
 }
-#include <iostream>
 /**
  * start the chat session
  */
 void octosession::start_session()
 {
 	__current_state->start_session();
-	std::cout << "conntection with " << __username << std::endl;
 }
 /**
  * close the current session
@@ -124,7 +132,6 @@ void octosession::close_session()
  */
 void octosession::set_nickname( std::string& nickname )
 {
-	std::cout << "changing username with " << __username << std::endl;
 	__current_state->set_nickname( nickname );
 }
 /**
@@ -143,7 +150,6 @@ std::string octosession::get_nickname()
 void octosession::edit_nickname( std::string nickname )
 {
 	__username = nickname;
-	std::cout << "j'edite " << __username << std::endl ;
 	std::cout << nickname << std::endl;
 	std::cout << __username << std::endl;
 }

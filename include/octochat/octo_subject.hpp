@@ -43,11 +43,11 @@ class octo_subject
 {
 	protected:
 		/// store observers
-		std::set< octobserver* > __observers;
+		std::set< octobserver* > _observers;
 	public:
 		/// contructor
 		octo_subject() :
-			__observers()
+			_observers()
 		{}
 		/**
 		 * Add a new observer
@@ -55,7 +55,7 @@ class octo_subject
 		 */
 		void add_octobserver( octobserver* observer )
 		{
-			__observers.insert( observer );
+			_observers.insert( observer );
 		}
 		/**
 		 * Remove an observer
@@ -63,12 +63,12 @@ class octo_subject
 		 */
 		void remove_octobserver( octobserver* observer )
 		{
-			__observers.erase( observer );
+			_observers.erase( observer );
 		}
 		/// notify octobservers
 		void notify( octostates_name state )
 		{
-			for ( std::set< octobserver* >::iterator it = __observers.begin() ; it != __observers.end(); ++it )
+			for ( std::set< octobserver* >::iterator it = _observers.begin() ; it != _observers.end(); ++it )
 			{
 				(*it)->update( state );
 			}
