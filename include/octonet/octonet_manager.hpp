@@ -1,3 +1,8 @@
+//          Copyright Alexis Giraudet 2014.
+// Distributed under the Boost Software License, Version 1.0.
+//    (See accompanying file LICENSE_1_0.txt or copy at
+//          http://www.boost.org/LICENSE_1_0.txt)
+
 #ifndef OCTONET_MANAGER_HPP
 #define OCTONET_MANAGER_HPP
 
@@ -47,6 +52,10 @@ static const std::string octonet_udp_port_header = OCTONET_UDP_PORT_HEADER;
 using boost::asio::ip::udp;
 using boost::asio::ip::tcp;
 
+/*!
+ * \class octonet_manager
+ * \brief Classe octonet_manager, gèrant les observeurs et les entrées/sorties.
+ */
 class octonet_manager
 {
 private:
@@ -74,12 +83,14 @@ private:
 
 public:
     /*!
-     * \brief 
+     * \brief Constructeur permettant de paramétrer les ports UDP/TCP de octonet_manager.
+     * \param _tcp_port : le port d'écoute TCP
+     * \param _udp_port : le port d'écoute UDP
      */
     octonet_manager(unsigned short _tcp_port, unsigned short _udp_port) : uuid_(to_string(boost::uuids::random_generator()())), tcp_port_(_tcp_port), udp_port_(_udp_port), server_factory_(this) {}
 
     /*!
-     * \brief 
+     * \brief Destructeur de octonet_manager.
      */
     ~octonet_manager(void)
     {
@@ -89,8 +100,8 @@ public:
 	}
 
     /*!
-     * \brief 
-     * \return 
+     * \brief Retourne le service d'entrées/sorties.
+     * \return le service d'entrées/sorties
      */
     boost::asio::io_service& io_service(void)
     {
@@ -98,8 +109,8 @@ public:
     }
 
     /*!
-     * \brief 
-     * \return 
+     * \brief Retourne l'UUID.
+     * \return l'UUID
      */
     std::string uuid(void) const
     {
@@ -107,8 +118,8 @@ public:
     }
 
     /*!
-     * \brief 
-     * \return 
+     * \brief Retourne l'adresse IP.
+     * \return l'adresse IP
      */
     boost::asio::ip::address ip_address(void) const
     {
@@ -116,8 +127,8 @@ public:
     }
 
     /*!
-     * \brief 
-     * \return 
+     * \brief Retourne le port TCP.
+     * \return le port TCP
      */
     unsigned short tcp_port(void) const
     {
@@ -125,19 +136,19 @@ public:
     }
 
     /*!
-     * \brief 
-     * \return 
+     * \brief Retourne le port UDP.
+     * \return le port UDP
      */
     unsigned short udp_port(void) const
     {
         return udp_port_;
     }
 
-	/*!
-	 * \brief 
-	 * \param _peers : 
-	 * \return 
-	 */
+    /*!
+     * \brief Remplit l'ensemble passé en paramètre avec touts les pairs en ligne. 
+     * \param _peers : l'ensemble de pairs à remplir
+     * \return l'ensemble de pairs
+     */
 	 std::set<octopeer, octopeer_comparator>& peers(std::set<octopeer, octopeer_comparator>& _peers)
 	 {
 		 boost::lock_guard<boost::mutex> guard(peers_set_mtx_);
@@ -146,8 +157,8 @@ public:
 	 }
 
     /*!
-     * \brief 
-     * \param _port : 
+     * \brief Ajoute un port UDP de destination.
+     * \param _port : le port UDP
      */
     void add_udp_broadcast_port(unsigned short _port)
     {
@@ -160,8 +171,8 @@ public:
     }
 
     /*!
-     * \brief 
-     * \param _peer : 
+     * \brief Ajoute un pair.
+     * \param _peer : le pair
      */
     void add_peer(const octopeer& _peer)
     {
@@ -181,8 +192,8 @@ public:
     }
 
     /*!
-     * \brief 
-     * \param peer : 
+     * \brief Supprime un pair.
+     * \param peer : le pair
      */
     void rem_peer(const octopeer& _peer)
     {
@@ -197,9 +208,9 @@ public:
     }
 
     /*!
-     * \brief 
-     * \param _query_observer : 
-     * \return 
+     * \brief Ajoute un observeur de requêtes.
+     * \param _query_observer : l'observeur de requêtes
+     * \return vrai si l'observeur de requêtes à bien été ajouté, sinon faux
      */
     bool add_query_observer(octoquery_observer* _query_observer)
     {
@@ -208,9 +219,9 @@ public:
     }
     
     /*!
-     * \brief 
-     * \param _query_observer : 
-     * \return 
+     * \brief Supprime un observeur de requêtes.
+     * \param _query_observer : l'observeur de requêtes
+     * \return vrai si l'observeur de requêtes à bien été supprimé, sinon faux
      */
     bool rem_query_observer(octoquery_observer* _query_observer)
     {
@@ -219,9 +230,9 @@ public:
     }
     
     /*!
-     * \brief 
-     * \param _peer_observer : 
-     * \return 
+     * \brief Ajoute un observeur de pairs.
+     * \param _query_observer : l'observeur de pairs
+     * \return vrai si l'observeur de pairs à bien été ajouté, sinon faux
      */
     bool add_peer_observer(octopeer_observer* _peer_observer)
     {
@@ -230,9 +241,9 @@ public:
     }
     
     /*!
-     * \brief 
-     * \param _peer_observer : 
-     * \return 
+     * \brief Supprime un observeur de pairs.
+     * \param _query_observer : l'observeur de pairs
+     * \return vrai si l'observeur de pairs à bien été supprimé, sinon faux
      */
     bool rem_peer_observer(octopeer_observer* _peer_observer)
     {
@@ -241,8 +252,8 @@ public:
     }
 
     /*!
-     * \brief 
-     * \param query : 
+     * \brief Notifie les observeurs de la réception d'une nouvelle requête.
+     * \param query : la nouvelle requête
      */
     void notify_query_observers(const octoquery& _query)
     {
@@ -267,9 +278,9 @@ public:
     }
     
     /*!
-     * \brief 
-     * \param _peer : 
-     * \param _state : 
+     * \brief Notifie les observeurs du changement de l'état d'un pair.
+     * \param _peer : le pair
+     * \param _state : l'état du pair
      */
     void notify_peer_observers(const octopeer& _peer, octopeer_state _state)
     {
@@ -284,7 +295,7 @@ public:
     }
 
     /*!
-     * \brief 
+     * \brief Lance les services d'entrées/sorties.
      */
     void run(void)
     {
@@ -317,10 +328,10 @@ public:
     }
     
     /*!
-     * \brief 
-     * \param _peer : 
-     * \param _query : 
-     * \return 
+     * \brief Envoie une requête.
+     * \param _peer : le destinataire
+     * \param _query : la requête
+     * \return vrai si la requête a bien été envoyée, sinon faux
      */
     bool send_query(const octopeer& _peer, octoquery& _query)
     {
@@ -398,9 +409,9 @@ public:
     }
 
     /*!
-     * \brief 
-     * \param _port : 
-     * \return 
+     * \brief Émet un broadcast UDP.
+     * \param _port : le port de destination
+     * \return vrai si le broadcast a bien été émis, sinon faux
      */
     bool send_broadcast(unsigned short _port)
     {
