@@ -40,10 +40,11 @@
 #include "octochat/octomanager.hpp"
 #include "octochat/octopostman.hpp"
 #include "octochat/octostate.hpp"
+#include "octochat/octo_subject.hpp"
 /**
  * Class to represent a session
  */
-class octosession
+class octosession : public octo_subject
 {
 	private:
 		/// attributs for state pattern
