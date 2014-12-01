@@ -75,7 +75,7 @@ class octoquery_handler : public octoquery_observer
 		 */
 		void update_query( const octoquery &query )
 		{
-			/// \todo change it to be more flexible and EXPANDABLE
+			// get the query type
 			std::string header = query.headers_map.find( OCTONET_APP_ID_HEADER )->second;
 			// the query is a message to post
 			if ( OCTOCHAT_PROTOCOL_MAIL == header )
@@ -84,12 +84,13 @@ class octoquery_handler : public octoquery_observer
 									query.headers_map.find( OCTOCHAT_PROTOCOL_DESTINEE )->second,
 									query.content_str ) );
 			}
-			// the query is an authenficiation confirmation
+			// the query is an authentication confirmation
 			else if ( OCTOCHAT_PROTOCOL_AUTH_OK == header )
 			{
 				octopeer* owner_peer = new octopeer( boost::asio::ip::address::from_string( query.headers_map.find( OCTONET_IP_ADDRESS_HEADER )->second),
 									boost::lexical_cast<unsigned short>(query.headers_map.find( OCTONET_TCP_PORT_HEADER )->second ));
 				octouser* owner = new octouser( query.headers_map.find( OCTOCHAT_PROTOCOL_OWNER )->second, owner_peer );
+				// start local room
 				__manager->open_local_octoroom( owner, OCTOCHAT_PROTOCOL_ROOM );
 				__session->set_nickname( query.content_str );
 				__session->connect();

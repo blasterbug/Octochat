@@ -43,7 +43,7 @@ octosession::octosession( octonet* server ) :
 	__deco_state( deconnected_octostate( this ) ),
 	__wait_state( waiting_octostate( this ) ),
 	__connected_state( connected_octostate( this ) ),
-	__current_state( &__deco_state ),
+	__current_state( new deconnected_octostate( this ) ),
 	// initiate session stuffs
 	__local_manager(),
 	__postman( new octopostman( server ) )
@@ -130,12 +130,14 @@ void octosession::send_mail( octomail mail )
 {
 	__current_state->send_mail( mail );
 }
+#include <iostream>
 /**
  * start the chat session
  */
 void octosession::start_session()
 {
 	__current_state->start_session();
+	std::cout << "conntection with " << __username << std::endl;
 }
 /**
  * close the current session

@@ -41,6 +41,7 @@
 #include "octochat/octopostman.hpp"
 #include "octochat/octostate.hpp"
 #include "octochat/octo_subject.hpp"
+
 /**
  * Class to represent a session
  */

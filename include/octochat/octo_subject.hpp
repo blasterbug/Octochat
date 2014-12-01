@@ -32,7 +32,10 @@
  */
 
 #include <set>
+
 #include "octochat/octobserver.hpp"
+#include "octochat/octostate.hpp"
+
 /**
  * class to define an observable object
  */
@@ -63,11 +66,11 @@ class octo_subject
 			__observers.erase( observer );
 		}
 		/// notify octobservers
-		void notify()
+		void notify( octostates_name state )
 		{
 			for ( std::set< octobserver* >::iterator it = __observers.begin() ; it != __observers.end(); ++it )
 			{
-				(*it)->update();
+				(*it)->update( state );
 			}
 		}
 };

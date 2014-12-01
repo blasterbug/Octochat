@@ -69,7 +69,7 @@ class deconnected_octostate : public octostate
 		/// start the session (i.e try to connect to peers octorooms )
 		void start_session();
 		/// change the nickname for chat
-		void set_nickname( std::string );
+		void set_nickname( const std::string& );
 };
 
 /// waiting state

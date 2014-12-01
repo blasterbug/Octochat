@@ -34,6 +34,8 @@
 #include <string>
 #include "octochat.hpp"
 
+#define OCTOMANAGER_DEFAULT_OWNER_NAME ""
+
 /***
  * Manage local octorooms from octonetwork
  */

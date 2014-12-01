@@ -35,7 +35,8 @@
 /**
  * Octomanager contructor
  */
-octomanager::octomanager()
+octomanager::octomanager() :
+	__main_room( new octoroom( 0, OCTOMANAGER_DEFAULT_OWNER_NAME ) )
 {}
 
 /**
@@ -45,6 +46,7 @@ octomanager::octomanager()
  */
 void octomanager::open_local_octoroom( octouser* owner, std::string name )
 {
+	delete __main_room;
 	__main_room = new octoroom( owner, name );
 }
 
@@ -62,7 +64,7 @@ std::string octomanager::get_room_owner_name()
  */
 void octomanager::add_user( octouser* user )
 {
-		__main_room->add_user( user );
+	__main_room->add_user( user );
 }
 
 /**

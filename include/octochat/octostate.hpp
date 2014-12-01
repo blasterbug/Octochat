@@ -51,11 +51,21 @@ class octostate
 		/// stop the session
 		void close_session();
 		/// Set the nickname for the user
-		void set_nickname( std::string );
+		void set_nickname( const std::string& );
 		/// receive a new mail
 		void receive_mail( octomail mail );
 		/// send a new octomail
 		void send_mail( octomail mail );
+};
+
+/**
+ * List of all states possible
+ * Usefull for notify octosession observers when its state changes
+ */
+enum octostates_name {
+	connected = 0,
+	deconnected,
+	waiting
 };
 
 #endif

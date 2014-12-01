@@ -43,6 +43,7 @@
 #include "octonet/octonet_manager.hpp"
 #include "octonet/octopeer_observer.hpp"
 #include "octonet/octonet.hpp"
+#include "octonet/octonet_manager.hpp"
 
 #include "octochat.hpp"
 #include "octochat/octochat_protocol.hpp"
@@ -112,7 +113,9 @@
 			// if there is not other peer
 			if( __connected_peers.empty() )
 			{
-				//__session->connect();
+				// at least the user peers should be there !
+				// force broadcast to update peers
+				__server->send_broadcast( OCTONET_DEFAULT_UDP_PORT );
 			}
 			else
 			{

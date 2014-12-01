@@ -30,6 +30,7 @@
  */
 
 #include "octochat.hpp"
+#include "octochat/octostate.hpp"
 #include "octochat/octostates.hpp"
 
 // octostate implementation
@@ -63,7 +64,7 @@ void octostate::send_mail( octomail mail ) {}
  * change the nickname of the octo-user
  * @param[in] nickname The octo-ouser name
  */
-void octostate::set_nickname( std::string nickname ) {}
+void octostate::set_nickname( const std::string &nickname ) {}
 
  // connected_octostate implementation
 /**
@@ -84,6 +85,7 @@ void connected_octostate::send_mail( octomail mail )
 void connected_octostate::close_session()
 {
 	__session->set_current_state( __session->get_waiting_state() );
+	__session->notify( deconnected );
 	//__session->get_octopostman()->byebye();
 	/// \todo send a query to locals peers when users is being deconnected
 }
@@ -99,13 +101,16 @@ void deconnected_octostate::start_session() {
 	// send query to connect
 	__session->get_octopostman()->register_user(
 							__session->get_nickname(), OCTOCHAT_DEFAULT_ROOM_NAME );
+	__session->notify( waiting );
 }
+#include <iostream>
 /// change the nickname for chat
-void deconnected_octostate::set_nickname( std::string nickname )
+void deconnected_octostate::set_nickname( const std::string& nickname )
 {
 	// change name of the user
 	// call set_nickname cause calling this function => infinite loop
 	__session->edit_nickname( nickname );
+	std::cout << nickname << " edit" << std::endl;
 }
 
 // waiting_octostate implementation
@@ -120,9 +125,11 @@ waiting_octostate::waiting_octostate( octosession* session ) :
 void waiting_octostate::disconnect()
 {
 	__session->set_current_state( __session->get_deconnected_state() );
+	__session->notify( deconnected );
 }
 /// function to pass from waiting state to connected state
 void waiting_octostate::connect()
 {
 	__session->set_current_state( __session->get_connected_state() );
+	__session->notify( connected );
 }
