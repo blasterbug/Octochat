@@ -40,7 +40,7 @@ class octobserver
 {
 	public:
 		/// get updated from the observable object
-		virtual void update( octostates_name state) = 0 ;
+		virtual void update( octostates_name state ) = 0 ;
 };
 
 #endif

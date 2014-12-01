@@ -45,8 +45,8 @@ class octo_ui : public octobserver
 	/**
 	 * Ask to user a nickname for chatting
 	 * And be sure the name it's not already used
-	 * @param[out] The name of the user or an empty string if the name entered
-	 * is not unique.
+	 * @param[out] The name of the user or an empty string if the given
+	 * name is not unique.
 	 */
 	void set_name_id()
 	{
@@ -54,7 +54,7 @@ class octo_ui : public octobserver
 		cout << "Please enter a nickname: ";
 		cin >> nickname;
 		__session->set_nickname( nickname );
-}
+	}
 
 };
 

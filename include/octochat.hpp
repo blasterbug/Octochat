@@ -342,7 +342,7 @@ class octoroom
 		/** currently incompleted implementation, we're working on
 		 * Get the title of a room
 		 * @param[out] The octoroom subject
-		 *
+		 */
 		std::string get_subject()
 		{
 			return __subject;

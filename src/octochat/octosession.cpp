@@ -39,10 +39,7 @@
  * @param[in] server Octonet instance
  */
 octosession::octosession( octonet* server ) :
-	// initiate states
-	__deco_state( deconnected_octostate( this ) ),
-	__wait_state( waiting_octostate( this ) ),
-	__connected_state( connected_octostate( this ) ),
+	// At programm start up, the session is deconnected
 	__current_state( new deconnected_octostate( this ) ),
 	// initiate session stuffs
 	__local_manager(),
@@ -51,39 +48,14 @@ octosession::octosession( octonet* server ) :
 	// register an observer to get notified on new queries
 	server->add_query_observer( new octoquery_handler( __local_manager, this ) );
 }
-
-/**
- *  getter for state pattern : deconnected state
- * @param[out] deconnected state
- */
-octostate octosession::get_deconnected_state()
-{
-	return __deco_state;
-}
-/**
- * getter for state pattern : connected state
- * @param[out] connected state
- */
-octostate octosession::get_connected_state()
-{
-	return __connected_state;
-}
-/**
- * getter for state pattern : waiting state
- * @param[out] waiting state
- */
-octostate octosession::get_waiting_state()
-{
-	return __wait_state;
-}
 /**
  * setter for state pattern
  * @param[in] state The nex state
  * This function is supposed to be only called by octostate objects
  */
-void octosession::set_current_state( octostate state )
+void octosession::set_current_state( octostate* state )
 {
-	__current_state = &state;
+	__current_state = state;
 }
 /**
  * When the session is connected
@@ -150,8 +122,9 @@ void octosession::close_session()
  * set the nickname user for the session
  * @param[in] nickname username for the session
  */
-void octosession::set_nickname( std::string nickname )
+void octosession::set_nickname( std::string& nickname )
 {
+	std::cout << "changing username with " << __username << std::endl;
 	__current_state->set_nickname( nickname );
 }
 /**
@@ -170,6 +143,9 @@ std::string octosession::get_nickname()
 void octosession::edit_nickname( std::string nickname )
 {
 	__username = nickname;
+	std::cout << "j'edite " << __username << std::endl ;
+	std::cout << nickname << std::endl;
+	std::cout << __username << std::endl;
 }
 /**
  * Send a query to an octo-user when he tried to joint

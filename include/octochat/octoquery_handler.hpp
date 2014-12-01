@@ -92,7 +92,7 @@ class octoquery_handler : public octoquery_observer
 				octouser* owner = new octouser( query.headers_map.find( OCTOCHAT_PROTOCOL_OWNER )->second, owner_peer );
 				// start local room
 				__manager->open_local_octoroom( owner, OCTOCHAT_PROTOCOL_ROOM );
-				__session->set_nickname( query.content_str );
+				__session->edit_nickname( query.content_str );
 				__session->connect();
 			}
 			// the query is to noticied user can't be connected

@@ -42,20 +42,38 @@
 class octostate
 {
 	public:
-		/// connection transition
-		void connect();
-		/// deconnection transition
-		void disconnect();
-		/// start the session
-		void start_session();
-		/// stop the session
-		void close_session();
-		/// Set the nickname for the user
-		void set_nickname( const std::string& );
-		/// receive a new mail
-		void receive_mail( octomail mail );
-		/// send a new octomail
-		void send_mail( octomail mail );
+		// octostate implementation
+		/**
+		 * connection transition
+		 */
+		virtual void connect() {}
+		/**
+		 * deconnection transition
+		 */
+		virtual void disconnect() {}
+		/**
+		 * start the session
+		 */
+		virtual void start_session() {}
+		/**
+		 * stop the session
+		 */
+		virtual void close_session() {}
+		/**
+		 * receive a new mail
+		 * @param[in] mail mail to post in local(s) octoroom
+		 */
+		virtual void receive_mail( octomail mail ) {}
+		/**
+		 * post a new octomail
+		 * @param[in] mail The octomail to send to peers octorooms
+		 */
+		virtual void send_mail( octomail mail ) {}
+		/**
+		 * change the nickname of the octo-user
+		 * @param[in] nickname The octo-ouser name
+		 */
+		virtual void set_nickname( std::string& nickname ) {}
 };
 
 /**

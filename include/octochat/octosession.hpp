@@ -48,14 +48,6 @@
 class octosession : public octo_subject
 {
 	private:
-		/// attributs for state pattern
-		/// the deconnected state
-		octostate __deco_state;
-		/// the waiting state
-		octostate __wait_state;
-		/// the connected state
-		octostate __connected_state;
-
 		/// current state of the session
 		octostate* __current_state;
 		/// room for the session
@@ -70,19 +62,12 @@ class octosession : public octo_subject
 	public:
 	/// constructor
 	octosession( octonet* );
-	/// getter for state pattern : deconnected state
-	octostate get_deconnected_state();
-	/// getter for state pattern : connected state
-	octostate get_connected_state();
-	/// getter for state pattern : waiting state
-	octostate get_waiting_state();
 	/// setter for state pattern
-	void set_current_state( octostate );
+	void set_current_state( octostate* );
 	/// When the session is connected
 	void connect();
 	/// When the session is being disconnected
 	void disconnect();
-
 	/// get the current manager for the session
 	octomanager* get_octomanager();
 	/// Get the current postman for the current session
@@ -96,12 +81,12 @@ class octosession : public octo_subject
 	/// close the current session
 	void close_session();
 	/// set the nickname user for the session
-	void set_nickname( std::string );
+	void set_nickname( std::string& );
 	/// get the nickname for the session
 	std::string get_nickname();
 	/// Change the name of the user (only callable from octostates
 	void edit_nickname( std::string );
-	/// send a query to an octo-user when he tried to joint the local room
+	/// send a query to octo-user when he tried to joint the local room
 	void notify_user_auth( octouser*, bool );
 
 };
