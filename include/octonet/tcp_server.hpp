@@ -31,7 +31,7 @@ private:
     std::size_t data_size_len_;
     std::size_t data_len_;
     unsigned short tcp_port_;
-    unsigned short udp_port_;    
+    unsigned short udp_port_;
 
     tcp_connection(boost::asio::io_service& _io_service, octonet_manager* _net_manager);
     void handle_check_version(const boost::system::error_code& _error, size_t _bytes_transferred);
@@ -54,7 +54,7 @@ private:
     boost::asio::ip::address ip_address_;
     unsigned short port_;
     tcp::acceptor acceptor_;
-    
+
     void start_accept(void);
     void handle_accept(boost::shared_ptr<tcp_connection> _new_connection, const boost::system::error_code& _error);
 

@@ -28,9 +28,15 @@ public:
         std::cout << "update peer: " << _peer.ip_address << ":" << _peer.tcp_port << " ";
         switch(_state)
         {
-            case online : std::cout << "online"; break;
-            case offline : std::cout << "offline"; break;
-            default : std::cout << "???"; break;
+        case online :
+            std::cout << "online";
+            break;
+        case offline :
+            std::cout << "offline";
+            break;
+        default :
+            std::cout << "???";
+            break;
         }
         std::cout << std::endl;
     }

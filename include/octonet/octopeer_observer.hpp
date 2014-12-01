@@ -14,19 +14,19 @@
  */
 class octopeer_observer
 {
-    public:
-    	
-		/*!
-		 * \brief Destructeur par défaut.
-		 */
-		virtual ~octopeer_observer(void) {}
+public:
 
-		/*!
-		 * \brief Méthode appelée lors du changement de l'état d'un pair.
-		 * \param _peer : le pair
-		 * \param _state : l'état du pair
-		 */
-        virtual void update_peer(const octopeer& _peer, octopeer_state _state) = 0;
+    /*!
+     * \brief Destructeur par défaut.
+     */
+    virtual ~octopeer_observer(void) {}
+
+    /*!
+     * \brief Méthode appelée lors du changement de l'état d'un pair.
+     * \param _peer : le pair
+     * \param _state : l'état du pair
+     */
+    virtual void update_peer(const octopeer& _peer, octopeer_state _state) = 0;
 };
 
 #endif

@@ -33,9 +33,9 @@ void tcp_connection::start(void)
     version_len_ = octonet_version_header.size();
     version_buf_.reset(new char[version_len_]);
     sock_.async_read_some(boost::asio::buffer(version_buf_.get(), version_len_),
-        boost::bind(&tcp_connection::handle_check_version, shared_from_this(),
-        boost::asio::placeholders::error,
-        boost::asio::placeholders::bytes_transferred));
+                          boost::bind(&tcp_connection::handle_check_version, shared_from_this(),
+                                      boost::asio::placeholders::error,
+                                      boost::asio::placeholders::bytes_transferred));
 }
 
 //private
@@ -55,9 +55,9 @@ void tcp_connection::handle_check_version(const boost::system::error_code& _erro
         tcp_port_len_ = octonet_port_header_length;
         tcp_port_buf_.reset(new char[tcp_port_len_]);
         sock_.async_read_some(boost::asio::buffer(tcp_port_buf_.get(), tcp_port_len_),
-            boost::bind(&tcp_connection::handle_read_tcp_port, shared_from_this(),
-            boost::asio::placeholders::error,
-            boost::asio::placeholders::bytes_transferred));
+                              boost::bind(&tcp_connection::handle_read_tcp_port, shared_from_this(),
+                                          boost::asio::placeholders::error,
+                                          boost::asio::placeholders::bytes_transferred));
     }
     else
     {
@@ -80,13 +80,13 @@ void tcp_connection::handle_read_tcp_port(const boost::system::error_code& _erro
         {
             return;
         }
-        
+
         udp_port_len_ = octonet_port_header_length;
         udp_port_buf_.reset(new char[udp_port_len_]);
         sock_.async_read_some(boost::asio::buffer(udp_port_buf_.get(), udp_port_len_),
-            boost::bind(&tcp_connection::handle_read_udp_port, shared_from_this(),
-            boost::asio::placeholders::error,
-            boost::asio::placeholders::bytes_transferred));
+                              boost::bind(&tcp_connection::handle_read_udp_port, shared_from_this(),
+                                          boost::asio::placeholders::error,
+                                          boost::asio::placeholders::bytes_transferred));
     }
     else
     {
@@ -109,13 +109,13 @@ void tcp_connection::handle_read_udp_port(const boost::system::error_code& _erro
         {
             return;
         }
-        
+
         data_size_len_ = octonet_size_header_length;
         data_size_buf_.reset(new char[data_size_len_]);
         sock_.async_read_some(boost::asio::buffer(data_size_buf_.get(), data_size_len_),
-            boost::bind(&tcp_connection::handle_read_data_len, shared_from_this(),
-            boost::asio::placeholders::error,
-            boost::asio::placeholders::bytes_transferred));
+                              boost::bind(&tcp_connection::handle_read_data_len, shared_from_this(),
+                                          boost::asio::placeholders::error,
+                                          boost::asio::placeholders::bytes_transferred));
     }
     else
     {
@@ -138,12 +138,12 @@ void tcp_connection::handle_read_data_len(const boost::system::error_code& _erro
         {
             return;
         }
-        
+
         data_buf_.reset(new char[data_len_]);
         sock_.async_read_some(boost::asio::buffer(data_buf_.get(), data_len_),
-            boost::bind(&tcp_connection::handle_read_data, shared_from_this(),
-            boost::asio::placeholders::error,
-            boost::asio::placeholders::bytes_transferred));
+                              boost::bind(&tcp_connection::handle_read_data, shared_from_this(),
+                                          boost::asio::placeholders::error,
+                                          boost::asio::placeholders::bytes_transferred));
     }
     else
     {
@@ -165,12 +165,12 @@ void tcp_connection::handle_read_data(const boost::system::error_code& _error, s
         {
             octoquery query;
             octopeer peer(sock_.remote_endpoint().address(), tcp_port_);
-            
+
             std::string archive_data(data_buf_.get(), data_len_);
             std::istringstream archive_stream(archive_data);
             boost::archive::text_iarchive archive(archive_stream);
             archive >> query;
-            
+
             query.headers_map[octonet_ip_address_header] = sock_.remote_endpoint().address().to_string();
             query.headers_map[octonet_tcp_port_header] = boost::lexical_cast<std::string>(tcp_port_);
             query.headers_map[octonet_udp_port_header] = boost::lexical_cast<std::string>(udp_port_);
@@ -200,7 +200,7 @@ void tcp_connection::handle_read_data(const boost::system::error_code& _error, s
 
 tcp_server::tcp_server(octonet_manager* _net_manager, unsigned short _port) : net_manager_(_net_manager), acceptor_(io_service_, tcp::endpoint(tcp::v4(), _port))
 {
-	ip_address_ = acceptor_.local_endpoint().address();
+    ip_address_ = acceptor_.local_endpoint().address();
     port_ = acceptor_.local_endpoint().port();
 }
 
@@ -222,7 +222,7 @@ unsigned short tcp_server::port(void)
 
 boost::asio::ip::address tcp_server::ip_address(void)
 {
-	return ip_address_;
+    return ip_address_;
 }
 
 void tcp_server::start_accept(void)
@@ -230,8 +230,8 @@ void tcp_server::start_accept(void)
     boost::shared_ptr<tcp_connection> new_connection = tcp_connection::create(io_service_, net_manager_);
 
     acceptor_.async_accept(new_connection->socket(),
-        boost::bind(&tcp_server::handle_accept, this, new_connection,
-        boost::asio::placeholders::error));
+                           boost::bind(&tcp_server::handle_accept, this, new_connection,
+                                       boost::asio::placeholders::error));
 }
 
 //private

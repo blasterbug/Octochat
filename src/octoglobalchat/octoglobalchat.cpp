@@ -32,19 +32,25 @@ public:
         std::cout << "*** " << _peer.ip_address << ":" << _peer.tcp_port << " ";
         switch(_state)
         {
-            case online : std::cout << "has joined"; break;
-            case offline : std::cout << "has left"; break;
-            default : std::cout << "is a jedi"; break;
+        case online :
+            std::cout << "has joined";
+            break;
+        case offline :
+            std::cout << "has left";
+            break;
+        default :
+            std::cout << "is a jedi";
+            break;
         }
         std::cout << std::endl;
     }
 
     virtual void update_query(const octoquery& _query)
     {
-		if(_query.headers_map.find(octonet_uuid_header)->second == uuid_)
-		{
-			return;
-		}
+        if(_query.headers_map.find(octonet_uuid_header)->second == uuid_)
+        {
+            return;
+        }
 
         boost::lock_guard<boost::mutex> guard(out_mtx_);
         std::cout << "[time] <" << _query.headers_map.find(octonet_ip_address_header)->second << ":" << _query.headers_map.find(octonet_tcp_port_header)->second << "> " << _query.content_str << std::cout << std::endl;
@@ -64,17 +70,17 @@ int main(void)
     net.add_query_observer(&globalchat);
     net.run();
     std::string line;
-	while(std::getline(std::cin, line))
-	{
-		octoquery query;
-		query.headers_map[octonet_app_id_header] = OCTOGLOBALCHAT_APP_ID;
-		query.content_str = line;
-		std::set<octopeer, octopeer_comparator> peers;
-		net.peers(peers);
-		for(std::set<octopeer, octopeer_comparator>::const_iterator peer=peers.begin(); peer!=peers.end(); ++peer)
-		{
-			net.send_query(*peer, query);
-		}
-	}
+    while(std::getline(std::cin, line))
+    {
+        octoquery query;
+        query.headers_map[octonet_app_id_header] = OCTOGLOBALCHAT_APP_ID;
+        query.content_str = line;
+        std::set<octopeer, octopeer_comparator> peers;
+        net.peers(peers);
+        for(std::set<octopeer, octopeer_comparator>::const_iterator peer=peers.begin(); peer!=peers.end(); ++peer)
+        {
+            net.send_query(*peer, query);
+        }
+    }
     return 0;
 }

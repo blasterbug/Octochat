@@ -19,17 +19,17 @@ struct octopeer
     boost::asio::ip::address ip_address;
     unsigned short tcp_port;
 
- 	/*!
-	 * \brief Constructeur de octopeer.
-	 * \param _ip_address : l'adresse IP
-	 * \param _tcp_port : le port TCP
-	 */
+    /*!
+     * \brief Constructeur de octopeer.
+     * \param _ip_address : l'adresse IP
+     * \param _tcp_port : le port TCP
+     */
     octopeer(boost::asio::ip::address _ip_address, unsigned short _tcp_port) : ip_address(_ip_address), tcp_port(_tcp_port) {}
 
-	/*!
-	 * \brief Constructeur par recpie de octopeer.
-	 * \param _peer : le pair à recopier
-	 */
+    /*!
+     * \brief Constructeur par recpie de octopeer.
+     * \param _peer : le pair à recopier
+     */
     octopeer(const octopeer& _peer) : ip_address(_peer.ip_address), tcp_port(_peer.tcp_port) {}
 };
 

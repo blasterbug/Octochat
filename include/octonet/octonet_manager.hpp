@@ -94,10 +94,10 @@ public:
      */
     ~octonet_manager(void)
     {
-		udp_server_ptr_->stop();
+        udp_server_ptr_->stop();
         tcp_server_ptr_->stop();
-		servers_group_.join_all();
-	}
+        servers_group_.join_all();
+    }
 
     /*!
      * \brief Retourne le service d'entrées/sorties.
@@ -145,16 +145,16 @@ public:
     }
 
     /*!
-     * \brief Remplit l'ensemble passé en paramètre avec touts les pairs en ligne. 
+     * \brief Remplit l'ensemble passé en paramètre avec touts les pairs en ligne.
      * \param _peers : l'ensemble de pairs à remplir
      * \return l'ensemble de pairs
      */
-	 std::set<octopeer, octopeer_comparator>& peers(std::set<octopeer, octopeer_comparator>& _peers)
-	 {
-		 boost::lock_guard<boost::mutex> guard(peers_set_mtx_);
-		 _peers.insert(peers_set_.begin(), peers_set_.end());
-		 return _peers;
-	 }
+    std::set<octopeer, octopeer_comparator>& peers(std::set<octopeer, octopeer_comparator>& _peers)
+    {
+        boost::lock_guard<boost::mutex> guard(peers_set_mtx_);
+        _peers.insert(peers_set_.begin(), peers_set_.end());
+        return _peers;
+    }
 
     /*!
      * \brief Ajoute un port UDP de destination.
@@ -217,7 +217,7 @@ public:
         boost::lock_guard<boost::mutex> guard(query_observers_set_mtx_);
         return (query_observers_set_.insert(_query_observer)).second;
     }
-    
+
     /*!
      * \brief Supprime un observeur de requêtes.
      * \param _query_observer : l'observeur de requêtes
@@ -228,7 +228,7 @@ public:
         boost::lock_guard<boost::mutex> guard(query_observers_set_mtx_);
         return query_observers_set_.erase(_query_observer) > 0;
     }
-    
+
     /*!
      * \brief Ajoute un observeur de pairs.
      * \param _query_observer : l'observeur de pairs
@@ -239,7 +239,7 @@ public:
         boost::lock_guard<boost::mutex> guard(peer_observers_set_mtx_);
         return (peer_observers_set_.insert(_peer_observer)).second;
     }
-    
+
     /*!
      * \brief Supprime un observeur de pairs.
      * \param _query_observer : l'observeur de pairs
@@ -260,13 +260,13 @@ public:
 #       ifdef OCTONET_LOG_ENABLE
         BOOST_LOG_TRIVIAL(info) << "octonet_manager::notify_query_observers: start";
 #       endif
-        std::string app_str;                            
+        std::string app_str;
         std::map<std::string, std::string>::const_iterator app_it = _query.headers_map.find(octonet_app_id_header);
         if(app_it != _query.headers_map.end())
         {
             app_str = app_it->second;
         }
-        
+
         boost::lock_guard<boost::mutex> guard(query_observers_set_mtx_);
         for(std::set<octoquery_observer*>::const_iterator it=query_observers_set_.begin(); it!=query_observers_set_.end(); ++it)
         {
@@ -276,7 +276,7 @@ public:
             }
         }
     }
-    
+
     /*!
      * \brief Notifie les observeurs du changement de l'état d'un pair.
      * \param _peer : le pair
@@ -312,7 +312,7 @@ public:
             udp_server_ptr_.reset(server_factory_.create_server(udp, udp_port_));
             udp_port_ = udp_server_ptr_->port();
             servers_group_.create_thread(boost::bind(&abstract_server::run, udp_server_ptr_.get()));
-            
+
             add_udp_broadcast_port(udp_port_);
         }
         catch(std::exception& e)
@@ -326,7 +326,7 @@ public:
         BOOST_LOG_TRIVIAL(info) << "octonet_manager::run: stop";
 #       endif
     }
-    
+
     /*!
      * \brief Envoie une requête.
      * \param _peer : le destinataire
@@ -351,7 +351,7 @@ public:
             tcp_port_stream << std::setw(octonet_port_header_length) << std::hex << tcp_port_;
             if (!tcp_port_stream || tcp_port_stream.str().size() != octonet_port_header_length)
             {
-                    throw std::exception();
+                throw std::exception();
             }
             std::string tcp_port_str = tcp_port_stream.str();
 
@@ -359,7 +359,7 @@ public:
             udp_port_stream << std::setw(octonet_port_header_length) << std::hex << udp_port_;
             if (!udp_port_stream || udp_port_stream.str().size() != octonet_port_header_length)
             {
-                    throw std::exception();
+                throw std::exception();
             }
             std::string udp_port_str = udp_port_stream.str();
 
@@ -367,10 +367,10 @@ public:
             size_stream << std::setw(octonet_size_header_length) << std::hex << data_str.size();
             if (!size_stream || size_stream.str().size() != octonet_size_header_length)
             {
-                    throw std::exception();
+                throw std::exception();
             }
             std::string size_str = size_stream.str();
-            
+
             buffers.push_back(boost::asio::buffer(octonet_version_header));
             buffers.push_back(boost::asio::buffer(tcp_port_str));
             buffers.push_back(boost::asio::buffer(udp_port_str));
@@ -421,12 +421,12 @@ public:
         try
         {
             std::string data_str(octonet_version_header);
-            
+
             std::ostringstream tcp_port_stream;
             tcp_port_stream << std::setw(octonet_port_header_length) << std::hex << tcp_port_;
             if (!tcp_port_stream || tcp_port_stream.str().size() != octonet_port_header_length)
             {
-                    throw std::exception();
+                throw std::exception();
             }
             data_str += tcp_port_stream.str();
 

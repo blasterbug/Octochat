@@ -16,24 +16,24 @@
  */
 class octoquery_observer
 {
-    public:
+public:
 
-		/*!
-		 * \brief Destructeur par défaut.
-		 */
-		virtual ~octoquery_observer(void) {}
+    /*!
+     * \brief Destructeur par défaut.
+     */
+    virtual ~octoquery_observer(void) {}
 
-		/*!
-		 * \brief Méthode appelée lors de la réception d'une nouvelle requête correspondant à l'identifiant de l'application (ou bien si l'identifiant de l'application est vide).
-		 * \param _query : la requête
-		 */
-        virtual void update_query(const octoquery& _query) = 0;
+    /*!
+     * \brief Méthode appelée lors de la réception d'une nouvelle requête correspondant à l'identifiant de l'application (ou bien si l'identifiant de l'application est vide).
+     * \param _query : la requête
+     */
+    virtual void update_query(const octoquery& _query) = 0;
 
-		/*!
-		 * \brief Retourne l'identifiant de l'application.
-		 * \return l'identifiant
-		 */
-        virtual std::string app() const = 0;
+    /*!
+     * \brief Retourne l'identifiant de l'application.
+     * \return l'identifiant
+     */
+    virtual std::string app() const = 0;
 };
 
 #endif

@@ -16,9 +16,9 @@ class abstract_server
 {
 public:
 
-	/*!
-	 * \brief Destructeur par défaut de abstract_server.
-	 */
+    /*!
+     * \brief Destructeur par défaut de abstract_server.
+     */
     virtual ~abstract_server(void) {}
 
     /*!

@@ -26,7 +26,7 @@ private:
     udp::endpoint remote_endpoint_;
     boost::scoped_array<char> data_buf_;
     std::size_t data_len_;
-    
+
     void start_receive(void);
     void handle_receive(const boost::system::error_code& _error, std::size_t _bytes_recvd);
 

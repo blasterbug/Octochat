@@ -71,15 +71,15 @@ public:
         return net_manager_.udp_port();
     }
 
-	/*!
-	 * \brief Remplit l'ensemble passé en paramètre avec touts les pairs en ligne. 
-	 * \param _peers : l'ensemble de pairs à remplir
-	 * \return l'ensemble de pairs
-	 */
-	 std::set<octopeer, octopeer_comparator>& peers(std::set<octopeer, octopeer_comparator>& _peers)
-	 {
-		 return net_manager_.peers(_peers);
-	 }
+    /*!
+     * \brief Remplit l'ensemble passé en paramètre avec touts les pairs en ligne.
+     * \param _peers : l'ensemble de pairs à remplir
+     * \return l'ensemble de pairs
+     */
+    std::set<octopeer, octopeer_comparator>& peers(std::set<octopeer, octopeer_comparator>& _peers)
+    {
+        return net_manager_.peers(_peers);
+    }
 
     /*!
      * \brief Ajoute un observeur de requêtes.
@@ -90,7 +90,7 @@ public:
     {
         return net_manager_.add_query_observer(_query_observer);
     }
-    
+
     /*!
      * \brief Supprime un observeur de requêtes.
      * \param _query_observer : l'observeur de requêtes
@@ -100,7 +100,7 @@ public:
     {
         return net_manager_.rem_query_observer(_query_observer);
     }
-    
+
     /*!
      * \brief Ajoute un observeur de pairs.
      * \param _query_observer : l'observeur de pairs
@@ -110,7 +110,7 @@ public:
     {
         return net_manager_.add_peer_observer(_peer_observer);
     }
-    
+
     /*!
      * \brief Supprime un observeur de pairs.
      * \param _query_observer : l'observeur de pairs
@@ -137,9 +137,9 @@ public:
      */
     bool send_query(const octopeer& _peer, octoquery& _query)
     {
-            return net_manager_.send_query(_peer, _query);
+        return net_manager_.send_query(_peer, _query);
     }
-    
+
     /*!
      * \brief Émet un broadcast UDP.
      * \param _port : le port de destination
@@ -147,7 +147,7 @@ public:
      */
     bool send_broadcast(unsigned short _port)
     {
-            return net_manager_.send_broadcast(_port);
+        return net_manager_.send_broadcast(_port);
     }
 };
 
